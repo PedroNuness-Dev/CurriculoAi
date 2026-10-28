@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.controllers;
 
-import br.com.CurriculoAi.DTO.request.RedeSocialUsuarioDtoRequest;
-import br.com.CurriculoAi.DTO.response.UsuarioRedeSocialDtoResponse;
+import br.com.CurriculoAi.dto.request.RedeSocialUsuarioDtoRequest;
+import br.com.CurriculoAi.dto.response.UsuarioRedeSocialDtoResponse;
 import br.com.CurriculoAi.services.RedeSocialUsuarioService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.controllers;
 
-import br.com.CurriculoAi.DTO.response.CursoDtoResponse;
+import br.com.CurriculoAi.dto.response.CursoDtoResponse;
 import br.com.CurriculoAi.services.CursoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

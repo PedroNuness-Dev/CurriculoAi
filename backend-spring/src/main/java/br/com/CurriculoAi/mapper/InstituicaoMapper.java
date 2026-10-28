@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.mapper;
 
-import br.com.CurriculoAi.DTO.response.InstituicaoDtoResponse;
+import br.com.CurriculoAi.dto.response.InstituicaoDtoResponse;
 import br.com.CurriculoAi.models.Instituicao;
 import org.mapstruct.Mapper;
 

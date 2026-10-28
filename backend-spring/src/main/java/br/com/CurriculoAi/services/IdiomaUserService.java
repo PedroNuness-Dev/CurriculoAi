@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.request.IdiomaUserDtoRequest;
-import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
+import br.com.CurriculoAi.dto.request.IdiomaUserDtoRequest;
+import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.models.Idioma;
 import br.com.CurriculoAi.models.IdiomasUser;
 import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;

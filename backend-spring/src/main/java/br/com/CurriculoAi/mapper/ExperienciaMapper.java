@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.mapper;
 
-import br.com.CurriculoAi.DTO.response.ExperienciaUserDtoResponse;
+import br.com.CurriculoAi.dto.response.ExperienciaUserDtoResponse;
 import br.com.CurriculoAi.models.ExperienciaUser;
 import org.mapstruct.Mapper;
 

@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.request.ProjetoDtoRequest;
-import br.com.CurriculoAi.DTO.response.ProjetoDtoResponse;
+import br.com.CurriculoAi.dto.request.ProjetoDtoRequest;
+import br.com.CurriculoAi.dto.response.ProjetoDtoResponse;
 import br.com.CurriculoAi.models.Projeto;
 import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.repositories.ProjetoRepository;

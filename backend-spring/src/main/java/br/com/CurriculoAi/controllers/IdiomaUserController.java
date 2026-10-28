@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.controllers;
 
-import br.com.CurriculoAi.DTO.request.IdiomaUserDtoRequest;
-import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
+import br.com.CurriculoAi.dto.request.IdiomaUserDtoRequest;
+import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.services.IdiomaUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

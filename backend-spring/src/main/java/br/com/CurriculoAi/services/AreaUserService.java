@@ -1,8 +1,8 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.request.AreaUserAddDtoRequest;
-import br.com.CurriculoAi.DTO.response.AreaDTOResponse;
-import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
+import br.com.CurriculoAi.dto.request.AreaUserAddDtoRequest;
+import br.com.CurriculoAi.dto.response.AreaDTOResponse;
+import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.Area;
 import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
 import br.com.CurriculoAi.models.UsuarioCad;

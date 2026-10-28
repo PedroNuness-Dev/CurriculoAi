@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.mapper;
 
-import br.com.CurriculoAi.DTO.response.IdiomaDtoResponse;
+import br.com.CurriculoAi.dto.response.IdiomaDtoResponse;
 import br.com.CurriculoAi.models.Idioma;
 import org.mapstruct.Mapper;
 

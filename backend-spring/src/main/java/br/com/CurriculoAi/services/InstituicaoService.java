@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.response.InstituicaoDtoResponse;
+import br.com.CurriculoAi.dto.response.InstituicaoDtoResponse;
 import br.com.CurriculoAi.models.Instituicao;
 import br.com.CurriculoAi.repositories.InstituicaoRepository;
 import lombok.RequiredArgsConstructor;

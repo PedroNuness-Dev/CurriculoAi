@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.controllers;
 
-import br.com.CurriculoAi.DTO.request.DisponibilidadeDtoRequest;
-import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
+import br.com.CurriculoAi.dto.request.DisponibilidadeDtoRequest;
+import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.services.DisponibilidadeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

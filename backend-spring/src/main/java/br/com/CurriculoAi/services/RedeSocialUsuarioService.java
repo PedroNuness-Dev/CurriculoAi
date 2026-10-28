@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.request.RedeSocialUsuarioDtoRequest;
-import br.com.CurriculoAi.DTO.response.UsuarioRedeSocialDtoResponse;
+import br.com.CurriculoAi.dto.request.RedeSocialUsuarioDtoRequest;
+import br.com.CurriculoAi.dto.response.UsuarioRedeSocialDtoResponse;
 import br.com.CurriculoAi.models.RedeSocial;
 import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.models.UsuarioRedeSocial;

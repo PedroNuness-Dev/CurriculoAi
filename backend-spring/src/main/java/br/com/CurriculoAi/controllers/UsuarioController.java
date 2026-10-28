@@ -1,9 +1,9 @@
 package br.com.CurriculoAi.controllers;
 
-import br.com.CurriculoAi.DTO.request.UsuarioDtoRequest;
-import br.com.CurriculoAi.DTO.response.LoginDtoResponse;
-import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
-import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
+import br.com.CurriculoAi.dto.request.UsuarioDtoRequest;
+import br.com.CurriculoAi.dto.response.LoginDtoResponse;
+import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
+import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;

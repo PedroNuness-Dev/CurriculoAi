@@ -1,9 +1,9 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.request.UsuarioDtoRequest;
-import br.com.CurriculoAi.DTO.response.LoginDtoResponse;
-import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
-import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
+import br.com.CurriculoAi.dto.request.UsuarioDtoRequest;
+import br.com.CurriculoAi.dto.response.LoginDtoResponse;
+import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
+import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.Role;
 import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;

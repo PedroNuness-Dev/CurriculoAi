@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.mapper;
 
-import br.com.CurriculoAi.DTO.response.UsuarioCadDtoResponse;
-import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
+import br.com.CurriculoAi.dto.response.UsuarioCadDtoResponse;
+import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.models.UsuarioCad;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

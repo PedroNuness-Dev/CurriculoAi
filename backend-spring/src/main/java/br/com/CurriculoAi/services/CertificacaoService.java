@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.DTO.request.CertificacaoDtoRequest;
-import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
+import br.com.CurriculoAi.dto.request.CertificacaoDtoRequest;
+import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.CertificacaoUser;
 import br.com.CurriculoAi.models.Instituicao;
 import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;

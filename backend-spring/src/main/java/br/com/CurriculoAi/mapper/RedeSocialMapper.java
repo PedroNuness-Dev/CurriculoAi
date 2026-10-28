@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.mapper;
 
-import br.com.CurriculoAi.DTO.response.RedeSocialDtoResponse;
+import br.com.CurriculoAi.dto.response.RedeSocialDtoResponse;
 import br.com.CurriculoAi.models.RedeSocial;
 import org.mapstruct.Mapper;
 

@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.entities;
+package br.com.CurriculoAi.models;
 
 import br.com.CurriculoAi.enums.RoleEnum;
 import jakarta.persistence.*;

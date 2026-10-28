@@ -2,11 +2,10 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.FormacaoDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.entities.*;
+import br.com.CurriculoAi.models.*;
 import br.com.CurriculoAi.enums.TipoFormacao;
 import br.com.CurriculoAi.exceptions.ListIsEmptyException;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.AreaUserRepository;
 import br.com.CurriculoAi.repositories.CursoRepository;
 import br.com.CurriculoAi.repositories.FormacaoUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;

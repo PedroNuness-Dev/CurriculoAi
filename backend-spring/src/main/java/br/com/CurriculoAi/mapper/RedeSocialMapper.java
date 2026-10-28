@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.mapper;
 
 import br.com.CurriculoAi.DTO.response.RedeSocialDtoResponse;
-import br.com.CurriculoAi.entities.RedeSocial;
+import br.com.CurriculoAi.models.RedeSocial;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

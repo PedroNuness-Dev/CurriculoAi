@@ -2,14 +2,13 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.ProjetoDtoRequest;
 import br.com.CurriculoAi.DTO.response.ProjetoDtoResponse;
-import br.com.CurriculoAi.entities.Projeto;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.Projeto;
+import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.repositories.ProjetoRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,11 +1,10 @@
 package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.RedeSocialUsuarioDtoRequest;
-import br.com.CurriculoAi.DTO.response.RedeSocialDtoResponse;
 import br.com.CurriculoAi.DTO.response.UsuarioRedeSocialDtoResponse;
-import br.com.CurriculoAi.entities.RedeSocial;
-import br.com.CurriculoAi.entities.UsuarioCad;
-import br.com.CurriculoAi.entities.UsuarioRedeSocial;
+import br.com.CurriculoAi.models.RedeSocial;
+import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.UsuarioRedeSocial;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.RedeSocialMapper;
 import br.com.CurriculoAi.mapper.UsuarioMapper;

@@ -2,9 +2,9 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.DisponibilidadeDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.entities.DisponibilidadeUser;
-import br.com.CurriculoAi.entities.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.DisponibilidadeUser;
+import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
+import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.enums.ModeloDeTrabalho;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.DisponibilidadeUserRepository;

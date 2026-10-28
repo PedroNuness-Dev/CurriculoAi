@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.entities.CurriculoUsuario;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.CurriculoUsuario;
+import br.com.CurriculoAi.models.UsuarioCad;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

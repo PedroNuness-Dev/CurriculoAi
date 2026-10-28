@@ -2,10 +2,10 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.IdiomaUserDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
-import br.com.CurriculoAi.entities.Idioma;
-import br.com.CurriculoAi.entities.IdiomasUser;
-import br.com.CurriculoAi.entities.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.Idioma;
+import br.com.CurriculoAi.models.IdiomasUser;
+import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
+import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.enums.NivelIdioma;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.UsuarioMapper;

@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.utils.services;
 
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.UsuarioCadRepository;
 import lombok.RequiredArgsConstructor;

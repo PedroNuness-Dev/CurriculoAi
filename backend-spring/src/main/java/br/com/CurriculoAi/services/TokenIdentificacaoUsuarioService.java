@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.services;
 
-import br.com.CurriculoAi.entities.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
+import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

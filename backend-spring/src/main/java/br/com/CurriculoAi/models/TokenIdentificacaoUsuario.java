@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.entities;
+package br.com.CurriculoAi.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,19 +6,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "habilidade")
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Habilidade {
+@Entity
+@Table(name = "token_usuario")
+public class TokenIdentificacaoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_habilidade")
+    @Column(name = "id_token")
     private Long id;
+    private String token;
 
-    @Column(name = "nome", nullable = false)
-    private String nome;
+    @JoinColumn(name = "id_usuario")
+    @OneToOne(fetch = FetchType.EAGER)
+    private UsuarioCad usuarioCad;
 }

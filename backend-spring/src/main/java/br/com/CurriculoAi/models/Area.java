@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.entities;
+package br.com.CurriculoAi.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,18 +7,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "empresa")
+@Table(name = "area")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Empresa {
+@NoArgsConstructor
+public class Area {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_empresa")
+    @Column(name = "id_area")
     private Long id;
 
-    @Column(nullable = false)
-    private String nome;
+    @Column(name = "nome_area", nullable = false)
+    private String nomeArea;
+
 }

@@ -2,7 +2,7 @@ package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.DTO.response.CurriculosDtoResponse;
 import br.com.CurriculoAi.DTO.response.UsuarioFullContentDtoResponse;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.services.CerebrasService;
 import br.com.CurriculoAi.services.CurriculoUsuarioService;
 import br.com.CurriculoAi.services.PdfService;

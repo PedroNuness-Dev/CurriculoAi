@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.UsuarioCad;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

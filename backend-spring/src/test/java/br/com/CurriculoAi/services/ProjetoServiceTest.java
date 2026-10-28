@@ -2,8 +2,8 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.ProjetoDtoRequest;
 import br.com.CurriculoAi.DTO.response.ProjetoDtoResponse;
-import br.com.CurriculoAi.entities.Projeto;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.Projeto;
+import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.repositories.ProjetoRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.entities.AvaliacaoCurriculo;
+import br.com.CurriculoAi.models.AvaliacaoCurriculo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

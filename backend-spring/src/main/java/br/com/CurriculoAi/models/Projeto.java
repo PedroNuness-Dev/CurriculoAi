@@ -1,13 +1,10 @@
-package br.com.CurriculoAi.entities;
+package br.com.CurriculoAi.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Table
 @Entity

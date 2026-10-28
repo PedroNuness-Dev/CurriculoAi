@@ -1,6 +1,6 @@
-package br.com.CurriculoAi.entities;
+package br.com.CurriculoAi.models;
 
-import br.com.CurriculoAi.enums.TipoFormacao;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,30 +10,29 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "formacao")
+@Table(name = "certificacao")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class FormacaoUser {
+@AllArgsConstructor
+public class CertificacaoUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nome_certificacao")
+    private String nomeCertificacao;
+
     @ManyToOne
-    @JoinColumn(name = "id_curso", nullable = false)
-    private Curso curso;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_formacao", nullable = false, length = 80)
-    private TipoFormacao tipoFormacao;
-
-    @Column(name = "data_inicio", nullable = false)
-    private LocalDate dataInicio;
+    @JoinColumn(name = "id_instituicao")
+    private Instituicao instituicao;
 
     @Column(name = "data_conclusao")
     private LocalDate dataConclusao;
+
+    @Column(name = "certificado", nullable = false, columnDefinition = "bytea")
+    private byte[] certificado;
 
     @Column(name = "em_andamento")
     private Boolean emAndamento;
@@ -41,5 +40,9 @@ public class FormacaoUser {
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private UsuarioCad usuarioCad;
-}
 
+    public void estaEmAndamento(){
+
+        this.emAndamento = this.dataConclusao == null;
+    }
+}

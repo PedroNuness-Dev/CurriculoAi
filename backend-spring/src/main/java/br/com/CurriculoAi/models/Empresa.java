@@ -1,6 +1,5 @@
-package br.com.CurriculoAi.entities;
+package br.com.CurriculoAi.models;
 
-import br.com.CurriculoAi.enums.IdiomaEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,19 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "idioma")
+@Table(name = "empresa")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Idioma {
+@AllArgsConstructor
+public class Empresa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_idioma")
+    @Column(name = "id_empresa")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private IdiomaEnum idiomaNome;
+    private String nome;
 }

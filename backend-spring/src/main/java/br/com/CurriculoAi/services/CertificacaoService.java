@@ -2,10 +2,10 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.request.CertificacaoDtoRequest;
 import br.com.CurriculoAi.DTO.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.entities.CertificacaoUser;
-import br.com.CurriculoAi.entities.Instituicao;
-import br.com.CurriculoAi.entities.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.CertificacaoUser;
+import br.com.CurriculoAi.models.Instituicao;
+import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
+import br.com.CurriculoAi.models.UsuarioCad;
 import br.com.CurriculoAi.exceptions.ListIsEmptyException;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.CertificacaoUserRepository;

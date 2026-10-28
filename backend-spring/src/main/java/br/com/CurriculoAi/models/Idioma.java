@@ -1,6 +1,6 @@
-package br.com.CurriculoAi.entities;
+package br.com.CurriculoAi.models;
 
-import br.com.CurriculoAi.enums.NivelIdioma;
+import br.com.CurriculoAi.enums.IdiomaEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,26 +8,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "usuario_idioma")
+@Table(name = "idioma")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class IdiomasUser {
+public class Idioma {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_idioma")
     private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NivelIdioma nivel;
-
-    @ManyToOne
-    @JoinColumn(name = "id_usuario")
-    private UsuarioCad usuario;
-
-    @ManyToOne
-    @JoinColumn(name = "id_idioma")
-    private Idioma idioma;
+    private IdiomaEnum idiomaNome;
 }

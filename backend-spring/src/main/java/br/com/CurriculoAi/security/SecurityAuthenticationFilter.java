@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.security;
 
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.UsuarioCad;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.mapper;
 
 import br.com.CurriculoAi.DTO.response.InstituicaoDtoResponse;
-import br.com.CurriculoAi.entities.Instituicao;
+import br.com.CurriculoAi.models.Instituicao;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

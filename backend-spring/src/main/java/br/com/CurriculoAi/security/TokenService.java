@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.security;
 
-import br.com.CurriculoAi.entities.UsuarioCad;
+import br.com.CurriculoAi.models.UsuarioCad;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.entities;
+package br.com.CurriculoAi.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,25 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table
+@Table(name = "instituicao")
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjetoHabilidade {
-
+public class Instituicao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_projeto_habilidade")
+    @Column(name = "id_instituicao")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_projeto")
-    private Projeto projeto;
-
-    @ManyToOne
-    @JoinColumn(name = "id_habilidade")
-    private Habilidade habilidade;
+    @Column(name = "nome_instituicao", nullable = false)
+    private String nome;
 }

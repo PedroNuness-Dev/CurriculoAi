@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.DTO.response.CursoDtoResponse;
-import br.com.CurriculoAi.entities.Curso;
+import br.com.CurriculoAi.models.Curso;
 import br.com.CurriculoAi.repositories.CursoRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

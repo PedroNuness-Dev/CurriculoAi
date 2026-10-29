@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.security;
 
-import br.com.CurriculoAi.models.Usuario;
+import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.repositories.UsuarioCadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +15,9 @@ public class UserDetailsService implements org.springframework.security.core.use
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(username)
+        User user = usuarioRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Não foi possivel realizar a autenticação, email inválido"));
 
-        return UserDetailsImpl.build(usuario);
+        return UserDetailsImpl.build(user);
     }
 }

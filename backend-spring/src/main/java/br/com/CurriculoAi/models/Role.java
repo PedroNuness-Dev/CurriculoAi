@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.models;
 
-import br.com.CurriculoAi.enums.RoleType;
+import br.com.CurriculoAi.enums.role.RoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,10 +17,10 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_role")
-    private Long id;
+    @Column(name = "role_id")
+    private Long roleId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "name_role")
+    @Column(name = "type", nullable = false, unique = true)
     private RoleType type;
 }

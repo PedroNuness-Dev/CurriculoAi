@@ -2,7 +2,7 @@ package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.dto.request.RedeSocialUsuarioDtoRequest;
 import br.com.CurriculoAi.dto.response.UsuarioRedeSocialDtoResponse;
-import br.com.CurriculoAi.services.RedeSocialUsuarioService;
+import br.com.CurriculoAi.services.social_network.RedeSocialUsuarioService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

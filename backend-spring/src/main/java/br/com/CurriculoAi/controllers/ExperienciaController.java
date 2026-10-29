@@ -2,7 +2,7 @@ package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.dto.request.ExperienciaDtoRequest;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.services.ExperienciaService;
+import br.com.CurriculoAi.services.experience.ExperienciaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;

@@ -5,8 +5,8 @@ import br.com.CurriculoAi.dto.auth.LoginResponse;
 import br.com.CurriculoAi.dto.request.UsuarioDtoRequest;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.models.Usuario;
-import br.com.CurriculoAi.services.UsuarioService;
+import br.com.CurriculoAi.models.User;
+import br.com.CurriculoAi.services.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
 
-    private final UsuarioService service;
+    private final UserService service;
 
     @Operation(summary = "Retorna usuário pelo ID",
         description = "Role necessária = `ADMIN`")
     @GetMapping("/{id}")
-    public Usuario findById(@PathVariable("id") Long id) {
+    public User findById(@PathVariable("id") Long id) {
         return service.findByid(id);
     }
 

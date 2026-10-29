@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.mapper;
 
 import br.com.CurriculoAi.dto.response.IdiomaUserDtoResponse;
-import br.com.CurriculoAi.models.IdiomasUser;
+import br.com.CurriculoAi.models.UserLanguage;
 import org.mapstruct.Mapper;
 
 
@@ -9,5 +9,5 @@ import org.mapstruct.Mapper;
 public interface IdiomaUserMapper {
 
 
-    IdiomaUserDtoResponse toDto(IdiomasUser idiomasUser);
+    IdiomaUserDtoResponse toDto(UserLanguage userLanguage);
 }

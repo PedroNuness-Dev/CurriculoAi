@@ -2,7 +2,7 @@ package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.dto.request.FormacaoDtoRequest;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.services.FormacaoService;
+import br.com.CurriculoAi.services.formation.FormacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;

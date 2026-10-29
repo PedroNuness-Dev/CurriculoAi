@@ -5,12 +5,12 @@ WORKDIR /app
 
 COPY ./pom.xml .
 
-#Este comando baixa todas as dependências do projeto para o cache do Docker, evitando a necessidade de baixá-las novamente em etapas posteriores, o que acelera o processo de construção da imagem.
+#Este comando baixa todas as dependências do project para o cache do Docker, evitando a necessidade de baixá-las novamente em etapas posteriores, o que acelera o processo de construção da imagem.
 RUN mvn dependency:go-offline -B
 
 COPY . .
 
-#Compila o projeto e gera o arquivo JAR, ignorando os testes para acelerar o processo de construção da imagem. O resultado é um arquivo JAR que pode ser executado na etapa seguinte.
+#Compila o project e gera o arquivo JAR, ignorando os testes para acelerar o processo de construção da imagem. O resultado é um arquivo JAR que pode ser executado na etapa seguinte.
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine

@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.security;
 
-import br.com.CurriculoAi.models.Usuario;
+import br.com.CurriculoAi.models.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,18 +26,18 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
     private Collection<? extends SimpleGrantedAuthority> authorities;
 
-    public static UserDetails build(Usuario usuario){
+    public static UserDetails build(User user){
 
-        List<SimpleGrantedAuthority> authorities = usuario.getRoles()
+        List<SimpleGrantedAuthority> authorities = user.getRoles()
                 .stream()
                 .map(role -> new SimpleGrantedAuthority(role.getType().name()))
                 .toList();
 
         return new UserDetailsImpl(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                usuario.getSenha(),
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPassword(),
                 authorities
         );
     }

@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.models.UsuarioRedeSocial;
+import br.com.CurriculoAi.models.UserSocialNetwork;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UsuarioRedeSocialRepository extends JpaRepository<UsuarioRedeSocial, Long> {
+public interface UsuarioRedeSocialRepository extends JpaRepository<UserSocialNetwork, Long> {
 }

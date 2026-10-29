@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.utils.services;
 
-import br.com.CurriculoAi.models.Usuario;
+import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.UsuarioCadRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class UsuarioUtils {
     private final UsuarioCadRepository usuarioCadRepository;
 
     //Busca o usuário através do JWT
-    public Usuario me(){
+    public User me(){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -30,25 +30,25 @@ public class UsuarioUtils {
         }
 
         Object principal = authentication.getPrincipal();
-        Usuario usuarioAutenticado;
+        User userAutenticado;
 
-        if (principal instanceof Usuario){
-            usuarioAutenticado = (Usuario) principal;
+        if (principal instanceof User){
+            userAutenticado = (User) principal;
         }
         else if (principal instanceof UserDetails){
 
             String email = ((UserDetails) principal).getUsername();
 
-            usuarioAutenticado = usuarioCadRepository.findByEmail(email)
+            userAutenticado = usuarioCadRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         }
         else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        Usuario usuarioBuscado = usuarioCadRepository.findById(usuarioAutenticado.getId())
+        User userBuscado = usuarioCadRepository.findById(userAutenticado.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-        return usuarioBuscado;
+        return userBuscado;
     }
 }

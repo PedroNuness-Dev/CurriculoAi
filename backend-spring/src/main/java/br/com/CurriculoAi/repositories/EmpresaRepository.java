@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.models.Empresa;
+import br.com.CurriculoAi.models.Enterprise;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
+public interface EmpresaRepository extends JpaRepository<Enterprise, Long> {
 }

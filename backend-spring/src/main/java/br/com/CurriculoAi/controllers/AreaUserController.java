@@ -3,7 +3,7 @@ package br.com.CurriculoAi.controllers;
 import br.com.CurriculoAi.dto.request.AreaUserAddDtoRequest;
 import br.com.CurriculoAi.dto.response.AreaDTOResponse;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.services.AreaUserService;
+import br.com.CurriculoAi.services.area.AreaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -17,10 +17,10 @@ import java.util.List;
 @Tag(name = "Area Controller", description = "Responsável por controlar as ações relacionadas as Áreas")
 public class AreaUserController {
 
-    private final AreaUserService areaUserService;
+    private final AreaService areaService;
 
-    public AreaUserController(AreaUserService areaUserService) {
-        this.areaUserService = areaUserService;
+    public AreaUserController(AreaService areaService) {
+        this.areaService = areaService;
     }
 
     @Operation(summary = "Adicioanr Área a um usuário",
@@ -28,7 +28,7 @@ public class AreaUserController {
     @PostMapping("/add")
     public ResponseEntity<UsuarioTokenIdentResponseDto> addAreaUser(@RequestBody AreaUserAddDtoRequest areaUserAddDtoRequest){
 
-        UsuarioTokenIdentResponseDto usuarioTokenIdentResponseDto = areaUserService.addAreaUser(areaUserAddDtoRequest);
+        UsuarioTokenIdentResponseDto usuarioTokenIdentResponseDto = areaService.addAreaUser(areaUserAddDtoRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioTokenIdentResponseDto);
     }
@@ -38,7 +38,7 @@ public class AreaUserController {
     @PutMapping("/user/update/{id}")
     public ResponseEntity<AreaDTOResponse> updateAreaUser(@PathVariable Long id){
 
-        AreaDTOResponse areaUserAtualizada = areaUserService.updateAreaUser(id);
+        AreaDTOResponse areaUserAtualizada = areaService.updateAreaUser(id);
 
         return ResponseEntity.ok(areaUserAtualizada);
     }
@@ -47,7 +47,7 @@ public class AreaUserController {
     @Operation(summary = "Buscar todas as Áreas", description = "Busca todas as áreas cadastradas no sistem. `AUTENTICAÇÃO NECESSÁRIA`")
     public ResponseEntity<List<AreaDTOResponse>> findAll(){
 
-        List<AreaDTOResponse> areas = areaUserService.findAll();
+        List<AreaDTOResponse> areas = areaService.findAll();
 
         return ResponseEntity.ok(areas);
     }

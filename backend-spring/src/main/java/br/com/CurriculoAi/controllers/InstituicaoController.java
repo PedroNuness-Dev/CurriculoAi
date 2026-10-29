@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.dto.response.InstituicaoDtoResponse;
-import br.com.CurriculoAi.services.InstituicaoService;
+import br.com.CurriculoAi.services.institution.InstituicaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

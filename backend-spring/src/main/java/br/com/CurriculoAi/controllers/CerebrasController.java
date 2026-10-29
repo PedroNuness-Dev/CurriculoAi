@@ -2,11 +2,11 @@ package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.dto.response.CurriculosDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
-import br.com.CurriculoAi.models.Usuario;
-import br.com.CurriculoAi.services.CerebrasService;
-import br.com.CurriculoAi.services.CurriculoUsuarioService;
-import br.com.CurriculoAi.services.PdfService;
-import br.com.CurriculoAi.services.UsuarioService;
+import br.com.CurriculoAi.models.User;
+import br.com.CurriculoAi.services.cerebras.CerebrasService;
+import br.com.CurriculoAi.services.curriculum.CurriculoUsuarioService;
+import br.com.CurriculoAi.services.pdf.PdfService;
+import br.com.CurriculoAi.services.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class CerebrasController {
 
     private final CerebrasService cerebrasService;
     private final  PdfService pdfService;
-    private final UsuarioService usuarioService;
+    private final UserService userService;
     private final CurriculoUsuarioService curriculoUsuarioService;
 
     @Operation(summary = "Gerar o `Curriculo` do usuário",
@@ -37,17 +37,17 @@ public class CerebrasController {
     @PostMapping("/pdf")
     public ResponseEntity<byte[]> gerarPdf() throws Exception {
 
-        UsuarioFullContentDtoResponse curriculo = usuarioService.me();
+        UsuarioFullContentDtoResponse curriculo = userService.me();
 
         String markdown = cerebrasService.gerarMarkdawn(curriculo);
 
         byte[] pdf = pdfService.generatePdfFromMarkdown(markdown);
 
         //salva o curriculo no usuario autenticado
-        Usuario usuarioAutenticado = (Usuario) SecurityContextHolder
+        User userAutenticado = (User) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
 
-        curriculoUsuarioService.salvar(pdf, usuarioAutenticado);
+        curriculoUsuarioService.salvar(pdf, userAutenticado);
 
         return ResponseEntity.ok()
                 .header(

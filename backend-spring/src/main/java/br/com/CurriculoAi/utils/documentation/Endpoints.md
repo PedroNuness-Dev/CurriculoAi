@@ -12,23 +12,23 @@ A maioria dos endpoints exige um **token** passado como `query parameter` (`?tok
 
 ## 📌 Endpoints
 
-### 👤 Usuário — `/usuario`
+### 👤 Usuário — `/user`
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| `POST` | `/usuario/create` | Cria um novo usuário |
-| `POST` | `/usuario/login` | Autentica o usuário e retorna o token |
-| `GET` | `/usuario/{id}` | Busca um usuário pelo ID |
-| `GET` | `/usuario/me` | Retorna os dados completos do usuário autenticado |
-| `DELETE` | `/usuario/delete/{id}` | Remove um usuário pelo ID |
+| `POST` | `/user/create` | Cria um novo usuário |
+| `POST` | `/user/login` | Autentica o usuário e retorna o token |
+| `GET` | `/user/{id}` | Busca um usuário pelo ID |
+| `GET` | `/user/me` | Retorna os dados completos do usuário autenticado |
+| `DELETE` | `/user/delete/{id}` | Remove um usuário pelo ID |
 
-**`POST /usuario/create`**
+**`POST /user/create`**
 Cria um novo usuário. Retorna um `UsuarioTokenIdentResponseDto` contendo o token de identificação para uso nos próximos passos.
 
-**`POST /usuario/login`**
+**`POST /user/login`**
 Recebe as credenciais no body e retorna o token de acesso como string.
 
-**`GET /usuario/me`**
+**`GET /user/me`**
 Retorna o perfil completo do usuário autenticado, incluindo todas as seções do currículo já preenchidas (`UsuarioFullContentDtoResponse`).
 
 ---
@@ -121,15 +121,15 @@ POST /idiomas/user/register?token=seu_token
 ## 🔄 Fluxo de uso recomendado
 
 ```
-1. POST /usuario/create          → obtém o token
-2. POST /usuario/login           → autentica e obtém o token
+1. POST /user/create          → obtém o token
+2. POST /user/login           → autentica e obtém o token
 3. POST /area/add                → define a área de atuação
 4. POST /formacao/add            → adiciona formações
 5. POST /certificacao/register   → adiciona certificações
 6. POST /experiencia/register    → adiciona experiências
 7. POST /disponibilidade/register → define disponibilidade
 8. POST /idiomas/user/register   → adiciona idiomas
-9. GET  /usuario/me              → visualiza o currículo completo
+9. GET  /user/me              → visualiza o currículo completo
 ```
 
 ---

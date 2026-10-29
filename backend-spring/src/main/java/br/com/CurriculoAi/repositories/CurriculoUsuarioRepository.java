@@ -1,12 +1,12 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.models.CurriculoUsuario;
-import br.com.CurriculoAi.models.Usuario;
+import br.com.CurriculoAi.models.UserCurriculum;
+import br.com.CurriculoAi.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface CurriculoUsuarioRepository extends JpaRepository<CurriculoUsuario, Long> {
+public interface CurriculoUsuarioRepository extends JpaRepository<UserCurriculum, Long> {
 
-    List<CurriculoUsuario> findByUsuario(Usuario usuario);
+    List<UserCurriculum> findByUsuario(User user);
 }

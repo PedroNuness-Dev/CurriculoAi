@@ -2,7 +2,7 @@ package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.dto.request.ProjetoDtoRequest;
 import br.com.CurriculoAi.dto.response.ProjetoDtoResponse;
-import br.com.CurriculoAi.services.ProjetoService;
+import br.com.CurriculoAi.services.project.ProjetoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

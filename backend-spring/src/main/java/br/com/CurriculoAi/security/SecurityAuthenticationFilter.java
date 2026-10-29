@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,8 @@ public class SecurityAuthenticationFilter extends OncePerRequestFilter {
             UserDetails usuarioAutenticado = userDetailsService.loadUserByUsername(emailSubject);
 
             //Cria um novo contexto de autenticação e coloca os dados do usuário autenticado
-            var authentication = new UsernamePasswordAuthenticationToken(usuarioAutenticado, null, usuarioAutenticado.getAuthorities());
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(usuarioAutenticado, null, usuarioAutenticado.getAuthorities());
 
             //Pega o contexto de segurança do sistema e adiciona a autenticação gerada para o usuário (Durante a requisição do usuário)
             SecurityContextHolder.getContext().setAuthentication(authentication);

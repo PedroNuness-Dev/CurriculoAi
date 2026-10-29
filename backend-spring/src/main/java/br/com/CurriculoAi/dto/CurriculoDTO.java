@@ -1,8 +1,8 @@
 package br.com.CurriculoAi.dto;
 
-import br.com.CurriculoAi.enums.IdiomaEnum;
-import br.com.CurriculoAi.enums.ModeloDeTrabalho;
-import br.com.CurriculoAi.enums.NivelIdioma;
+import br.com.CurriculoAi.enums.language.LanguageEnum;
+import br.com.CurriculoAi.enums.availability.WorkModel;
+import br.com.CurriculoAi.enums.language.LanguageLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,7 +58,7 @@ public class CurriculoDTO {
         private Long id;
         private LocalDate disponibilidadeInicio;
         private Integer cargaHoraria;
-        private ModeloDeTrabalho modeloTrabalho;
+        private WorkModel modeloTrabalho;
         private String tipoContrato;
     }
 
@@ -99,8 +99,8 @@ public class CurriculoDTO {
     @AllArgsConstructor
     public static class IdiomaDTO {
         private Long id;
-        private IdiomaEnum idioma;
-        private NivelIdioma nivel;
+        private LanguageEnum idioma;
+        private LanguageLevel nivel;
     }
 
     @Getter

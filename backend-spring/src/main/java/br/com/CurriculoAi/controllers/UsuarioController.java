@@ -1,7 +1,8 @@
 package br.com.CurriculoAi.controllers;
 
+import br.com.CurriculoAi.dto.auth.LoginRequest;
+import br.com.CurriculoAi.dto.auth.LoginResponse;
 import br.com.CurriculoAi.dto.request.UsuarioDtoRequest;
-import br.com.CurriculoAi.dto.response.LoginDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.Usuario;
@@ -46,11 +47,11 @@ public class UsuarioController {
     @Operation(summary = "Logar usuário",
         description = "Realiza o login do usuário, que retornará um `JWT`, que será usado para autenticação e autorização do usuário durante o uso do APP")
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDtoResponse loginDtoResponse){
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
 
-        String token = service.login(loginDtoResponse);
+        LoginResponse loginResponse = service.login(loginRequest);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(loginResponse);
     }
 
     @Operation(summary = "Deletar usuário",

@@ -28,7 +28,7 @@ public class SecurityAuthenticationFilter extends OncePerRequestFilter {
         if (tokenJWT != null){
 
             //Valida o token através do TokenService e pesquisa o usuário pelo Email do token (Analisar essa funcionalidade se esTÁ BOA)
-            String emailSubject = tokenService.validarTokenJWT(tokenJWT);
+            String emailSubject = tokenService.validateTokenAndGetSubject(tokenJWT);
             UserDetails usuarioAutenticado = userDetailsService.loadUserByUsername(emailSubject);
 
             //Cria um novo contexto de autenticação e coloca os dados do usuário autenticado

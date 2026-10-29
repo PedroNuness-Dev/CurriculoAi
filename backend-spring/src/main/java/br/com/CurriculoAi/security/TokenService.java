@@ -1,60 +1,74 @@
 package br.com.CurriculoAi.security;
 
-import br.com.CurriculoAi.models.Usuario;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import br.com.CurriculoAi.dto.auth.TokenDetails;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Service
 public class TokenService {
 
-    @Value("${jwt-secret}")
+    @Value("${api.security.token.secret}")
     private String keySecret;
+    @Value("${api.security.token.issuer}")
+    private String issuer;
 
-    private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
-
-    public String gerarToken(Usuario usuario){
-
-        logger.warn("Geração de token pelo usuário com email: {}", usuario.getEmail());
-
-        Algorithm algorithm = Algorithm.HMAC256(keySecret);
-
-        //Gera um token JWT que contem uma assinatura e um subject contendo o email do usuário
-        String tokenGerado =  JWT.create()
-                .withIssuer("CurriculoAi")
-                .withSubject(usuario.getEmail())
-                .withExpiresAt(gerarTempoDeDuracaoToken())
-                .sign(algorithm);
-
-        logger.info("JWT gerado com sucesso!");
-
-        return tokenGerado;
+    private SecretKey getSigningKey(){
+        return Keys.hmacShaKeyFor(keySecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String validarTokenJWT(String token){
+    public TokenDetails generateToken(UserDetailsImpl userDetails){
 
-        logger.warn("Validação de token iniciada: {}",token);
+        Instant now = Instant.now();
+        Instant expiration = now.plus(2, ChronoUnit.HOURS);
 
-        Algorithm algorithm = Algorithm.HMAC256(keySecret);
+        String token = Jwts.builder()
+                .issuer(issuer)
+                .signWith(getSigningKey())
+                .subject(userDetails.getUsername()) // User's email
+                .claim("id", userDetails.getUserId())
+                .claim("name", userDetails.getName())
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(expiration))
+                .compact();
 
-        //Faz a validação do token e pega o email no subject
-        String emailDoSubject = JWT.require(algorithm)
-                .withIssuer("CurriculoAi")
+        return new TokenDetails(token, expiration);
+    }
+
+    public String validateTokenAndGetSubject(String token){
+
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .verify(token)
-                .getSubject();
+                .parseSignedClaims(token)
+                .getPayload();
 
-        logger.info("Validação do token concluida com sucesso!");
-
-        return emailDoSubject;
+        return claims.getSubject();
     }
 
-    private Instant gerarTempoDeDuracaoToken(){
-        return Instant.now().plusSeconds(3600); //Duração de 1 hora
+    public boolean isTokenValid(String token){
+        try{
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        }
+        catch (ExpiredJwtException e){
+            return false;
+        }
+        catch (JwtException e){
+            return false;
+        }
     }
 }

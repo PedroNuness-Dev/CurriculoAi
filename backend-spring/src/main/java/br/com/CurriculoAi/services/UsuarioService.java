@@ -1,17 +1,20 @@
 package br.com.CurriculoAi.services;
 
+import br.com.CurriculoAi.dto.auth.LoginRequest;
+import br.com.CurriculoAi.dto.auth.LoginResponse;
+import br.com.CurriculoAi.dto.auth.TokenDetails;
 import br.com.CurriculoAi.dto.request.UsuarioDtoRequest;
-import br.com.CurriculoAi.dto.response.LoginDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.models.Role;
-import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.UsuarioMapper;
+import br.com.CurriculoAi.models.Role;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.repositories.AreaUserRepository;
 import br.com.CurriculoAi.repositories.RoleRepository;
 import br.com.CurriculoAi.repositories.UsuarioCadRepository;
 import br.com.CurriculoAi.security.TokenService;
+import br.com.CurriculoAi.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,21 +88,24 @@ public class UsuarioService {
 
     }
 
-    public String login(LoginDtoResponse loginDtoResponse){
+    public LoginResponse login(LoginRequest loginRequest){
 
         logger.info("Iniando método de Login do usuário...");
 
-        var usernamepasswor = new UsernamePasswordAuthenticationToken(loginDtoResponse.email(), loginDtoResponse.senha());
+        UserDetailsImpl userDetails = authenticateUser(loginRequest);
 
-        var authentication = authenticationManager.authenticate(usernamepasswor);
-
-        Usuario usuarioAutenticado = (Usuario) authentication.getPrincipal();
-
-        String token = tokenService.gerarToken(usuarioAutenticado);
+        TokenDetails tokenCreated = tokenService.generateToken(userDetails);
 
         logger.info("Login efetuado com sucesso!");
 
-        return token;
+        return new LoginResponse(
+                tokenCreated.token(),
+                "Bearer",
+                tokenCreated.expiration(),
+                userDetails.getUserId(),
+                userDetails.getName(),
+                userDetails.getEmail()
+        );
     }
 
     @Transactional
@@ -168,5 +174,15 @@ public class UsuarioService {
         logger.info("Usuário encontrado com sucesso, iniciando processo de construção do DTO...");
 
         return mapper.toFullContentDto(usuarioBuscado);
+    }
+
+    private UserDetailsImpl authenticateUser(LoginRequest loginRequest){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.email(),loginRequest.password())
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return (UserDetailsImpl) authentication.getPrincipal();
     }
 }

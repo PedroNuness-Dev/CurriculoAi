@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.models;
 
-import br.com.CurriculoAi.enums.RoleEnum;
+import br.com.CurriculoAi.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,5 +22,5 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "name_role")
-    private RoleEnum roleEnum;
+    private RoleType type;
 }

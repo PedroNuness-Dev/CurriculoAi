@@ -5,7 +5,7 @@ import br.com.CurriculoAi.dto.response.AreaDTOResponse;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.Area;
 import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.AreaUserRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
@@ -41,14 +41,14 @@ public class AreaUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Token de identificação inválido"));
 
         //Pego usuário contido no token
-        UsuarioCad usuario = tokenIdentificacao.getUsuarioCad();
+        Usuario usuario = tokenIdentificacao.getUsuario();
 
         Area areaBuscada = areaUserRepository.findById(areaUserAddDtoRequest.idArea())
                 .orElseThrow(() -> new ResourceNotFoundException("Área com id "+areaUserAddDtoRequest.idArea()+" não encontrada"));
 
         usuario.setArea(areaBuscada);
 
-        UsuarioCad usuarioAtualizado = usuarioCadRepository.save(usuario);
+        Usuario usuarioAtualizado = usuarioCadRepository.save(usuario);
 
         logger.info("Areá: {} adicionada com sucesso ao usuário com id: {}", areaBuscada.getNomeArea(), usuario.getId());
 
@@ -63,7 +63,7 @@ public class AreaUserService {
         Area areaSearched = areaUserRepository.findById(idBuscado)
                 .orElseThrow(() -> new ResourceNotFoundException("Área com id: "+idBuscado+" não encontrada"));
 
-        UsuarioCad usuario = usuarioUtils.me();
+        Usuario usuario = usuarioUtils.me();
 
         if (usuario.getArea().getId() == areaSearched.getId()){
             throw new IllegalArgumentException("Área não pode ser a mesma, é necessário ser uma área diferente para atualizar");
@@ -73,7 +73,7 @@ public class AreaUserService {
 
         logger.info("Área atualizada com sucesso! Área: {}", areaSearched.getNomeArea());
 
-        UsuarioCad usuarioAtualizado =  usuarioCadRepository.save(usuario);
+        Usuario usuarioAtualizado =  usuarioCadRepository.save(usuario);
 
         return new AreaDTOResponse(areaSearched.getId(),areaSearched.getNomeArea());
     }

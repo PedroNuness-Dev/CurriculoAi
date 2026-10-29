@@ -31,5 +31,5 @@ public class DisponibilidadeUser {
 
     @OneToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    private UsuarioCad usuarioCad;
+    private Usuario usuario;
 }

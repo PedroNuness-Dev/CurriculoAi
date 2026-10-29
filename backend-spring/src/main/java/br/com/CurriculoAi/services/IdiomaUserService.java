@@ -2,10 +2,7 @@ package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.dto.request.IdiomaUserDtoRequest;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
-import br.com.CurriculoAi.models.Idioma;
-import br.com.CurriculoAi.models.IdiomasUser;
-import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.*;
 import br.com.CurriculoAi.enums.NivelIdioma;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.UsuarioMapper;
@@ -44,7 +41,7 @@ public class IdiomaUserService {
         TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Token não encontrado"));
 
-        UsuarioCad usuarioCad = tokenIdentificacaoUsuario.getUsuarioCad();
+        Usuario usuario = tokenIdentificacaoUsuario.getUsuario();
 
         List<Long> idsIdiomas = idiomas
                 .stream()
@@ -62,13 +59,13 @@ public class IdiomaUserService {
                     Idioma idiomaBuscado = Optional.ofNullable(idiomasPorId.get(idioma.id_idioma()))
                             .orElseThrow(() -> new ResourceNotFoundException("Idioma com id: "+ idioma.id_idioma()+" não encontrado"));
 
-                    return new IdiomasUser(null, NivelIdioma.from(idioma.nivel()),usuarioCad,idiomaBuscado);
+                    return new IdiomasUser(null, NivelIdioma.from(idioma.nivel()), usuario,idiomaBuscado);
                 }).toList();
 
         idiomasUserRepository.saveAll(registerIdiomas);
 
         logger.info("Cadastro de idiomas realizado com sucesso!");
 
-        return usuarioMapper.toFullContentDto(usuarioCad);
+        return usuarioMapper.toFullContentDto(usuario);
     }
  }

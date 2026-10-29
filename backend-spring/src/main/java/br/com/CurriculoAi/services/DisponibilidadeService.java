@@ -4,7 +4,7 @@ import br.com.CurriculoAi.dto.request.DisponibilidadeDtoRequest;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.DisponibilidadeUser;
 import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.enums.ModeloDeTrabalho;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.repositories.DisponibilidadeUserRepository;
@@ -33,7 +33,7 @@ public class DisponibilidadeService {
         TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Token não encontrado"));
 
-        UsuarioCad usuario = tokenIdentificacaoUsuario.getUsuarioCad();
+        Usuario usuario = tokenIdentificacaoUsuario.getUsuario();
 
         DisponibilidadeUser novaDisponibilidade = new DisponibilidadeUser(
                 null,

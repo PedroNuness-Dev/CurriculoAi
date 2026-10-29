@@ -22,5 +22,5 @@ public class TokenIdentificacaoUsuario {
 
     @JoinColumn(name = "id_usuario")
     @OneToOne(fetch = FetchType.EAGER)
-    private UsuarioCad usuarioCad;
+    private Usuario usuario;
 }

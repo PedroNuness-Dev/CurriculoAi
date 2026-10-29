@@ -22,7 +22,7 @@ public class UsuarioRedeSocial {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    private UsuarioCad usuario;
+    private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "id_rede_social")

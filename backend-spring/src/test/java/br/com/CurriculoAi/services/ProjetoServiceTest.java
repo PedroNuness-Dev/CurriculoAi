@@ -3,7 +3,7 @@ package br.com.CurriculoAi.services;
 import br.com.CurriculoAi.dto.request.ProjetoDtoRequest;
 import br.com.CurriculoAi.dto.response.ProjetoDtoResponse;
 import br.com.CurriculoAi.models.Projeto;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.repositories.ProjetoRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -37,11 +37,11 @@ public class ProjetoServiceTest {
     @Test
     void deveCadastrarNovosProjeto(){
 
-        UsuarioCad usuarioCad = new UsuarioCad();
-        usuarioCad.setId(1L);
-        usuarioCad.setEmail("pedro@gmail.com");
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setEmail("pedro@gmail.com");
 
-        var authentication = new UsernamePasswordAuthenticationToken(usuarioCad, null, usuarioCad.getAuthorities());
+        var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

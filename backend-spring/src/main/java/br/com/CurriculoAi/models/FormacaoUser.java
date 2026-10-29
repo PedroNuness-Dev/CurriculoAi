@@ -40,6 +40,6 @@ public class FormacaoUser {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    private UsuarioCad usuarioCad;
+    private Usuario usuario;
 }
 

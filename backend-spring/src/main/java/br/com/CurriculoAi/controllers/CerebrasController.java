@@ -2,7 +2,7 @@ package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.dto.response.CurriculosDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.services.CerebrasService;
 import br.com.CurriculoAi.services.CurriculoUsuarioService;
 import br.com.CurriculoAi.services.PdfService;
@@ -44,7 +44,7 @@ public class CerebrasController {
         byte[] pdf = pdfService.generatePdfFromMarkdown(markdown);
 
         //salva o curriculo no usuario autenticado
-        UsuarioCad usuarioAutenticado = (UsuarioCad) SecurityContextHolder
+        Usuario usuarioAutenticado = (Usuario) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
 
         curriculoUsuarioService.salvar(pdf, usuarioAutenticado);

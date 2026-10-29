@@ -1,13 +1,13 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UsuarioCadRepository extends JpaRepository<UsuarioCad, Long> {
+public interface UsuarioCadRepository extends JpaRepository<Usuario, Long> {
 
-    Optional<UsuarioCad> findByEmail(String email);
+    Optional<Usuario> findByEmail(String email);
 }

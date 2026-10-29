@@ -28,5 +28,5 @@ public class Projeto {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    private UsuarioCad usuario;
+    private Usuario usuario;
 }

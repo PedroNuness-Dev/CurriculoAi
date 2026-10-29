@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public class TokenIdentificacaoUsuarioService {
     private static final Logger logger = LoggerFactory.getLogger(TokenIdentificacaoUsuarioService.class);
 
     @Transactional
-    public String gerarTokenDeIdentificacao(UsuarioCad usuario){
+    public String gerarTokenDeIdentificacao(Usuario usuario){
 
         logger.info("Iniando processo de geração de token do usuário com id: {}", usuario.getId());
 

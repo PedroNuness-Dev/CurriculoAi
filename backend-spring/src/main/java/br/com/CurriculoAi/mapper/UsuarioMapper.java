@@ -2,7 +2,7 @@ package br.com.CurriculoAi.mapper;
 
 import br.com.CurriculoAi.dto.response.UsuarioCadDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -20,7 +20,7 @@ public interface UsuarioMapper{
     @Mapping(target = "id", source = "id")
     @Mapping(target = "nome", source = "nome")
     @Mapping(target = "email", source = "email")
-    UsuarioCadDtoResponse toDto(UsuarioCad usuarioCad);
+    UsuarioCadDtoResponse toDto(Usuario usuario);
 
     @Mapping(target = "usuario", source = "usuarioCad")
     @Mapping(target = "area", source = "area")
@@ -30,5 +30,5 @@ public interface UsuarioMapper{
     @Mapping(target = "disponibilidade", source = "disponibilidade")
     @Mapping(target = "idiomas", source = "idiomas")
     @Mapping(target = "projetos", source = "projetos")
-    UsuarioFullContentDtoResponse toFullContentDto(UsuarioCad usuarioCad);
+    UsuarioFullContentDtoResponse toFullContentDto(Usuario usuario);
 }

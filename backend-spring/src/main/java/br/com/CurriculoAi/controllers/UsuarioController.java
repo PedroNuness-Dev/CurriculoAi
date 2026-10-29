@@ -4,7 +4,7 @@ import br.com.CurriculoAi.dto.request.UsuarioDtoRequest;
 import br.com.CurriculoAi.dto.response.LoginDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +26,7 @@ public class UsuarioController {
     @Operation(summary = "Retorna usuário pelo ID",
         description = "Role necessária = `ADMIN`")
     @GetMapping("/{id}")
-    public UsuarioCad findById(@PathVariable("id") Long id) {
+    public Usuario findById(@PathVariable("id") Long id) {
         return service.findByid(id);
     }
 

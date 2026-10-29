@@ -3,7 +3,7 @@ package br.com.CurriculoAi.services;
 import br.com.CurriculoAi.dto.request.RedeSocialUsuarioDtoRequest;
 import br.com.CurriculoAi.dto.response.UsuarioRedeSocialDtoResponse;
 import br.com.CurriculoAi.models.RedeSocial;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.models.UsuarioRedeSocial;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.RedeSocialMapper;
@@ -41,7 +41,7 @@ public class RedeSocialUsuarioService {
 
         logger.info("Iniciando processo de registro de idiomas ao usuário");
 
-        UsuarioCad usuarioAutenticado = usuarioUtils.me();
+        Usuario usuarioAutenticado = usuarioUtils.me();
 
         List<Long> idsRedeSociais = redesSociais
                 .stream()

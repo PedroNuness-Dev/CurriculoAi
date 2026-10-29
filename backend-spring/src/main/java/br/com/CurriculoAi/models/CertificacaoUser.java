@@ -39,7 +39,7 @@ public class CertificacaoUser {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    private UsuarioCad usuarioCad;
+    private Usuario usuario;
 
     public void estaEmAndamento(){
 

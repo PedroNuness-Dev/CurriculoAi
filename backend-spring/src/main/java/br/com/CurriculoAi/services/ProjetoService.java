@@ -3,7 +3,7 @@ package br.com.CurriculoAi.services;
 import br.com.CurriculoAi.dto.request.ProjetoDtoRequest;
 import br.com.CurriculoAi.dto.response.ProjetoDtoResponse;
 import br.com.CurriculoAi.models.Projeto;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.repositories.ProjetoRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +31,12 @@ public class ProjetoService {
 
         logger.info("Inicinado cadastro de projetos do usuário");
 
-        UsuarioCad usuarioCad = usuarioUtils.me();
+        Usuario usuario = usuarioUtils.me();
 
         List<Projeto> projetosParaSalvamento = projetosParaCadastro
                 .stream()
                 .map(projeto -> {
-                    return new Projeto(null, projeto.titulo(),projeto.descriacao(),projeto.link(), usuarioCad);
+                    return new Projeto(null, projeto.titulo(),projeto.descriacao(),projeto.link(), usuario);
                 })
                 .toList();
 

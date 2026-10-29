@@ -40,5 +40,5 @@ public class CurriculoUsuario {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
-    private UsuarioCad usuario;
+    private Usuario usuario;
 }

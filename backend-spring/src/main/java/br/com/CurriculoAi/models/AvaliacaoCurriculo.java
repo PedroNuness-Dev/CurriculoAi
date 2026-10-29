@@ -39,6 +39,6 @@ public class AvaliacaoCurriculo {
 
     @ManyToOne
     @JoinColumn(name = "id_user")
-    private UsuarioCad usuarioCad;
+    private Usuario usuario;
 
 }

@@ -40,7 +40,7 @@ public class ExperienciaService {
         TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Token não encotrado"));
 
-        UsuarioCad usuario = tokenIdentificacaoUsuario.getUsuarioCad();
+        Usuario usuario = tokenIdentificacaoUsuario.getUsuario();
 
         List<Long> idsAreas = experiencias
                 .stream()

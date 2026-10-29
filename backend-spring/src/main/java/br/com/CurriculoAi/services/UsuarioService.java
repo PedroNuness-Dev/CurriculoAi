@@ -5,7 +5,7 @@ import br.com.CurriculoAi.dto.response.LoginDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.Role;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.UsuarioMapper;
 import br.com.CurriculoAi.repositories.AreaUserRepository;
@@ -42,11 +42,11 @@ public class UsuarioService {
 
     private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class.getName());
 
-    public UsuarioCad findByid(Long id) {
+    public Usuario findByid(Long id) {
 
         logger.info("Procurando o usuario pelo id: {}", id);
 
-        UsuarioCad entity = repository.findById(id)
+        Usuario entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Esse id não foi encontrado no sistema"));
 
         logger.info("Usuário encontrado!");
@@ -65,7 +65,7 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role não encontrada"));
 
 
-        var entity = UsuarioCad.builder()
+        var entity = Usuario.builder()
                 .nome(usuarioCadDTO.nome())
                 .senha(passwordEncoder.encode(usuarioCadDTO.senha()))
                 .email(usuarioCadDTO.email())
@@ -73,7 +73,7 @@ public class UsuarioService {
 
         entity.getRoles().add(role);
 
-        UsuarioCad savedEntity = repository.save(entity);
+        Usuario savedEntity = repository.save(entity);
 
         String tokenDeIdentificacao = tokenIdentificacaoUsuarioService.gerarTokenDeIdentificacao(savedEntity);
 
@@ -93,7 +93,7 @@ public class UsuarioService {
 
         var authentication = authenticationManager.authenticate(usernamepasswor);
 
-        UsuarioCad usuarioAutenticado = (UsuarioCad) authentication.getPrincipal();
+        Usuario usuarioAutenticado = (Usuario) authentication.getPrincipal();
 
         String token = tokenService.gerarToken(usuarioAutenticado);
 
@@ -126,12 +126,12 @@ public class UsuarioService {
         }
 
         Object principal = authentication.getPrincipal();
-        UsuarioCad usuarioAutenticado;
+        Usuario usuarioAutenticado;
 
         logger.warn("Resgatar usuário através do subject do JWT efetuado com sucesso!");
 
-        if (principal instanceof UsuarioCad) {
-            usuarioAutenticado = (UsuarioCad) principal;
+        if (principal instanceof Usuario) {
+            usuarioAutenticado = (Usuario) principal;
 
         } else if (principal instanceof UserDetails) {
 
@@ -162,7 +162,7 @@ public class UsuarioService {
             );
         }
 
-        UsuarioCad usuarioBuscado = repository.findById(usuarioAutenticado.getId())
+        Usuario usuarioBuscado = repository.findById(usuarioAutenticado.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         logger.info("Usuário encontrado com sucesso, iniciando processo de construção do DTO...");

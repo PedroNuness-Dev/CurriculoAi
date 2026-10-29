@@ -44,7 +44,7 @@ public class FormacaoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Token de identificação não encontrado"));
 
         //Pega o usuário contido no token
-        UsuarioCad usuario = token.getUsuarioCad();
+        Usuario usuario = token.getUsuario();
 
         // Pegas todos os ids das áreas sem repetir
         List<Long> idsCurso = formacoes

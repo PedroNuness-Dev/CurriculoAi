@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.security;
 
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.slf4j.Logger;
@@ -18,16 +18,16 @@ public class TokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
 
-    public String gerarToken(UsuarioCad usuarioCad){
+    public String gerarToken(Usuario usuario){
 
-        logger.warn("Geração de token pelo usuário com email: {}", usuarioCad.getEmail());
+        logger.warn("Geração de token pelo usuário com email: {}", usuario.getEmail());
 
         Algorithm algorithm = Algorithm.HMAC256(keySecret);
 
         //Gera um token JWT que contem uma assinatura e um subject contendo o email do usuário
         String tokenGerado =  JWT.create()
                 .withIssuer("CurriculoAi")
-                .withSubject(usuarioCad.getEmail())
+                .withSubject(usuario.getEmail())
                 .withExpiresAt(gerarTempoDeDuracaoToken())
                 .sign(algorithm);
 

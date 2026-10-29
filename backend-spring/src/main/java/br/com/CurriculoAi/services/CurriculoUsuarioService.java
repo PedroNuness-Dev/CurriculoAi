@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.services;
 
 import br.com.CurriculoAi.models.CurriculoUsuario;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.repositories.CurriculoUsuarioRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class CurriculoUsuarioService {
         this.curriculoUsuarioRepository = curriculoUsuarioRepository;
     }
 
-    public void salvar(byte[] pdf, UsuarioCad usuario) {
+    public void salvar(byte[] pdf, Usuario usuario) {
 
         List<CurriculoUsuario> curriculosExistentes = curriculoUsuarioRepository
                 .findByUsuario(usuario);

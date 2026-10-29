@@ -3,7 +3,7 @@ package br.com.CurriculoAi.services;
 import br.com.CurriculoAi.dto.request.CerebrasRequestDTO;
 import br.com.CurriculoAi.dto.response.*;
 import br.com.CurriculoAi.models.CurriculoUsuario;
-import br.com.CurriculoAi.models.UsuarioCad;
+import br.com.CurriculoAi.models.Usuario;
 import br.com.CurriculoAi.repositories.CurriculoUsuarioRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -327,7 +327,7 @@ public class CerebrasService {
     @Transactional(readOnly = true)
     public List<CurriculosDtoResponse> buscarCurriculos(){
 
-        UsuarioCad usuarioAutenticado = usuarioUtils.me();
+        Usuario usuarioAutenticado = usuarioUtils.me();
 
         List<CurriculoUsuario> curriculoUsuarios = curriculoUsuarioRepository.findByUsuario(usuarioAutenticado);
 

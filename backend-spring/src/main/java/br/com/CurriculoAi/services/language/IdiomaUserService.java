@@ -6,8 +6,8 @@ import br.com.CurriculoAi.models.*;
 import br.com.CurriculoAi.enums.language.LanguageLevel;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.UsuarioMapper;
-import br.com.CurriculoAi.repositories.IdiomaRepository;
-import br.com.CurriculoAi.repositories.IdiomasUserRepository;
+import br.com.CurriculoAi.repositories.LanguageRepository;
+import br.com.CurriculoAi.repositories.UserLanguageRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class IdiomaUserService {
 
-    private final IdiomasUserRepository idiomasUserRepository;
-    private final IdiomaRepository idiomaRepository;
+    private final UserLanguageRepository userLanguageRepository;
+    private final LanguageRepository languageRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
     private final UsuarioMapper usuarioMapper;
 
@@ -49,7 +49,7 @@ public class IdiomaUserService {
                 .distinct()
                 .toList();
 
-        Map<Long, Language> idiomasPorId = idiomaRepository.findAllById(idsIdiomas)
+        Map<Long, Language> idiomasPorId = languageRepository.findAllById(idsIdiomas)
                 .stream()
                 .collect(Collectors.toMap(Language::getId, Function.identity()));
 
@@ -62,7 +62,7 @@ public class IdiomaUserService {
                     return new UserLanguage(null, LanguageLevel.from(idioma.nivel()), user, languageBuscado);
                 }).toList();
 
-        idiomasUserRepository.saveAll(registerIdiomas);
+        userLanguageRepository.saveAll(registerIdiomas);
 
         logger.info("Cadastro de idiomas realizado com sucesso!");
 

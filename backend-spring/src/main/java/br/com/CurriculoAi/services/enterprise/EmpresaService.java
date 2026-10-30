@@ -2,7 +2,7 @@ package br.com.CurriculoAi.services.enterprise;
 
 import br.com.CurriculoAi.dto.response.EmpresaDtoResponse;
 import br.com.CurriculoAi.models.Enterprise;
-import br.com.CurriculoAi.repositories.EmpresaRepository;
+import br.com.CurriculoAi.repositories.EnterpriseRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmpresaService {
 
-    private final EmpresaRepository empresaRepository;
+    private final EnterpriseRepository enterpriseRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(EmpresaService.class);
 
@@ -24,7 +24,7 @@ public class EmpresaService {
 
         logger.info("Buscando empresas...");
 
-        List<Enterprise> empresasBuscadas = empresaRepository.findAll();
+        List<Enterprise> empresasBuscadas = enterpriseRepository.findAll();
 
         logger.info("Empresas buscadas, com um total de: {}", empresasBuscadas.size());
 

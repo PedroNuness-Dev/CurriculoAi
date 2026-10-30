@@ -7,9 +7,9 @@ import br.com.CurriculoAi.models.Area;
 import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
 import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.AreaUserRepository;
+import br.com.CurriculoAi.repositories.AreaRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
-import br.com.CurriculoAi.repositories.UsuarioCadRepository;
+import br.com.CurriculoAi.repositories.UserRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -24,9 +24,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AreaService {
 
-    private final AreaUserRepository areaUserRepository;
+    private final AreaRepository areaRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
-    private final UsuarioCadRepository usuarioCadRepository;
+    private final UserRepository userRepository;
     private final UsuarioUtils usuarioUtils;
 
     private final static Logger logger = LoggerFactory.getLogger(AreaService.class);
@@ -43,12 +43,12 @@ public class AreaService {
         //Pego usuário contido no token
         User user = tokenIdentificacao.getUsuario();
 
-        Area areaBuscada = areaUserRepository.findById(areaUserAddDtoRequest.idArea())
+        Area areaBuscada = areaRepository.findById(areaUserAddDtoRequest.idArea())
                 .orElseThrow(() -> new ResourceNotFoundException("Área com id "+areaUserAddDtoRequest.idArea()+" não encontrada"));
 
         user.setArea(areaBuscada);
 
-        User userAtualizado = usuarioCadRepository.save(user);
+        User userAtualizado = userRepository.save(user);
 
         logger.info("Areá: {} adicionada com sucesso ao usuário com id: {}", areaBuscada.getNomeArea(), user.getId());
 
@@ -60,7 +60,7 @@ public class AreaService {
 
         logger.info("Iniando processo de atualização da área do usuário");
 
-        Area areaSearched = areaUserRepository.findById(idBuscado)
+        Area areaSearched = areaRepository.findById(idBuscado)
                 .orElseThrow(() -> new ResourceNotFoundException("Área com id: "+idBuscado+" não encontrada"));
 
         User user = usuarioUtils.me();
@@ -73,7 +73,7 @@ public class AreaService {
 
         logger.info("Área atualizada com sucesso! Área: {}", areaSearched.getNomeArea());
 
-        User userAtualizado =  usuarioCadRepository.save(user);
+        User userAtualizado =  userRepository.save(user);
 
         return new AreaDTOResponse(areaSearched.getId(),areaSearched.getNomeArea());
     }
@@ -82,7 +82,7 @@ public class AreaService {
 
         logger.info("Buscando área...");
 
-        List<Area> areasBuscadas = areaUserRepository.findAll();
+        List<Area> areasBuscadas = areaRepository.findAll();
 
         logger.info("Área buscadas, com um total de: {}", areasBuscadas.size());
         return areasBuscadas

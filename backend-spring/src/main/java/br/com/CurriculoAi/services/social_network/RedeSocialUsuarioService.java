@@ -8,8 +8,8 @@ import br.com.CurriculoAi.models.UserSocialNetwork;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.mapper.RedeSocialMapper;
 import br.com.CurriculoAi.mapper.UsuarioMapper;
-import br.com.CurriculoAi.repositories.RedeSocialRepository;
-import br.com.CurriculoAi.repositories.UsuarioRedeSocialRepository;
+import br.com.CurriculoAi.repositories.SocialNetworkRepository;
+import br.com.CurriculoAi.repositories.UserSocialNetworkRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class RedeSocialUsuarioService {
 
-    private final RedeSocialRepository redeSocialRepository;
+    private final SocialNetworkRepository socialNetworkRepository;
     private final UsuarioUtils usuarioUtils;
-    private final UsuarioRedeSocialRepository usuarioRedeSocialRepository;
+    private final UserSocialNetworkRepository userSocialNetworkRepository;
     private final RedeSocialMapper redeSocialMapper;
     private final UsuarioMapper usuarioMapper;
 
@@ -49,7 +49,7 @@ public class RedeSocialUsuarioService {
                 .distinct()
                 .toList();
 
-        Map<Long, SocialNetwork> redesSociaisBuscadas = redeSocialRepository.findAllById(idsRedeSociais)
+        Map<Long, SocialNetwork> redesSociaisBuscadas = socialNetworkRepository.findAllById(idsRedeSociais)
                 .stream()
                 .collect(Collectors.toMap(SocialNetwork::getId, Function.identity()));
 
@@ -67,7 +67,7 @@ public class RedeSocialUsuarioService {
 
         logger.info("Registro de redes sociais feito com sucesso, com uma quantidade de: {}", redesSociaisUsuarioParaSalvar.size());
 
-        return usuarioRedeSocialRepository.saveAll(redesSociaisUsuarioParaSalvar)
+        return userSocialNetworkRepository.saveAll(redesSociaisUsuarioParaSalvar)
                 .stream()
                 .map(userSocialNetwork -> {
                     return new UsuarioRedeSocialDtoResponse(

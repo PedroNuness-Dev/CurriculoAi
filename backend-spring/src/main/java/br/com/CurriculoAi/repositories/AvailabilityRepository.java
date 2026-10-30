@@ -1,9 +1,9 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.models.Area;
+import br.com.CurriculoAi.models.Availability;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AreaUserRepository extends JpaRepository<Area, Long> {
+public interface AvailabilityRepository extends JpaRepository <Availability, Long>{
 }

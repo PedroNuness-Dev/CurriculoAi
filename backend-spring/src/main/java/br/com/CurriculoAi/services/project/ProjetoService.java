@@ -4,7 +4,7 @@ import br.com.CurriculoAi.dto.request.ProjetoDtoRequest;
 import br.com.CurriculoAi.dto.response.ProjetoDtoResponse;
 import br.com.CurriculoAi.models.Project;
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.ProjetoRepository;
+import br.com.CurriculoAi.repositories.ProjectRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ProjetoService {
 
-    private final ProjetoRepository projetoRepository;
+    private final ProjectRepository projectRepository;
     private final UsuarioUtils usuarioUtils;
 
     private static final Logger logger = LoggerFactory.getLogger(ProjetoService.class);
@@ -42,7 +42,7 @@ public class ProjetoService {
 
         logger.warn("Salvando no banco de dados um total de: {}", projetosParaSalvamento.size());
 
-        projetoRepository.saveAll(projetosParaSalvamento);
+        projectRepository.saveAll(projetosParaSalvamento);
 
         logger.info("Cadastro de novos projetos realizado com sucesso");
 

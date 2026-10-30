@@ -1,6 +1,6 @@
 package br.com.CurriculoAi.mapper;
 
-import br.com.CurriculoAi.dto.response.UsuarioCadDtoResponse;
+import br.com.CurriculoAi.dto.user.UserResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.models.User;
 import org.mapstruct.Mapper;
@@ -20,7 +20,7 @@ public interface UsuarioMapper{
     @Mapping(target = "id", source = "id")
     @Mapping(target = "nome", source = "nome")
     @Mapping(target = "email", source = "email")
-    UsuarioCadDtoResponse toDto(User user);
+    UserResponse toDto(User user);
 
     @Mapping(target = "usuario", source = "usuario")
     @Mapping(target = "area", source = "area")

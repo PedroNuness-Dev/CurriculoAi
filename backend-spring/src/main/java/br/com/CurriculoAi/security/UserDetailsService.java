@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.security;
 
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.UsuarioCadRepository;
+import br.com.CurriculoAi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
-    private final UsuarioCadRepository usuarioRepository;
+    private final UserRepository usuarioRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

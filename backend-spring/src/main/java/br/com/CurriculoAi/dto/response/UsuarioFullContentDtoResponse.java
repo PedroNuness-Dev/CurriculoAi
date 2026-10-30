@@ -1,9 +1,11 @@
 package br.com.CurriculoAi.dto.response;
 
+import br.com.CurriculoAi.dto.user.UserResponse;
+
 import java.util.List;
 
 public record UsuarioFullContentDtoResponse(
-        UsuarioCadDtoResponse usuario,
+        UserResponse usuario,
         AreaDTOResponse area,
         List<FormacaoUserDtoResponse> formacoes,
         List<ExperienciaUserDtoResponse> experiencias,

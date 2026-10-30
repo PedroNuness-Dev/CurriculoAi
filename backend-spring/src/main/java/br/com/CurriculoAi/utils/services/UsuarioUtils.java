@@ -2,7 +2,7 @@ package br.com.CurriculoAi.utils.services;
 
 import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.UsuarioCadRepository;
+import br.com.CurriculoAi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -17,7 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class UsuarioUtils {
 
-    private final UsuarioCadRepository usuarioCadRepository;
+    private final UserRepository userRepository;
 
     //Busca o usuário através do JWT
     public User me(){
@@ -39,14 +39,14 @@ public class UsuarioUtils {
 
             String email = ((UserDetails) principal).getUsername();
 
-            userAutenticado = usuarioCadRepository.findByEmail(email)
+            userAutenticado = userRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         }
         else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        User userBuscado = usuarioCadRepository.findById(userAutenticado.getId())
+        User userBuscado = userRepository.findById(userAutenticado.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         return userBuscado;

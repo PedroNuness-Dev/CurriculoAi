@@ -2,7 +2,7 @@ package br.com.CurriculoAi.services.institution;
 
 import br.com.CurriculoAi.dto.response.InstituicaoDtoResponse;
 import br.com.CurriculoAi.models.Institution;
-import br.com.CurriculoAi.repositories.InstituicaoRepository;
+import br.com.CurriculoAi.repositories.InstitutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +16,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InstituicaoService {
 
-    private final InstituicaoRepository instituicaoRepository;
+    private final InstitutionRepository institutionRepository;
     private static final Logger logger = LoggerFactory.getLogger(InstituicaoService.class);
 
     public List<InstituicaoDtoResponse> findAll(){
 
         logger.info("Busncando instituições...");
 
-        List<Institution> instituicoesBuscadas = instituicaoRepository.findAll();
+        List<Institution> instituicoesBuscadas = institutionRepository.findAll();
 
         logger.info("Instituições buscadas, com um total de: {}", instituicoesBuscadas.size());
 

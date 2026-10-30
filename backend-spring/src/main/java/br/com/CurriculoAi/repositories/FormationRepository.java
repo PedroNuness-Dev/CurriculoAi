@@ -1,9 +1,9 @@
 package br.com.CurriculoAi.repositories;
 
-import br.com.CurriculoAi.models.Experience;
+import br.com.CurriculoAi.models.Formation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ExperienciaUserRepository extends JpaRepository<Experience, Long>{
+public interface FormationRepository extends JpaRepository<Formation, Long> {
 }

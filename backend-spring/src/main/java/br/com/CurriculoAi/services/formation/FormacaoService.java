@@ -6,8 +6,8 @@ import br.com.CurriculoAi.models.*;
 import br.com.CurriculoAi.enums.formation.FormationType;
 import br.com.CurriculoAi.exceptions.ListIsEmptyException;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.CursoRepository;
-import br.com.CurriculoAi.repositories.FormacaoUserRepository;
+import br.com.CurriculoAi.repositories.CourseRepository;
+import br.com.CurriculoAi.repositories.FormationRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class FormacaoService {
 
-    private final FormacaoUserRepository formacaoUserRepository;
+    private final FormationRepository formationRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
-    private final CursoRepository cursoRepository;
+    private final CourseRepository courseRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(FormacaoService.class);
 
@@ -54,7 +54,7 @@ public class FormacaoService {
                 .toList();
 
         //Busca todas os cursos no banco em mantém em 'cache'
-        Map<Long, Course> cursosPorId = cursoRepository
+        Map<Long, Course> cursosPorId = courseRepository
                 .findAllById(idsCurso)
                 .stream()
                 .collect(Collectors.toMap(Course::getId, Function.identity()));
@@ -79,7 +79,7 @@ public class FormacaoService {
                 })
                 .toList();
 
-        formacaoUserRepository.saveAll(formacoesSalvas);
+        formationRepository.saveAll(formacoesSalvas);
 
         logger.info("Cadastro de formações realizada com sucesso!");
 

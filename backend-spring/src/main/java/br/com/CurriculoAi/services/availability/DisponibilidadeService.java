@@ -7,7 +7,7 @@ import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
 import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.enums.availability.WorkModel;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.DisponibilidadeUserRepository;
+import br.com.CurriculoAi.repositories.AvailabilityRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DisponibilidadeService {
 
-    private final DisponibilidadeUserRepository disponibilidadeUserRepository;
+    private final AvailabilityRepository availabilityRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(DisponibilidadeService.class);
@@ -41,7 +41,7 @@ public class DisponibilidadeService {
                 WorkModel.from(disponibilidadeDtoRequest.modeloTrabalho()),
                 user);
 
-        Availability availabilitySalva = disponibilidadeUserRepository.save(novaDisponibilidade);
+        Availability availabilitySalva = availabilityRepository.save(novaDisponibilidade);
 
         logger.info("Disponibilidade salva com sucesso! Com id: {}", availabilitySalva.getId());
 

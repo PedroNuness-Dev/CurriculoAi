@@ -5,8 +5,8 @@ import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.*;
 import br.com.CurriculoAi.exceptions.ListIsEmptyException;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.CertificacaoUserRepository;
-import br.com.CurriculoAi.repositories.InstituicaoRepository;
+import br.com.CurriculoAi.repositories.CertificationRepository;
+import br.com.CurriculoAi.repositories.InstitutionRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CertificacaoService {
 
-    private final CertificacaoUserRepository certificacaoUserRepository;
+    private final CertificationRepository certificationRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
-    private final InstituicaoRepository instituicaoRepository;
+    private final InstitutionRepository institutionRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(CertificacaoService.class);
 
@@ -50,7 +50,7 @@ public class CertificacaoService {
                 .toList();
 
         // Armazena todas as instituições que estão vindo para cadastro em um cache local, para não ir no banco desnecessáriamente
-        Map<Long, Institution> instituicoesPorId = instituicaoRepository.findAllById(idsInstituicoes)
+        Map<Long, Institution> instituicoesPorId = institutionRepository.findAllById(idsInstituicoes)
                 .stream()
                 .collect(Collectors.toMap(Institution::getId, Function.identity()));
 
@@ -78,7 +78,7 @@ public class CertificacaoService {
                 })
                 .toList();
 
-        certificacaoUserRepository.saveAll(certificacoesSalvas);
+        certificationRepository.saveAll(certificacoesSalvas);
 
         logger.info("Certificações salvas com sucesso!");
 

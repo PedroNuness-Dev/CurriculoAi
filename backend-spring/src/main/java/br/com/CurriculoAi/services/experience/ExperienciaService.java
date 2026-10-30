@@ -4,9 +4,9 @@ import br.com.CurriculoAi.dto.request.ExperienciaDtoRequest;
 import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
 import br.com.CurriculoAi.models.*;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.AreaUserRepository;
-import br.com.CurriculoAi.repositories.EmpresaRepository;
-import br.com.CurriculoAi.repositories.ExperienciaUserRepository;
+import br.com.CurriculoAi.repositories.AreaRepository;
+import br.com.CurriculoAi.repositories.EnterpriseRepository;
+import br.com.CurriculoAi.repositories.ExperienceRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ExperienciaService {
 
-    private final ExperienciaUserRepository experienciaUserRepository;
-    private final AreaUserRepository areaUserRepository;
-    private final EmpresaRepository empresaRepository;
+    private final ExperienceRepository experienceRepository;
+    private final AreaRepository areaRepository;
+    private final EnterpriseRepository enterpriseRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ExperienciaService.class);
 
@@ -52,11 +52,11 @@ public class ExperienciaService {
                 .distinct()
                 .toList();
 
-        Map<Long, Area> areasPorId = areaUserRepository.findAllById(idsAreas)
+        Map<Long, Area> areasPorId = areaRepository.findAllById(idsAreas)
                 .stream()
                 .collect(Collectors.toMap(Area::getId, Function.identity()));
 
-        Map<Long, Enterprise> empresasPorId = empresaRepository.findAllById(idsEmpresas)
+        Map<Long, Enterprise> empresasPorId = enterpriseRepository.findAllById(idsEmpresas)
                 .stream()
                 .collect(Collectors.toMap(Enterprise::getId, Function.identity()));
 
@@ -85,7 +85,7 @@ public class ExperienciaService {
                 })
                 .toList();
 
-        experienciaUserRepository.saveAll(experienciasSalvas);
+        experienceRepository.saveAll(experienciasSalvas);
 
         logger.info("Cadastro de experiências realizado com sucesso!");
 

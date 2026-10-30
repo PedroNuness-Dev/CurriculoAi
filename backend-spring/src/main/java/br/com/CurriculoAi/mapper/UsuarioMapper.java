@@ -2,6 +2,7 @@ package br.com.CurriculoAi.mapper;
 
 import br.com.CurriculoAi.dto.user.UserResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
+import br.com.CurriculoAi.mapper.area.AreaMapper;
 import br.com.CurriculoAi.models.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,7 +13,7 @@ import org.mapstruct.Mapping;
         CertificacaoMapper.class,
         DisponibilidadeMapper.class,
         IdiomaUserMapper.class,
-        AreaUserMapper.class,
+        AreaMapper.class,
         ProjetoMapper.class
 })
 public interface UsuarioMapper{

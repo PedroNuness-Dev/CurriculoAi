@@ -5,7 +5,7 @@ import br.com.CurriculoAi.dto.auth.LoginResponse;
 import br.com.CurriculoAi.dto.auth.TokenDetails;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.UserRepository;
+import br.com.CurriculoAi.repositories.user.UserRepository;
 import br.com.CurriculoAi.security.TokenService;
 import br.com.CurriculoAi.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;

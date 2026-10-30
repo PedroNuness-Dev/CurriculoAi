@@ -1,7 +1,7 @@
 package br.com.CurriculoAi.security;
 
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.UserRepository;
+import br.com.CurriculoAi.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

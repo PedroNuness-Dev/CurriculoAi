@@ -4,7 +4,7 @@ import br.com.CurriculoAi.dto.request.ProjetoDtoRequest;
 import br.com.CurriculoAi.dto.response.ProjetoDtoResponse;
 import br.com.CurriculoAi.models.Project;
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.ProjectRepository;
+import br.com.CurriculoAi.repositories.project.ProjectRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

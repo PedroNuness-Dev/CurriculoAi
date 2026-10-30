@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.repositories;
+package br.com.CurriculoAi.repositories.institution;
 
 import br.com.CurriculoAi.models.Institution;
 import org.springframework.data.jpa.repository.JpaRepository;

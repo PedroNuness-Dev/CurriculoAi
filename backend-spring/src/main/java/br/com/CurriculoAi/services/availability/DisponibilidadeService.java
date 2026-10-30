@@ -7,7 +7,7 @@ import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
 import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.enums.availability.WorkModel;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.AvailabilityRepository;
+import br.com.CurriculoAi.repositories.availability.AvailabilityRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.repositories;
+package br.com.CurriculoAi.repositories.role;
 
 import br.com.CurriculoAi.enums.role.RoleType;
 import br.com.CurriculoAi.models.Role;

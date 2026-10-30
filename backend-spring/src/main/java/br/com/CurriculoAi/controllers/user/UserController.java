@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.controllers;
+package br.com.CurriculoAi.controllers.user;
 
 import br.com.CurriculoAi.dto.user.UserRegisterRequest;
 import br.com.CurriculoAi.dto.user.UserResponse;
@@ -22,9 +22,7 @@ public class UserController {
     private final UserService userService;
 
 
-    @Operation(summary = "Cadastrar um usuário",
-            description = "É passado as informações no body da requisição, retornando um `TOKEN` de identificação do usuário, " +
-                    "que será usado para as proximas etapas do cadastro!")
+    @Operation(summary = "Cadastrar um usuário")
     @PostMapping("/create")
     public ResponseEntity<UserResponse> registerUserWithRoleCandidate(@RequestBody UserRegisterRequest userRegisterRequest){
 

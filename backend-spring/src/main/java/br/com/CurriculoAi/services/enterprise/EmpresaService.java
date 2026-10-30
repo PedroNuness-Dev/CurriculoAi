@@ -2,7 +2,7 @@ package br.com.CurriculoAi.services.enterprise;
 
 import br.com.CurriculoAi.dto.response.EmpresaDtoResponse;
 import br.com.CurriculoAi.models.Enterprise;
-import br.com.CurriculoAi.repositories.EnterpriseRepository;
+import br.com.CurriculoAi.repositories.enterprise.EnterpriseRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -4,7 +4,7 @@ import br.com.CurriculoAi.enums.role.RoleType;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.models.Role;
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.RoleRepository;
+import br.com.CurriculoAi.repositories.role.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

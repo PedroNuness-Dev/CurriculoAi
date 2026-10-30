@@ -4,7 +4,7 @@ import br.com.CurriculoAi.dto.request.CerebrasRequestDTO;
 import br.com.CurriculoAi.dto.response.*;
 import br.com.CurriculoAi.models.UserCurriculum;
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.CurriculoUsuarioRepository;
+import br.com.CurriculoAi.repositories.curriculum.CurriculoUsuarioRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;

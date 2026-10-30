@@ -4,7 +4,7 @@ import br.com.CurriculoAi.dto.user.UserRegisterRequest;
 import br.com.CurriculoAi.dto.user.UserResponse;
 import br.com.CurriculoAi.enums.role.RoleType;
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.UserRepository;
+import br.com.CurriculoAi.repositories.user.UserRepository;
 import br.com.CurriculoAi.services.role.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

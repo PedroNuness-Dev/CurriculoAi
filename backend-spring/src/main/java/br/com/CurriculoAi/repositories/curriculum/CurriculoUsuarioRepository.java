@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.repositories;
+package br.com.CurriculoAi.repositories.curriculum;
 
 import br.com.CurriculoAi.models.UserCurriculum;
 import br.com.CurriculoAi.models.User;

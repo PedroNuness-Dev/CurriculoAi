@@ -1,19 +1,13 @@
 package br.com.CurriculoAi.services.area;
 
-import br.com.CurriculoAi.dto.request.AreaUserAddDtoRequest;
-import br.com.CurriculoAi.dto.response.AreaDTOResponse;
-import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.models.Area;
-import br.com.CurriculoAi.models.TokenIdentificacaoUsuario;
-import br.com.CurriculoAi.models.User;
+import br.com.CurriculoAi.dto.area.AreaRequest;
+import br.com.CurriculoAi.dto.area.AreaResponse;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.AreaRepository;
-import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
-import br.com.CurriculoAi.repositories.UserRepository;
-import br.com.CurriculoAi.utils.services.UsuarioUtils;
+import br.com.CurriculoAi.mapper.area.AreaMapper;
+import br.com.CurriculoAi.models.Area;
+import br.com.CurriculoAi.repositories.area.AreaRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,74 +16,66 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class AreaService {
 
     private final AreaRepository areaRepository;
-    private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
-    private final UserRepository userRepository;
-    private final UsuarioUtils usuarioUtils;
-
-    private final static Logger logger = LoggerFactory.getLogger(AreaService.class);
+    private final AreaMapper areaMapper;
 
     @Transactional
-    public UsuarioTokenIdentResponseDto addAreaUser(AreaUserAddDtoRequest areaUserAddDtoRequest){
+    public AreaResponse createArea(AreaRequest areaRequest) {
 
-        logger.info("Adicionando área com id: {} ao usuário com token de identificação: {}", areaUserAddDtoRequest.idArea(), areaUserAddDtoRequest.tokenIdentificacaoUsuario());
+        log.info("Iniciando o processo de criação de área");
 
-        //Pego o token do dto
-        TokenIdentificacaoUsuario tokenIdentificacao = tokenIdentificacaoUsurioRepository.findByToken(areaUserAddDtoRequest.tokenIdentificacaoUsuario())
-                .orElseThrow(() -> new ResourceNotFoundException("Token de identificação inválido"));
-
-        //Pego usuário contido no token
-        User user = tokenIdentificacao.getUsuario();
-
-        Area areaBuscada = areaRepository.findById(areaUserAddDtoRequest.idArea())
-                .orElseThrow(() -> new ResourceNotFoundException("Área com id "+areaUserAddDtoRequest.idArea()+" não encontrada"));
-
-        user.setArea(areaBuscada);
-
-        User userAtualizado = userRepository.save(user);
-
-        logger.info("Areá: {} adicionada com sucesso ao usuário com id: {}", areaBuscada.getNomeArea(), user.getId());
-
-        return new UsuarioTokenIdentResponseDto(tokenIdentificacao.getId(), user.getNome(), tokenIdentificacao.getToken());
-    }
-
-    @Transactional
-    public AreaDTOResponse updateAreaUser(Long idBuscado){
-
-        logger.info("Iniando processo de atualização da área do usuário");
-
-        Area areaSearched = areaRepository.findById(idBuscado)
-                .orElseThrow(() -> new ResourceNotFoundException("Área com id: "+idBuscado+" não encontrada"));
-
-        User user = usuarioUtils.me();
-
-        if (user.getArea().getId() == areaSearched.getId()){
-            throw new IllegalArgumentException("Área não pode ser a mesma, é necessário ser uma área diferente para atualizar");
+        if (areaRepository.existsByNameIgnoreCase(areaRequest.name())) {
+            throw new IllegalArgumentException("Já existe uma área com esse nome");
         }
 
-        user.setArea(areaSearched);
+        Area newArea = Area.builder()
+                .name(areaRequest.name())
+                .build();
 
-        logger.info("Área atualizada com sucesso! Área: {}", areaSearched.getNomeArea());
+        Area savedArea = areaRepository.save(newArea);
 
-        User userAtualizado =  userRepository.save(user);
+        log.info("Área criada com sucesso! Id: {}", savedArea.getAreaId());
 
-        return new AreaDTOResponse(areaSearched.getId(),areaSearched.getNomeArea());
+        return areaMapper.toDTO(savedArea);
     }
 
-    public List<AreaDTOResponse> findAll(){
-
-        logger.info("Buscando área...");
-
-        List<Area> areasBuscadas = areaRepository.findAll();
-
-        logger.info("Área buscadas, com um total de: {}", areasBuscadas.size());
-        return areasBuscadas
+    public List<AreaResponse> findAllAreas() {
+        return areaRepository.findAll()
                 .stream()
-                .map(area -> {
-                    return new AreaDTOResponse(area.getId(), area.getNomeArea());
-                })
+                .map(areaMapper::toDTO)
                 .toList();
+    }
+
+    public AreaResponse getAreaById(Long areaId) {
+        return areaMapper.toDTO(findAreaById(areaId));
+    }
+
+    @Transactional
+    public AreaResponse updateArea(Long areaId, AreaRequest areaRequest) {
+
+        log.info("Iniciando a atualização da área com id [{}]", areaId);
+
+        Area area = findAreaById(areaId);
+
+        if (areaRepository.existsByNameIgnoreCaseAndAreaIdNot(areaRequest.name(), areaId)) {
+            throw new IllegalArgumentException("Já existe uma área com esse nome");
+        }
+
+        area.setName(areaRequest.name());
+
+        Area updatedArea = areaRepository.save(area);
+
+        log.info("Área atualizada com sucesso! Id: {}", updatedArea.getAreaId());
+
+        return areaMapper.toDTO(updatedArea);
+    }
+
+    // Público para ser reutilizado por outros services (ex: UserAreaService)
+    public Area findAreaById(Long areaId) {
+        return areaRepository.findById(areaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada"));
     }
 }

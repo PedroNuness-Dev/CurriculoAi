@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.repositories;
+package br.com.CurriculoAi.repositories.social_network;
 
 import br.com.CurriculoAi.models.SocialNetwork;
 import org.springframework.data.jpa.repository.JpaRepository;

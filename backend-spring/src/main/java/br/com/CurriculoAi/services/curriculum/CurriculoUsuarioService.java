@@ -2,7 +2,7 @@ package br.com.CurriculoAi.services.curriculum;
 
 import br.com.CurriculoAi.models.UserCurriculum;
 import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.CurriculoUsuarioRepository;
+import br.com.CurriculoAi.repositories.curriculum.CurriculoUsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

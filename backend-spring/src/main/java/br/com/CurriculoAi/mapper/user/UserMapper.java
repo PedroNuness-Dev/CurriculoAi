@@ -1,22 +1,27 @@
-package br.com.CurriculoAi.mapper;
+package br.com.CurriculoAi.mapper.user;
 
 import br.com.CurriculoAi.dto.user.UserResponse;
 import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.mapper.area.AreaMapper;
+import br.com.CurriculoAi.mapper.availability.AvailabilityMapper;
+import br.com.CurriculoAi.mapper.certification.CertificationMapper;
+import br.com.CurriculoAi.mapper.experience.ExperienceMapper;
+import br.com.CurriculoAi.mapper.formation.FormationMapper;
+import br.com.CurriculoAi.mapper.project.ProjectMapper;
 import br.com.CurriculoAi.models.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {
-        FormacaoMapper.class,
-        ExperienciaMapper.class,
-        CertificacaoMapper.class,
-        DisponibilidadeMapper.class,
-        IdiomaUserMapper.class,
+        FormationMapper.class,
+        ExperienceMapper.class,
+        CertificationMapper.class,
+        AvailabilityMapper.class,
+        UserLanguageMapper.class,
         AreaMapper.class,
-        ProjetoMapper.class
+        ProjectMapper.class
 })
-public interface UsuarioMapper{
+public interface UserMapper{
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "nome", source = "nome")

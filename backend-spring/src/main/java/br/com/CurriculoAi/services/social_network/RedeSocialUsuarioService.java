@@ -6,8 +6,8 @@ import br.com.CurriculoAi.models.SocialNetwork;
 import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.models.UserSocialNetwork;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.mapper.RedeSocialMapper;
-import br.com.CurriculoAi.mapper.UsuarioMapper;
+import br.com.CurriculoAi.mapper.social_network.SocialNetworkMapper;
+import br.com.CurriculoAi.mapper.user.UserMapper;
 import br.com.CurriculoAi.repositories.social_network.SocialNetworkRepository;
 import br.com.CurriculoAi.repositories.user.UserSocialNetworkRepository;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
@@ -31,8 +31,8 @@ public class RedeSocialUsuarioService {
     private final SocialNetworkRepository socialNetworkRepository;
     private final UsuarioUtils usuarioUtils;
     private final UserSocialNetworkRepository userSocialNetworkRepository;
-    private final RedeSocialMapper redeSocialMapper;
-    private final UsuarioMapper usuarioMapper;
+    private final SocialNetworkMapper redeSocialMapper;
+    private final UserMapper usuarioMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(RedeSocialUsuarioService.class);
 

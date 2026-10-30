@@ -5,7 +5,7 @@ import br.com.CurriculoAi.dto.response.UsuarioFullContentDtoResponse;
 import br.com.CurriculoAi.models.*;
 import br.com.CurriculoAi.enums.language.LanguageLevel;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.mapper.UsuarioMapper;
+import br.com.CurriculoAi.mapper.user.UserMapper;
 import br.com.CurriculoAi.repositories.language.LanguageRepository;
 import br.com.CurriculoAi.repositories.user.UserLanguageRepository;
 import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
@@ -29,7 +29,7 @@ public class IdiomaUserService {
     private final UserLanguageRepository userLanguageRepository;
     private final LanguageRepository languageRepository;
     private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
-    private final UsuarioMapper usuarioMapper;
+    private final UserMapper usuarioMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(IdiomaUserService.class);
 

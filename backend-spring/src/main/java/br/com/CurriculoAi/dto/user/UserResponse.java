@@ -5,8 +5,8 @@ import br.com.CurriculoAi.models.Role;
 import java.util.Set;
 
 public record UserResponse(
-        Long id,
-        String nome,
+        Long userId,
+        String name,
         String email,
         Set<Role> roles
 ){

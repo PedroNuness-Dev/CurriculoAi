@@ -1,6 +1,7 @@
 package br.com.CurriculoAi.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -42,13 +43,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    /**
+     * Tratamento para ListIsEmptyException (lista enviada vazia).
+     */
     @ExceptionHandler(ListIsEmptyException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleList(
             ListIsEmptyException ex,
             HttpServletRequest request) {
 
-        logger.warn("Recursos não encontrado: {}", ex.getMessage());
+        logger.warn("Lista vazia: {}", ex.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -56,9 +60,8 @@ public class GlobalExceptionHandler {
                 request
         );
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
-
 
     /**
      * Tratamento para MethodArgumentNotValidException (validação de argumentos).
@@ -89,23 +92,36 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Tratamento genérico para exceções não capturadas.
+     * Tratamento para ConstraintViolationException.
+     * Captura erros de validação de parâmetros de métodos do controller quando a classe
+     * usa @Validated (ex: List<@Valid FormationRequest>, @PathVariable com @Min, etc).
      */
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorResponse> handleGlobalException(
-            Exception ex,
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            ConstraintViolationException ex,
             HttpServletRequest request) {
 
-        logger.error("Erro interno não tratado", ex);
+        List<String> errors = new ArrayList<>();
 
-      ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Erro interno do servidor. Por favor, tente novamente mais tarde.",
-                request
+        ex.getConstraintViolations().forEach(violation -> {
+            String path = violation.getPropertyPath().toString();
+            // Remove o nome do método do início do caminho (ex: "registerFormationsByUser.formationRequests[0].name")
+            int firstDot = path.indexOf('.');
+            String field = firstDot >= 0 ? path.substring(firstDot + 1) : path;
+            errors.add(field + ": " + violation.getMessage());
+        });
+
+        logger.warn("Erro de validação de parâmetros: {}", errors);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Erro de validação nos campos enviados",
+                request,
+                errors
         );
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     /**
@@ -127,5 +143,24 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
-}
 
+    /**
+     * Tratamento genérico para exceções não capturadas.
+     */
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleGlobalException(
+            Exception ex,
+            HttpServletRequest request) {
+
+        logger.error("Erro interno não tratado", ex);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Erro interno do servidor. Por favor, tente novamente mais tarde.",
+                request
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+}

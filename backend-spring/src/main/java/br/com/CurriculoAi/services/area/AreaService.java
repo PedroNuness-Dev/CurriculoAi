@@ -76,6 +76,6 @@ public class AreaService {
     // Público para ser reutilizado por outros services (ex: UserAreaService)
     public Area findAreaById(Long areaId) {
         return areaRepository.findById(areaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Área com id: "+areaId+" não encontrada para adição"));
     }
 }

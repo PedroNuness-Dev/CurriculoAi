@@ -24,7 +24,7 @@ public class FormationController {
     private final FormationService formationService;
 
     @Operation(summary = "Cadastrar formações do usuário autenticado")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<List<FormationResponse>> registerFormationsByUser(
             @RequestBody List<@Valid FormationRequest> formationRequests) {
 

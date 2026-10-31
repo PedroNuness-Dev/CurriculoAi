@@ -22,7 +22,7 @@ public class CourseController {
     private final CourseService courseService;
 
     @Operation(summary = "Cadastrar um curso")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest courseRequest) {
 
         CourseResponse courseResponse = courseService.createCourse(courseRequest);

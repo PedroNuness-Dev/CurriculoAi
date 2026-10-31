@@ -23,7 +23,7 @@ public class UserController {
 
 
     @Operation(summary = "Cadastrar um usuário")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<UserResponse> registerUserWithRoleCandidate(@RequestBody UserRegisterRequest userRegisterRequest){
 
         UserResponse userResponse = userService.registerUserWithRoleTypeCandidate(userRegisterRequest);

@@ -1,10 +1,13 @@
 package br.com.CurriculoAi.services.user;
 
+import br.com.CurriculoAi.dto.user.UserFullContent;
 import br.com.CurriculoAi.dto.user.UserRegisterRequest;
 import br.com.CurriculoAi.dto.user.UserResponse;
 import br.com.CurriculoAi.enums.role.RoleType;
+import br.com.CurriculoAi.mapper.user.UserMapper;
 import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.repositories.user.UserRepository;
+import br.com.CurriculoAi.services.auth.AuthService;
 import br.com.CurriculoAi.services.role.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +24,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleService roleService;
-    
+    private final UserMapper userMapper;
+    private final AuthService authService;
 
     @Transactional
     public UserResponse registerUserWithRoleTypeCandidate(UserRegisterRequest userRegisterRequest) {
@@ -36,12 +40,13 @@ public class UserService {
 
         log.info("Usuário criado com sucesso! Id: {}", savedUser.getUserId());
 
-        return new UserResponse(
-                savedUser.getUserId(),
-                savedUser.getName(),
-                savedUser.getEmail(),
-                savedUser.getRoles()
-        );
+        return userMapper.toDto(savedUser);
+    }
+
+    public UserFullContent getUserFullContentData(){
+        User user = authService.getUserByTokenAuthenticate();
+
+        return userMapper.toFullContentDto(user);
     }
 
     public User buildUserWithRoleCandidate(UserRegisterRequest userRegisterRequest){

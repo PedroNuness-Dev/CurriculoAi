@@ -35,9 +35,24 @@ public class User {
     @JoinColumn(name = "area_id")
     private Area area;
 
+    @OneToOne(mappedBy = "user")
+    private Availability availability;
+
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Formation> formations = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Experience> experiences = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Certification> certifications = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Project> projects = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user")

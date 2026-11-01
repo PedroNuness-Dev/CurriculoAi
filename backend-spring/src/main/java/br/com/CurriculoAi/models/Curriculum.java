@@ -8,27 +8,23 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_curriculum")
+@Table(name = "curriculum")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCurriculum {
+public class Curriculum {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_curriculum_id")
-    private Long userCurriculumId;
+    @Column(name = "curriculum_id")
+    private Long curriculumId;
 
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Lob
-    //usar apenas no h2
-    //@Column(name = "curriculum", nullable = false)
-    // usar em prod
-    @Column(name = "curriculum", nullable = false, columnDefinition = "OID")
+    @Column(name = "curriculum", nullable = false, columnDefinition = "BYTEA")
     private byte[] curriculum;
 
     @Column(name = "created_at", nullable = false)

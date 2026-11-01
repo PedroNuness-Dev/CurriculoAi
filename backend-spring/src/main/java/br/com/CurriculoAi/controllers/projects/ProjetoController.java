@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.controllers;
+package br.com.CurriculoAi.controllers.projects;
 
 import br.com.CurriculoAi.dto.project.ProjectRequest;
 import br.com.CurriculoAi.dto.project.ProjectResponse;

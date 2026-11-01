@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.dto;
+package br.com.CurriculoAi.dto.cerebras;
 
 public class MessageDTO {
 

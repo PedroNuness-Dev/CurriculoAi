@@ -1,27 +1,34 @@
 package br.com.CurriculoAi.services.cerebras;
 
-import br.com.CurriculoAi.dto.request.CerebrasRequestDTO;
-import br.com.CurriculoAi.dto.response.*;
-import br.com.CurriculoAi.models.UserCurriculum;
-import br.com.CurriculoAi.models.User;
-import br.com.CurriculoAi.repositories.curriculum.CurriculoUsuarioRepository;
-import br.com.CurriculoAi.utils.services.UsuarioUtils;
+import br.com.CurriculoAi.dto.area.AreaResponse;
+import br.com.CurriculoAi.dto.availability.AvailabilityResponse;
+import br.com.CurriculoAi.dto.cerebras.CerebrasRequestDTO;
+import br.com.CurriculoAi.dto.certification.CertificationResponse;
+import br.com.CurriculoAi.dto.experience.ExperienceResponse;
+import br.com.CurriculoAi.dto.formation.FormationResponse;
+import br.com.CurriculoAi.dto.user.UserFullContent;
+import br.com.CurriculoAi.dto.user.UserLanguageResponse;
+import br.com.CurriculoAi.repositories.curriculum.CurriculumRepository;
+import br.com.CurriculoAi.services.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class CerebrasService {
-
-    private final Logger logger = Logger.getLogger(CerebrasService.class.getName());
 
     @Value("${cerebras.api.key}")
     private String apiKey;
@@ -31,29 +38,26 @@ public class CerebrasService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final UsuarioUtils usuarioUtils;
-    private final CurriculoUsuarioRepository curriculoUsuarioRepository;
-
-    public CerebrasService(UsuarioUtils usuarioUtils, CurriculoUsuarioRepository curriculoUsuarioRepository) {
-        this.usuarioUtils = usuarioUtils;
-        this.curriculoUsuarioRepository = curriculoUsuarioRepository;
-    }
+    private final UserService userService;
+    private final CurriculumRepository curriculumRepository;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MM/yyyy");
 
-    public String gerarMarkdawn(UsuarioFullContentDtoResponse curriculo) throws Exception {
+    public String gerarMarkdawn() throws Exception {
 
-        if (curriculo == null) {
+        UserFullContent userFullContent = userService.getUserFullContentData();
+
+        if (userFullContent == null) {
             throw new IllegalArgumentException("Curriculo não pode ser nulo");
         }
 
-        if (curriculo.usuario() == null) {
+        if (userFullContent.user() == null) {
             throw new IllegalArgumentException("Dados do usuario nao encontrados. Verifique o mapper.");
         }
 
-        logger.info("Iniciando geração de markdown");
+        log.info("Iniciando geração de markdown");
 
-        String prompt = montarPrompt(curriculo);
+        String prompt = montarPrompt(userFullContent);
 
         CerebrasRequestDTO requestDTO = new CerebrasRequestDTO(prompt);
 
@@ -65,7 +69,7 @@ public class CerebrasService {
 
         HttpEntity<String> request = new HttpEntity<>(bodyJson, headers);
 
-        logger.info("Enviando request para Cerebras");
+        log.info("Enviando request para Cerebras");
 
         ResponseEntity<Map> response = restTemplate.postForEntity(apiUrl, request, Map.class);
 
@@ -78,12 +82,12 @@ public class CerebrasService {
         List<Map> choices = (List<Map>) body.get("choices");
         Map message = (Map) choices.get(0).get("message");
 
-        logger.info("Resposta recebida com sucesso");
+        log.info("Resposta recebida com sucesso");
 
         return (String) message.get("content");
     }
 
-    private String montarPrompt(UsuarioFullContentDtoResponse curriculo) {
+    private String montarPrompt(UserFullContent userFullContent) {
 
         String prompt = """
                 You are a senior technical recruiter and ATS resume optimization expert. Your only task is to transform the candidate data below into a professional, ATS-optimized resume in Markdown.
@@ -181,42 +185,42 @@ public class CerebrasService {
                 """;
 
         return prompt
-                .replace("{name}",         safe(curriculo.usuario().nome()))
-                .replace("{email}",        safe(curriculo.usuario().email()))
-                .replace("{area}",         formatarArea(curriculo.area()))
-                .replace("{experience}",   formatarExperiencias(curriculo.experiencias()))
-                .replace("{education}",    formatarFormacoes(curriculo.formacoes()))
-                .replace("{certifications}", formatarCertificacoes(curriculo.certificoes()))
-                .replace("{languages}",    formatarIdiomas(curriculo.idiomas()))
-                .replace("{disponibilidade}", formatarDisponibilidade(curriculo.disponibilidade()));
+                .replace("{name}",         safe(userFullContent.user().name()))
+                .replace("{email}",        safe(userFullContent.user().email()))
+                .replace("{area}",         formatarArea(userFullContent.area()))
+                .replace("{experience}",   formatarExperiencias(userFullContent.experiences()))
+                .replace("{education}",    formatarFormacoes(userFullContent.formations()))
+                .replace("{certifications}", formatarCertificacoes(userFullContent.certifications()))
+                .replace("{languages}",    formatarIdiomas(userFullContent.languages()))
+                .replace("{disponibilidade}", formatarDisponibilidade(userFullContent.availability()));
     }
 
     private String safe(String value) {
         return value != null ? value : "";
     }
 
-    private String formatarArea(AreaDTOResponse area) {
-        if (area == null || area.nomeArea() == null) return "Não informado";
-        return area.nomeArea();
+    private String formatarArea(AreaResponse area) {
+        if (area == null || area.name() == null) return "Não informado";
+        return area.name();
     }
 
-    private String formatarExperiencias(List<ExperienciaUserDtoResponse> experiencias) {
+    private String formatarExperiencias(List<ExperienceResponse> experiencias) {
         if (experiencias == null || experiencias.isEmpty()) return "Não informado.";
 
-        logger.info("Formatando experiências");
+        log.info("Formatando experiências");
 
         StringBuilder sb = new StringBuilder();
 
-        for (ExperienciaUserDtoResponse e : experiencias) {
+        for (ExperienceResponse e : experiencias) {
 
-            String empresa = (e.empresa() != null) ? safe(e.empresa().nome()) : "Empresa não informada";
-            String area    = (e.area() != null)    ? safe(e.area().nomeArea()) : "";
-            String cargo   = safe(e.cargo());
-            String inicio  = (e.dataInicio() != null) ? e.dataInicio().format(FORMATTER) : "?";
-            String fim     = Boolean.TRUE.equals(e.trabalhoAtual())
+            String empresa = (e.enterprise() != null) ? safe(e.enterprise().name()) : "Empresa não informada";
+            String area    = (e.area() != null)    ? safe(e.area().name()) : "";
+            String cargo   = safe(e.position());
+            String inicio  = (e.startDate() != null) ? e.startDate().format(FORMATTER) : "?";
+            String fim     = Boolean.TRUE.equals(e.workCurrent())
                     ? "Atual"
-                    : (e.dataFim() != null ? e.dataFim().format(FORMATTER) : "?");
-            String descricao = safe(e.descricao());
+                    : (e.finishDate() != null ? e.finishDate().format(FORMATTER) : "?");
+            String descricao = safe(e.description());
 
             sb.append("Company: ").append(empresa).append("\n");
             if (!area.isBlank()) sb.append("Area: ").append(area).append("\n");
@@ -229,29 +233,29 @@ public class CerebrasService {
         return sb.toString().trim();
     }
 
-    private String formatarFormacoes(List<FormacaoUserDtoResponse> formacoes) {
+    private String formatarFormacoes(List<FormationResponse> formacoes) {
         if (formacoes == null || formacoes.isEmpty()) return "Não informado.";
 
-        logger.info("Formatando formações");
+        log.info("Formatando formações");
 
         StringBuilder sb = new StringBuilder();
 
-        for (FormacaoUserDtoResponse f : formacoes) {
+        for (FormationResponse f : formacoes) {
             if (f == null) continue;
 
-            String tipo  = safe(f.tipoFormacao());
+            String tipo  = safe(f.formationType().name());
 
             // A record FormacaoUserDtoResponse tem campo 'curso' (CursoDtoResponse)
             // e CursoDtoResponse expõe o accessor 'nomeCurso()'
             String cursoNome = "Curso não informado";
-            if (f.curso() != null && f.curso().nomeCurso() != null && !f.curso().nomeCurso().isBlank()) {
-                cursoNome = f.curso().nomeCurso();
+            if (f.course() != null && f.course().name() != null && !f.course().name().isBlank()) {
+                cursoNome = f.course().name();
             }
 
-            String inicio = (f.dataInicio() != null) ? f.dataInicio().format(FORMATTER) : "?";
-            String fim = Boolean.TRUE.equals(f.emAndamento())
+            String inicio = (f.startDate() != null) ? f.startDate().format(FORMATTER) : "?";
+            String fim = Boolean.TRUE.equals(f.inProgress())
                     ? "Em andamento"
-                    : (f.dataConclusao() != null ? f.dataConclusao().format(FORMATTER) : "?");
+                    : (f.finishDate() != null ? f.finishDate().format(FORMATTER) : "?");
 
             sb.append("Type: ").append(tipo).append("\n");
             sb.append("Field: ").append(cursoNome).append("\n");
@@ -262,19 +266,19 @@ public class CerebrasService {
         return sb.toString().trim();
     }
 
-    private String formatarCertificacoes(List<CertificacaoUserDtoResponse> certificacoes) {
+    private String formatarCertificacoes(List<CertificationResponse> certificacoes) {
         if (certificacoes == null || certificacoes.isEmpty()) return "Não informado.";
 
-        logger.info("Formatando certificações");
+        log.info("Formatando certificações");
 
         StringBuilder sb = new StringBuilder();
 
-        for (CertificacaoUserDtoResponse c : certificacoes) {
+        for (CertificationResponse c : certificacoes) {
 
-            String instituicao = (c.instituicao() != null) ? safe(c.instituicao().nome()) : "Instituição não informada";
-            String data = Boolean.TRUE.equals(c.emAndamento())
+            String instituicao = (c.institution() != null) ? safe(c.institution().name()) : "Instituição não informada";
+            String data = Boolean.TRUE.equals(c.inProgress())
                     ? "Em andamento"
-                    : (c.dataConclusao() != null ? c.dataConclusao().format(FORMATTER) : "?");
+                    : (c.finishDate() != null ? c.finishDate().format(FORMATTER) : "?");
 
             sb.append("- ").append(instituicao).append(" | ").append(data).append("\n");
         }
@@ -282,24 +286,24 @@ public class CerebrasService {
         return sb.toString().trim();
     }
 
-    private String formatarIdiomas(List<IdiomaUserDtoResponse> idiomas) {
+    private String formatarIdiomas(List<UserLanguageResponse> idiomas) {
         if (idiomas == null || idiomas.isEmpty()) return "Não informado.";
 
-        logger.info("Formatando idiomas");
+        log.info("Formatando idiomas");
 
         StringBuilder sb = new StringBuilder();
 
-        for (IdiomaUserDtoResponse i : idiomas) {
+        for (UserLanguageResponse i : idiomas) {
             if (i == null) continue;
 
             // nome do idioma vem do record IdiomaDtoResponse.idiomaNome()
             String nomeIdioma = "Idioma não informado";
-            if (i.idioma() != null && i.idioma().idiomaNome() != null && !i.idioma().idiomaNome().isBlank()) {
-                nomeIdioma = i.idioma().idiomaNome();
+            if (i.language() != null && i.language().name().getDescricao() != null && !i.language().name().getDescricao().isBlank()) {
+                nomeIdioma = i.language().name().getDescricao();
             }
 
             // nível vem do próprio IdiomaUserDtoResponse.nivel()
-            String nivel = (i.nivel() != null && !i.nivel().isBlank()) ? i.nivel() : "Nível não informado";
+            String nivel = (i.level() != null && !i.level().getDescricao().isBlank()) ? i.level().getDescricao() : "Nível não informado";
 
             sb.append("- ").append(nomeIdioma).append(": ").append(nivel).append("\n");
         }
@@ -307,37 +311,20 @@ public class CerebrasService {
         return sb.toString().trim();
     }
 
-    private String formatarDisponibilidade(DisponibilidadeUserDtoResponse disponibilidade) {
-        if (disponibilidade == null) return "Não informado.";
+    private String formatarDisponibilidade(AvailabilityResponse availabilityResponse) {
+        if (availabilityResponse == null) return "Não informado.";
 
         StringBuilder sb = new StringBuilder();
 
-        if (disponibilidade.modeloTrabalho() != null) {
-            sb.append(disponibilidade.modeloTrabalho().toString());
+        if (availabilityResponse.workModel() != null) {
+            sb.append(availabilityResponse.workModel().toString());
         }
 
-        if (disponibilidade.disponibilidadeInicio() != null) {
+        if (availabilityResponse.startAvailability() != null) {
             sb.append(" a partir de ")
-                    .append(disponibilidade.disponibilidadeInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    .append(availabilityResponse.startAvailability().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
 
         return sb.toString().trim();
-    }
-
-    @Transactional(readOnly = true)
-    public List<CurriculosDtoResponse> buscarCurriculos(){
-
-        User userAutenticado = usuarioUtils.me();
-
-        List<UserCurriculum> userCurricula = curriculoUsuarioRepository.findByUsuario(userAutenticado);
-
-        String area = userAutenticado.getArea().getNomeArea();
-
-        return userCurricula
-                .stream()
-                .map(curriculo -> {
-                    return  new CurriculosDtoResponse(area, curriculo.getCurriculo(), curriculo.getDataGeracao(), curriculo.getDataAtualizacao());
-                })
-                .toList();
     }
 }

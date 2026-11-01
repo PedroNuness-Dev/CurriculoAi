@@ -30,7 +30,7 @@ public class Certification {
     @Column(name = "finish_date")
     private LocalDate finishDate;
 
-    @Column(name = "certificate", columnDefinition = "bytea")
+    @Column(name = "certificate", columnDefinition = "BYTEA")
     private byte[] certificate;
 
     @Builder.Default

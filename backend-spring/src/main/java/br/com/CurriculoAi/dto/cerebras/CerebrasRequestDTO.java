@@ -1,6 +1,4 @@
-package br.com.CurriculoAi.dto.request;
-
-import br.com.CurriculoAi.dto.MessageDTO;
+package br.com.CurriculoAi.dto.cerebras;
 
 import java.util.List;
 

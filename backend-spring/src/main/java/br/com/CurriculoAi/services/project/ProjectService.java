@@ -5,8 +5,10 @@ import br.com.CurriculoAi.dto.response.ProjetoDtoResponse;
 import br.com.CurriculoAi.models.Project;
 import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.repositories.project.ProjectRepository;
+import br.com.CurriculoAi.services.auth.AuthService;
 import br.com.CurriculoAi.utils.services.UsuarioUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,21 +19,20 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ProjetoService {
+@Slf4j
+public class ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final UsuarioUtils usuarioUtils;
-
-    private static final Logger logger = LoggerFactory.getLogger(ProjetoService.class);
+    private final AuthService authService;
 
     @Transactional
     public List<ProjetoDtoResponse> registerProjects(List<ProjetoDtoRequest> projetosParaCadastro){
 
         if (projetosParaCadastro.isEmpty()) throw new IllegalArgumentException("Lista de projetos está vaiza");
 
-        logger.info("Inicinado cadastro de projetos do usuário");
+        log.info("Inicinado cadastro de projetos do usuário");
 
-        User user = usuarioUtils.me();
+        User user = authService.getUserByTokenAuthenticate();
 
         List<Project> projetosParaSalvamento = projetosParaCadastro
                 .stream()
@@ -40,11 +41,11 @@ public class ProjetoService {
                 })
                 .toList();
 
-        logger.warn("Salvando no banco de dados um total de: {}", projetosParaSalvamento.size());
+        log.warn("Salvando no banco de dados um total de: {}", projetosParaSalvamento.size());
 
         projectRepository.saveAll(projetosParaSalvamento);
 
-        logger.info("Cadastro de novos projetos realizado com sucesso");
+        log.info("Cadastro de novos projetos realizado com sucesso");
 
         return projetosParaSalvamento
                 .stream()

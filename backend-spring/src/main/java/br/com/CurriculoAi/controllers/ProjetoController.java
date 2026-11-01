@@ -2,7 +2,7 @@ package br.com.CurriculoAi.controllers;
 
 import br.com.CurriculoAi.dto.request.ProjetoDtoRequest;
 import br.com.CurriculoAi.dto.response.ProjetoDtoResponse;
-import br.com.CurriculoAi.services.project.ProjetoService;
+import br.com.CurriculoAi.services.project.ProjectService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +19,12 @@ import java.util.List;
 @Tag(name = "Projeto Controller", description = "Responsável pelas ações relacionadas aos projetos do usuário")
 public class ProjetoController {
 
-    private final ProjetoService projetoService;
+    private final ProjectService projectService;
 
     @PostMapping
     public ResponseEntity<List<ProjetoDtoResponse>> registerProjects(@RequestBody List<ProjetoDtoRequest> projetosParaCadastro){
 
-        List<ProjetoDtoResponse> projetosSalvos = projetoService.registerProjects(projetosParaCadastro);
+        List<ProjetoDtoResponse> projetosSalvos = projectService.registerProjects(projetosParaCadastro);
 
         return ResponseEntity.ok(projetosSalvos);
     }

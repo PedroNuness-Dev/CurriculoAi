@@ -1,0 +1,10 @@
+package br.com.CurriculoAi.repositories.institution;
+
+import br.com.CurriculoAi.models.Institution;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface InstitutionRepository extends JpaRepository<Institution, Long> {
+
+    Boolean existsByNameIgnoreCase(String name);
+    Boolean existsByNameIgnoreCaseAndInstitutionIdNot(String name, Long institutionId);
+}

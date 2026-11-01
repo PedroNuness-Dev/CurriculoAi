@@ -1,8 +1,7 @@
-package br.com.CurriculoAi.controllers;
+package br.com.CurriculoAi.controllers.cerebras;
 
 import br.com.CurriculoAi.services.cerebras.CerebrasService;
 import br.com.CurriculoAi.services.pdf.PdfService;
-import br.com.CurriculoAi.services.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class CerebrasController {
 
     private final CerebrasService cerebrasService;
     private final  PdfService pdfService;
-    private final UserService userService;
+
 
     @Operation(summary = "Gerar o `Curriculo` do usuário",
             description = "OBS: o usuário precisa estar `AUTENTICADO` com JWT")

@@ -1,87 +1,84 @@
 package br.com.CurriculoAi.services.certification;
 
-import br.com.CurriculoAi.dto.request.CertificacaoDtoRequest;
-import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.models.*;
+import br.com.CurriculoAi.dto.certification.CertificationRequest;
+import br.com.CurriculoAi.dto.certification.CertificationResponse;
 import br.com.CurriculoAi.exceptions.ListIsEmptyException;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
+import br.com.CurriculoAi.mapper.certification.CertificationMapper;
+import br.com.CurriculoAi.models.Certification;
+import br.com.CurriculoAi.models.Institution;
+import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.repositories.certification.CertificationRepository;
-import br.com.CurriculoAi.repositories.institution.InstitutionRepository;
-import br.com.CurriculoAi.repositories.TokenIdentificacaoUsurioRepository;
+import br.com.CurriculoAi.services.auth.AuthService;
+import br.com.CurriculoAi.services.institution.InstitutionService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class CertificacaoService {
 
     private final CertificationRepository certificationRepository;
-    private final TokenIdentificacaoUsurioRepository tokenIdentificacaoUsurioRepository;
-    private final InstitutionRepository institutionRepository;
-
-    private static final Logger logger = LoggerFactory.getLogger(CertificacaoService.class);
+    private final AuthService authService;
+    private final InstitutionService institutionService;
+    private final CertificationMapper certificationMapper;
 
     @Transactional
-    public UsuarioTokenIdentResponseDto cadastrarFormacoes(List<CertificacaoDtoRequest> certificacoes, String token){
+    public List<CertificationResponse> registerCertifications(List<CertificationRequest> certificationRequests){
 
-        logger.info("Iniando o cadastro de formações do usuário, quantidade de formações: {}", certificacoes.size());
+        if (certificationRequests.isEmpty()) throw new ListIsEmptyException("Lista de certificações não pode ser vazia");
 
-        if (certificacoes.isEmpty()) throw new ListIsEmptyException("Lista de certificações não pode ser vazia");
+        log.info("Iniando o cadastro de formações do usuário, quantidade de formações: {}", certificationRequests.size());
 
-        TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
-                .orElseThrow(() -> new ResourceNotFoundException("Token não encontrado"));
+        User user = authService.getUserByTokenAuthenticate();
 
-        User user = tokenIdentificacaoUsuario.getUsuario();
+        Map<Long, Institution> instituicoesPorId = getInstitutionsByCertificationsRequest(certificationRequests);
 
-        List<Long> idsInstituicoes = certificacoes
+        List<Certification> certificationsForSave = certificationRequests
                 .stream()
-                .map(CertificacaoDtoRequest::id_instituicao)
-                .distinct()
-                .toList();
+                .map(certificationRequest -> {
 
-        // Armazena todas as instituições que estão vindo para cadastro em um cache local, para não ir no banco desnecessáriamente
-        Map<Long, Institution> instituicoesPorId = institutionRepository.findAllById(idsInstituicoes)
-                .stream()
-                .collect(Collectors.toMap(Institution::getId, Function.identity()));
+                    Institution institution = Optional.ofNullable(instituicoesPorId.get(certificationRequest.institutionId()))
+                            .orElseThrow(() -> new ResourceNotFoundException("Instituição com id: "+certificationRequest.institutionId()+" não encontrada"));
 
-        List<Certification> certificacoesSalvas = certificacoes
-                .stream()
-                .map(certificacao -> {
+                    Boolean inProgress = certificationRequest.finishDate() == null;
 
-                    Institution institution = Optional.ofNullable(instituicoesPorId.get(certificacao.id_instituicao()))
-                            .orElseThrow(() -> new ResourceNotFoundException("Instituição com id: "+certificacao.id_instituicao()+" não encontrada"));
-
-                    boolean emAndamento = certificacao.dataConclusao() == null;
-
-                    Certification certificacaoNova =  new Certification(
-                            null,
-                            certificacao.nomeCertificacao(),
-                            institution,
-                            certificacao.dataConclusao(),
-                            certificacao.certificado(),
-                            emAndamento,
-                            user
-                    );
-
-                    certificacaoNova.estaEmAndamento();
-                    return certificacaoNova;
+                    return Certification.builder()
+                            .name(certificationRequest.name())
+                            .finishDate(certificationRequest.finishDate())
+                            .certificate(certificationRequest.certificate())
+                            .inProgress(inProgress)
+                            .institution(institution)
+                            .user(user)
+                            .build();
                 })
                 .toList();
 
-        certificationRepository.saveAll(certificacoesSalvas);
+        List<Certification> certificationsSaved = certificationRepository.saveAll(certificationsForSave);
 
-        logger.info("Certificações salvas com sucesso!");
+        log.info("Certificações salvas com sucesso!");
 
-        return new UsuarioTokenIdentResponseDto(tokenIdentificacaoUsuario.getId(), user.getNome(), tokenIdentificacaoUsuario.getToken());
+        return certificationsSaved
+                .stream()
+                .map(certificationMapper::toDto)
+                .toList();
+    }
+
+    public Map<Long, Institution> getInstitutionsByCertificationsRequest(List<CertificationRequest> certificationRequests){
+        Set<Long> institutionsIds = certificationRequests
+                .stream()
+                .map(CertificationRequest::institutionId)
+                .collect(Collectors.toSet());
+        return institutionService.findAllByIds(institutionsIds);
     }
 }

@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -84,5 +88,11 @@ public class InstitutionService {
     public Institution findInstitutionById(Long institutionId) {
         return institutionRepository.findById(institutionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Instituição com id: " + institutionId + " não encontrada"));
+    }
+
+    public Map<Long, Institution> findAllByIds(Set<Long> institutionsIds){
+        return institutionRepository.findAllById(institutionsIds)
+                .stream()
+                .collect(Collectors.toMap(Institution::getInstitutionId, Function.identity()));
     }
 }

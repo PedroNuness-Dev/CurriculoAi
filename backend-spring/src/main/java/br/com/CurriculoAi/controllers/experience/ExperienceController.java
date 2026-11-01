@@ -1,4 +1,4 @@
-package br.com.CurriculoAi.controllers;
+package br.com.CurriculoAi.controllers.experience;
 
 import br.com.CurriculoAi.dto.experience.ExperienceRequest;
 import br.com.CurriculoAi.dto.experience.ExperienceResponse;

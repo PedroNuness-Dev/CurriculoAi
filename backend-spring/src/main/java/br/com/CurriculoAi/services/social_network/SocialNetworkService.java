@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -84,5 +88,11 @@ public class SocialNetworkService {
     public SocialNetwork findSocialNetworkById(Long socialNetworkId) {
         return socialNetworkRepository.findById(socialNetworkId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rede social com id: " + socialNetworkId + " não encontrada"));
+    }
+
+    public Map<Long,SocialNetwork> findSocialNetworksByIds(Set<Long> socialNetworksIds){
+        return socialNetworkRepository.findAllById(socialNetworksIds)
+                .stream()
+                .collect(Collectors.toMap(SocialNetwork::getSocialNetworkId, Function.identity()));
     }
 }

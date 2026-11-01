@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -77,5 +81,11 @@ public class AreaService {
     public Area findAreaById(Long areaId) {
         return areaRepository.findById(areaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Área com id: "+areaId+" não encontrada para adição"));
+    }
+
+    public Map<Long, Area> findAllAreasByIds(Set<Long> areasIds){
+        return areaRepository.findAllById(areasIds)
+                .stream()
+                .collect(Collectors.toMap(Area::getAreaId, Function.identity()));
     }
 }

@@ -37,7 +37,7 @@ public class FormationService {
     @Transactional
     public List<FormationResponse> registerFormationsByUser(List<FormationRequest> formationRequests){
 
-        if (formationRequests.isEmpty()) throw new ListIsEmptyException("Lista de forações está vazia");
+        if (formationRequests.isEmpty()) throw new ListIsEmptyException("Lista de formações está vazia");
 
         log.info("Iniciando cadastro de formações do usuário, com o total de: {}", formationRequests.size());
 

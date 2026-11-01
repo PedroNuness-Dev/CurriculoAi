@@ -1,94 +1,105 @@
 package br.com.CurriculoAi.services.experience;
 
-import br.com.CurriculoAi.dto.request.ExperienciaDtoRequest;
-import br.com.CurriculoAi.dto.response.UsuarioTokenIdentResponseDto;
-import br.com.CurriculoAi.models.*;
+import br.com.CurriculoAi.dto.experience.ExperienceRequest;
+import br.com.CurriculoAi.dto.experience.ExperienceResponse;
+import br.com.CurriculoAi.exceptions.ListIsEmptyException;
 import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
-import br.com.CurriculoAi.repositories.area.AreaRepository;
-import br.com.CurriculoAi.repositories.enterprise.EnterpriseRepository;
+import br.com.CurriculoAi.mapper.experience.ExperienceMapper;
+import br.com.CurriculoAi.models.Area;
+import br.com.CurriculoAi.models.Enterprise;
+import br.com.CurriculoAi.models.Experience;
+import br.com.CurriculoAi.models.User;
 import br.com.CurriculoAi.repositories.experience.ExperienceRepository;
+import br.com.CurriculoAi.services.area.AreaService;
+import br.com.CurriculoAi.services.auth.AuthService;
+import br.com.CurriculoAi.services.enterprise.EnterpriseService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class ExperienciaService {
 
     private final ExperienceRepository experienceRepository;
-    private final AreaRepository areaRepository;
-    private final EnterpriseRepository enterpriseRepository;
-
-    private static final Logger logger = LoggerFactory.getLogger(ExperienciaService.class);
+    private final AreaService areaService;
+    private final EnterpriseService enterpriseService;
+    private final ExperienceMapper experienceMapper;
+    private final AuthService authService;
 
     @Transactional
-    public UsuarioTokenIdentResponseDto cadastrarExperiencias(List<ExperienciaDtoRequest> experiencias, String token){
+    public List<ExperienceResponse> registerExperiences(List<ExperienceRequest> experienceRequests){
 
-        logger.info("Iniciando cadastro de experiências do usuário, com um total de: {}", experiencias.size());
+        if (experienceRequests.isEmpty()) throw new ListIsEmptyException("Lista de experiências não pode ser vazia");
 
-        TokenIdentificacaoUsuario tokenIdentificacaoUsuario = tokenIdentificacaoUsurioRepository.findByToken(token)
-                .orElseThrow(() -> new ResourceNotFoundException("Token não encotrado"));
+        log.info("Iniciando cadastro de experiências do usuário, com um total de: {}", experienceRequests.size());
 
-        User user = tokenIdentificacaoUsuario.getUsuario();
+        User user = authService.getUserByTokenAuthenticate();
 
-        List<Long> idsAreas = experiencias
+        Map<Long, Area> areasMap = getAreasByExperiencesRequest(experienceRequests);
+
+        Map<Long, Enterprise> enterprisesMap = getEnterprisesByExperiencesRequest(experienceRequests);
+
+        List<Experience> experiencesForSave = experienceRequests
                 .stream()
-                .map(ExperienciaDtoRequest::id_area)
-                .distinct()
-                .toList();
+                .map(experienceRequest -> {
 
-        List<Long> idsEmpresas = experiencias
-                .stream()
-                .map(ExperienciaDtoRequest::id_empresa)
-                .distinct()
-                .toList();
+                    Area area = Optional.ofNullable(areasMap.get(experienceRequest.areaId()))
+                            .orElseThrow(() -> new ResourceNotFoundException("Área com id: "+experienceRequest.areaId()+" não encontrada"));
 
-        Map<Long, Area> areasPorId = areaRepository.findAllById(idsAreas)
-                .stream()
-                .collect(Collectors.toMap(Area::getId, Function.identity()));
+                    Enterprise enterprise = Optional.ofNullable(enterprisesMap.get(experienceRequest.enterpriseId()))
+                            .orElseThrow(() -> new ResourceNotFoundException("Empresa com id: "+experienceRequest.enterpriseId()+" não encontrada"));
 
-        Map<Long, Enterprise> empresasPorId = enterpriseRepository.findAllById(idsEmpresas)
-                .stream()
-                .collect(Collectors.toMap(Enterprise::getId, Function.identity()));
+                    Boolean workCurrent = experienceRequest.finishDate() == null;
 
-        List<Experience> experienciasSalvas = experiencias
-                .stream()
-                .map(experiencia -> {
-
-                    Area area = Optional.ofNullable(areasPorId.get(experiencia.id_area()))
-                            .orElseThrow(() -> new ResourceNotFoundException("Área com id"+experiencia.id_area()+" não encontrada"));
-
-                    Enterprise enterprise = Optional.ofNullable(empresasPorId.get(experiencia.id_empresa()))
-                            .orElseThrow(() -> new ResourceNotFoundException("Empresa com id"+experiencia.id_empresa()+" não encontrada"));
-
-                    return new Experience(
-                            null,
-                            area,
-                            enterprise,
-                            experiencia.dataInicio(),
-                            experiencia.cargo(),
-                            experiencia.dataFim(),
-                            experiencia.titulo(),
-                            experiencia.descriacao(),
-                            experiencia.trabalhoAtual(),
-                            user
-                    );
+                    return Experience.builder()
+                            .area(area)
+                            .enterprise(enterprise)
+                            .user(user)
+                            .title(experienceRequest.title())
+                            .description(experienceRequest.description())
+                            .position(experienceRequest.position())
+                            .startDate(experienceRequest.startDate())
+                            .finishDate(experienceRequest.finishDate())
+                            .workCurrent(workCurrent)
+                            .build();
                 })
                 .toList();
 
-        experienceRepository.saveAll(experienciasSalvas);
+        List<Experience> experiencesSaved = experienceRepository.saveAll(experiencesForSave);
 
-        logger.info("Cadastro de experiências realizado com sucesso!");
+        log.info("Cadastro de experiências realizado com sucesso!");
 
-        return new UsuarioTokenIdentResponseDto(tokenIdentificacaoUsuario.getId(), user.getNome(), token);
+        return experiencesSaved
+                .stream()
+                .map(experienceMapper::toDto)
+                .toList();
+    }
+
+    private Map<Long,Area> getAreasByExperiencesRequest(List<ExperienceRequest> experienceRequests){
+        Set<Long> areasIds = experienceRequests
+                .stream()
+                .map(ExperienceRequest::areaId)
+                .collect(Collectors.toSet());
+
+        return areaService.findAllAreasByIds(areasIds);
+    }
+
+    private Map<Long, Enterprise> getEnterprisesByExperiencesRequest(List<ExperienceRequest> experienceRequests){
+        Set<Long> enterprisesIds = experienceRequests
+                .stream()
+                .map(ExperienceRequest::enterpriseId)
+                .collect(Collectors.toSet());
+
+        return enterpriseService.findAllEnterprisesByIds(enterprisesIds);
     }
 }

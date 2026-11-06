@@ -3,6 +3,7 @@ package br.com.CurriculoAi.mapper.user;
 import br.com.CurriculoAi.dto.user.UserFullContent;
 import br.com.CurriculoAi.dto.user.UserResponse;
 import br.com.CurriculoAi.mapper.ability.AbilityMapper;
+import br.com.CurriculoAi.mapper.address.AddressMapper;
 import br.com.CurriculoAi.mapper.area.AreaMapper;
 import br.com.CurriculoAi.mapper.availability.AvailabilityMapper;
 import br.com.CurriculoAi.mapper.certification.CertificationMapper;
@@ -23,7 +24,8 @@ import org.mapstruct.Mapping;
         AreaMapper.class,
         ProjectMapper.class,
         SocialNetworkMapper.class,
-        AbilityMapper.class
+        AbilityMapper.class,
+        AddressMapper.class
 })
 public interface UserMapper{
 
@@ -42,5 +44,6 @@ public interface UserMapper{
     @Mapping(target = "projects", source = "projects")
     @Mapping(target = "socialNetworks", source = "socialNetworks")
     @Mapping(target = "abilities", source = "abilities")
+    @Mapping(target = "address", source = "address")
     UserFullContent toFullContentDto(User user);
 }

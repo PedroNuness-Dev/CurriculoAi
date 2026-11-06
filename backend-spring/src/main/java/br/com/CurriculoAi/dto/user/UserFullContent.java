@@ -1,6 +1,7 @@
 package br.com.CurriculoAi.dto.user;
 
 import br.com.CurriculoAi.dto.ability.AbilityResponse;
+import br.com.CurriculoAi.dto.address.AddressEntityResponse;
 import br.com.CurriculoAi.dto.area.AreaResponse;
 import br.com.CurriculoAi.dto.availability.AvailabilityResponse;
 import br.com.CurriculoAi.dto.certification.CertificationResponse;
@@ -13,6 +14,7 @@ import java.util.List;
 public record UserFullContent(
         UserResponse user,
         AreaResponse area,
+        AddressEntityResponse address,
         AvailabilityResponse availability,
         List<FormationResponse> formations,
         List<ExperienceResponse> experiences,

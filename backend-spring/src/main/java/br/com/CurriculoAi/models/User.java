@@ -38,6 +38,10 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Availability availability;
 
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Formation> formations = new ArrayList<>();

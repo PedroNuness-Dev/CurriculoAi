@@ -1,5 +1,6 @@
 package br.com.CurriculoAi.models;
 
+import br.com.CurriculoAi.enums.careergoal.GoalType;
 import br.com.CurriculoAi.enums.evaluation.EvaluationStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,13 @@ public class UserEvaluation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_id")
     private Area area;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "goal_type", length = 50)
+    private GoalType goalType;
+
+    @Column(name = "goal_fit_score", precision = 5, scale = 2)
+    private BigDecimal goalFitScore;
 
     @Column(name = "overall_score", nullable = false, precision = 5, scale = 2)
     private BigDecimal overallScore;

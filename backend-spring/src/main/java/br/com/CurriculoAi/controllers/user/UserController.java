@@ -28,7 +28,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
-    @GetMapping("/full")
+    @Operation(summary = "Buscar o perfil completo do usuário autenticado")
+    @GetMapping("/me/profile")
     public ResponseEntity<UserFullContent> getUserFullContentData(){
 
         UserFullContent userFullContent = userService.getUserFullContentData();

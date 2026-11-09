@@ -36,7 +36,7 @@ public class CurriculumService {
 
         Curriculum curriculum = Curriculum.builder()
                 .title(curriculumRequest.title())
-                .curriculum(curriculumRequest.curriculum())
+                .description(curriculumRequest.description())
                 .user(user)
                 .build();
 

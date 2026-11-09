@@ -26,12 +26,9 @@ public class CareerGoal {
     @Column(name = "goal_type", nullable = false, length = 50)
     private GoalType goalType;
 
-    @Column(name = "target_position", length = 150)
-    private String targetPosition;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_area_id")
-    private Area targetArea;
+    @JoinColumn(name = "area_id")
+    private Area area;
 
     @Column(name = "description", length = 1000)
     private String description;

@@ -4,6 +4,7 @@ import br.com.CurriculoAi.dto.ability.AbilityResponse;
 import br.com.CurriculoAi.dto.address.AddressEntityResponse;
 import br.com.CurriculoAi.dto.area.AreaResponse;
 import br.com.CurriculoAi.dto.availability.AvailabilityResponse;
+import br.com.CurriculoAi.dto.career_goal.CareerGoalResponse;
 import br.com.CurriculoAi.dto.certification.CertificationResponse;
 import br.com.CurriculoAi.dto.experience.ExperienceResponse;
 import br.com.CurriculoAi.dto.formation.FormationResponse;
@@ -15,6 +16,7 @@ public record UserFullContent(
         UserResponse user,
         AreaResponse area,
         AddressEntityResponse address,
+        CareerGoalResponse careerGoal,
         AvailabilityResponse availability,
         List<FormationResponse> formations,
         List<ExperienceResponse> experiences,

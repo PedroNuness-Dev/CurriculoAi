@@ -42,6 +42,9 @@ public class User {
     @JoinColumn(name = "address_id")
     private Address address;
 
+    @OneToOne(mappedBy = "user")
+    private CareerGoal careerGoal;
+
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Formation> formations = new ArrayList<>();

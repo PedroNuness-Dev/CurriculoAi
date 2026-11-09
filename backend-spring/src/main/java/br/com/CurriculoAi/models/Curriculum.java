@@ -24,8 +24,8 @@ public class Curriculum {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "curriculum", nullable = false, columnDefinition = "BYTEA")
-    private byte[] curriculum;
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp

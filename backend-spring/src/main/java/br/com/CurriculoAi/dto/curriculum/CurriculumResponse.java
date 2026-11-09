@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public record CurriculumResponse(
         Long curriculumId,
         String title,
-        byte[] curriculum,
+        String description,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

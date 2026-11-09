@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 public record CurriculumRequest(
         @NotBlank
         String title,
-        @NotNull
-        byte[] curriculum
+        @NotBlank
+        String description
 ) {
 }

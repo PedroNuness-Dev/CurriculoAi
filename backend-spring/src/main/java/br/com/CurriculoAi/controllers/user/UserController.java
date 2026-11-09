@@ -6,6 +6,7 @@ import br.com.CurriculoAi.dto.user.UserResponse;
 import br.com.CurriculoAi.services.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UserController {
 
     @Operation(summary = "Cadastrar um usuário")
     @PostMapping
-    public ResponseEntity<UserResponse> registerUserWithRoleCandidate(@RequestBody UserRegisterRequest userRegisterRequest){
+    public ResponseEntity<UserResponse> registerUserWithRoleCandidate(@RequestBody @Valid UserRegisterRequest userRegisterRequest){
 
         UserResponse userResponse = userService.registerUserWithRoleTypeCandidate(userRegisterRequest);
 

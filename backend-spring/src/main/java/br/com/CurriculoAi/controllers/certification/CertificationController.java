@@ -2,7 +2,7 @@ package br.com.CurriculoAi.controllers.certification;
 
 import br.com.CurriculoAi.dto.certification.CertificationRequest;
 import br.com.CurriculoAi.dto.certification.CertificationResponse;
-import br.com.CurriculoAi.services.certification.CertificacaoService;
+import br.com.CurriculoAi.services.certification.CertificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,14 +24,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CertificationController {
 
-    private final CertificacaoService certificacaoService;
+    private final CertificationService certificationService;
 
     @Operation(summary = "Resgistrar certificações do usuário")
     @PostMapping
     public ResponseEntity<List<CertificationResponse>> registerCertifications(
             @RequestBody  List<@Valid CertificationRequest> certificationRequests){
 
-        List<CertificationResponse> certificationResponses = certificacaoService.registerCertifications(certificationRequests);
+        List<CertificationResponse> certificationResponses = certificationService.registerCertifications(certificationRequests);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(certificationResponses);
     }

@@ -8,7 +8,6 @@ public record CertificationResponse(
         Long certificationId,
         String name,
         LocalDate finishDate,
-        byte[] certificate,
         Boolean inProgress,
         InstitutionResponse institution
 ) {

@@ -10,8 +10,6 @@ public record CertificationRequest(
         String name,
         @NotNull
         Long institutionId,
-        LocalDate finishDate,
-        @NotNull
-        byte[] certificate
+        LocalDate finishDate
 ) {
 }

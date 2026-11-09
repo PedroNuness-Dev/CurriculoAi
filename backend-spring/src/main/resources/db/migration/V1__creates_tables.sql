@@ -121,7 +121,6 @@ CREATE TABLE certification (
                                name VARCHAR(150),
                                finish_date DATE,
                                in_progress BOOLEAN DEFAULT FALSE,
-                               certificate BYTEA,
                                user_id BIGINT NOT NULL,
                                institution_id BIGINT NOT NULL,
                                CONSTRAINT fk_certification_user FOREIGN KEY (user_id) REFERENCES users(user_id)

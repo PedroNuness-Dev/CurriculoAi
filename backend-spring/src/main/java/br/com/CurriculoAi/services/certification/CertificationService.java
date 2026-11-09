@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class CertificacaoService {
+public class CertificationService {
 
     private final CertificationRepository certificationRepository;
     private final AuthService authService;
@@ -56,7 +56,6 @@ public class CertificacaoService {
                     return Certification.builder()
                             .name(certificationRequest.name())
                             .finishDate(certificationRequest.finishDate())
-                            .certificate(certificationRequest.certificate())
                             .inProgress(inProgress)
                             .institution(institution)
                             .user(user)

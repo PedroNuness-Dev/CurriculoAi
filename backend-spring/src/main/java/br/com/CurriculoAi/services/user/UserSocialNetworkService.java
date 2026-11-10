@@ -46,8 +46,8 @@ public class UserSocialNetworkService {
         List<UserSocialNetwork> userSocialNetworksForSave = userSocialNetworkRequests
                 .stream()
                 .map(userSocialNetworkRequest -> {
-                    SocialNetwork socialNetwork = Optional.ofNullable(socialNetworksMap.get(userSocialNetworkRequest.socialnetworkId()))
-                            .orElseThrow(() -> new ResourceNotFoundException("Rede social com id: "+userSocialNetworkRequest.socialnetworkId()+" não encontrada"));
+                    SocialNetwork socialNetwork = Optional.ofNullable(socialNetworksMap.get(userSocialNetworkRequest.socialNetworkId()))
+                            .orElseThrow(() -> new ResourceNotFoundException("Rede social com id: "+userSocialNetworkRequest.socialNetworkId()+" não encontrada"));
 
                     return UserSocialNetwork.builder()
                             .link(userSocialNetworkRequest.link())
@@ -68,7 +68,7 @@ public class UserSocialNetworkService {
     private Map<Long, SocialNetwork> findSocialNetworksByUserSocialNetworksRequest(List<UserSocialNetworkRequest> userSocialNetworkRequests){
         Set<Long> socialNetworksIds = userSocialNetworkRequests
                 .stream()
-                .map(UserSocialNetworkRequest::socialnetworkId)
+                .map(UserSocialNetworkRequest::socialNetworkId)
                 .collect(Collectors.toSet());
 
         return socialNetworkService.findSocialNetworksByIds(socialNetworksIds);

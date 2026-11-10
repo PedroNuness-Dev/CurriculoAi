@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record UserSocialNetworkRequest(
-        @NotBlank
-        Long socialnetworkId,
         @NotNull
+        Long socialNetworkId,
+        @NotBlank
         String link
 ) {
 }

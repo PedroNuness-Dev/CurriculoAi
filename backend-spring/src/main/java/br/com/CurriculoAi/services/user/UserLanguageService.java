@@ -66,6 +66,18 @@ public class UserLanguageService {
                 .toList();
     }
 
+    public List<UserLanguageResponse> getUserLanguagesOfUser(){
+
+        User user = authService.getUserByTokenAuthenticate();
+
+        List<UserLanguage> userLanguages = userLanguageRepository.findAllUserLanguageOfUser(user);
+
+        return userLanguages
+                .stream()
+                .map(userLanguageMapper::toDto)
+                .toList();
+    }
+
     private Map<Long, Language> getLanguagesByUserLanguagesRequest(List<UserLanguageRequest> userLanguageRequests){
         Set<Long> languagesIds = userLanguageRequests
                 .stream()

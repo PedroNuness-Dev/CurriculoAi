@@ -57,6 +57,23 @@ public class UserAbilityService {
         );
     }
 
+    public UserAbilityResponse getAbilitiesOfUser(){
+
+        User user = authService.getUserByTokenAuthenticate();
+
+        List<Ability> abilities = user.getAbilities();
+
+        return new UserAbilityResponse(
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                abilities
+                        .stream()
+                        .map(abilityMapper::toDto)
+                        .toList()
+        );
+    }
+
     private Map<Long, Ability> getAbilitiesByIds(List<Long> abilitiesIds){
 
         Set<Long> abilitiesIdsUniques = new HashSet<>(abilitiesIds);

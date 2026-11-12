@@ -16,7 +16,7 @@ public interface FormationRepository extends JpaRepository<Formation, Long> {
 
     @Query("""
     SELECT f FROM Formation f
-    WHERE f.user.userId = :userid
+    WHERE f.user.userId = :userId
     ORDER BY f.formationId
 """)
     List<Formation> findAllFormationsUser(@Param("userId") Long userId);

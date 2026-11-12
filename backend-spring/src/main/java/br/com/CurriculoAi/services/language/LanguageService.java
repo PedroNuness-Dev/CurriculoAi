@@ -32,12 +32,14 @@ public class LanguageService {
 
         log.info("Iniciando o processo de criação de idioma");
 
-        if (languageRepository.existsByNameIgnoreCase(languageRequest.name())) {
+        LanguageEnum languageName = LanguageEnum.from(languageRequest.name());
+
+        if (languageRepository.existsByName(languageName)) {
             throw new IllegalArgumentException("Já existe um idioma com esse nome");
         }
 
         Language newLanguage = Language.builder()
-                .name(LanguageEnum.from(languageRequest.name()))
+                .name(languageName)
                 .build();
 
         Language savedLanguage = languageRepository.save(newLanguage);
@@ -72,11 +74,13 @@ public class LanguageService {
 
         Language language = findLanguageById(languageId);
 
-        if (languageRepository.existsByNameIgnoreCaseAndLanguageIdNot(languageRequest.name(), languageId)) {
+        LanguageEnum languageName = LanguageEnum.from(languageRequest.name());
+
+        if (languageRepository.existsByNameAndLanguageIdNot(languageName, languageId)) {
             throw new IllegalArgumentException("Já existe um idioma com esse nome");
         }
 
-        language.setName(LanguageEnum.from(languageRequest.name()));
+        language.setName(languageName);
 
         Language updatedLanguage = languageRepository.save(language);
 

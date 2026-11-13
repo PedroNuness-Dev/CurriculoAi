@@ -33,6 +33,7 @@ public class UserSocialNetworkService {
     private final SocialNetworkService socialNetworkService;
     private final UserSocialNetworkMapper userSocialNetworkMapper;
 
+    @Transactional
     public List<UserSocialNetworkResponse> registerUserSocialNetworks(List<UserSocialNetworkRequest> userSocialNetworkRequests){
 
         if (userSocialNetworkRequests.isEmpty()) throw new ListIsEmptyException("Lista de redes sociais para atribuir ao usuário não pode ser vazia");

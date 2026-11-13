@@ -34,6 +34,7 @@ public class UserLanguageService {
     private final LanguageService languageService;
     private final UserLanguageMapper userLanguageMapper;
 
+    @Transactional
     public List<UserLanguageResponse> registerLanguages(List<UserLanguageRequest> userLanguageRequests){
 
         if (userLanguageRequests.isEmpty()) throw new ListIsEmptyException("Lista de idiomas para atribuir ao usuário não pode ser vazia");

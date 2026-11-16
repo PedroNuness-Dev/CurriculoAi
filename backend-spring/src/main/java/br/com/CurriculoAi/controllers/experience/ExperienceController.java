@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,5 +30,43 @@ public class ExperienceController {
         List<ExperienceResponse> experienceResponses = experienciaService.registerExperiences(experienceRequests);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(experienceResponses);
+    }
+
+    @Operation(summary = "Listar as experiências do usuário autenticado")
+    @GetMapping
+    public ResponseEntity<List<ExperienceResponse>> findAllExperiencesOfUser(){
+
+        List<ExperienceResponse> experienceResponses = experienciaService.findAllExperiencesOfUser();
+
+        return ResponseEntity.ok(experienceResponses);
+    }
+
+    @Operation(summary = "Buscar uma experiência do usuário autenticado pelo id")
+    @GetMapping("/{experienceId}")
+    public ResponseEntity<ExperienceResponse> getExperienceById(@PathVariable Long experienceId){
+
+        ExperienceResponse experienceResponse = experienciaService.getExperienceById(experienceId);
+
+        return ResponseEntity.ok(experienceResponse);
+    }
+
+    @Operation(summary = "Atualizar uma experiência do usuário autenticado")
+    @PutMapping("/{experienceId}")
+    public ResponseEntity<ExperienceResponse> updateExperience(
+            @PathVariable Long experienceId,
+            @RequestBody @Valid ExperienceRequest experienceRequest){
+
+        ExperienceResponse experienceResponse = experienciaService.updateExperience(experienceId, experienceRequest);
+
+        return ResponseEntity.ok(experienceResponse);
+    }
+
+    @Operation(summary = "Remover uma experiência do usuário autenticado")
+    @DeleteMapping("/{experienceId}")
+    public ResponseEntity<Void> deleteExperience(@PathVariable Long experienceId){
+
+        experienciaService.deleteExperience(experienceId);
+
+        return ResponseEntity.noContent().build();
     }
 }

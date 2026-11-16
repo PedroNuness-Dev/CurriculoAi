@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserLanguageRepository extends JpaRepository<UserLanguage, Long> {
@@ -17,4 +18,6 @@ public interface UserLanguageRepository extends JpaRepository<UserLanguage, Long
     WHERE ul.user = :user
 """)
     List<UserLanguage> findAllUserLanguageOfUser(@Param("user") User user);
+
+    Optional<UserLanguage> findByUserLanguageIdAndUser_UserId(Long userLanguageId, Long userId);
 }

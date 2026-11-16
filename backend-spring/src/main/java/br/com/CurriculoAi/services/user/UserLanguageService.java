@@ -79,6 +79,53 @@ public class UserLanguageService {
                 .toList();
     }
 
+    public UserLanguageResponse getUserLanguageById(Long userLanguageId){
+
+        UserLanguage userLanguage = findUserLanguageOfAuthenticatedUser(userLanguageId);
+
+        return userLanguageMapper.toDto(userLanguage);
+    }
+
+    @Transactional
+    public UserLanguageResponse updateUserLanguage(Long userLanguageId, UserLanguageRequest userLanguageRequest){
+
+        log.info("Iniciando atualização do idioma do usuário com id [{}]", userLanguageId);
+
+        UserLanguage userLanguage = findUserLanguageOfAuthenticatedUser(userLanguageId);
+
+        Language language = languageService.findLanguageById(userLanguageRequest.languageId());
+
+        userLanguage.setLanguage(language);
+        userLanguage.setLevel(LanguageLevel.from(userLanguageRequest.languageLevel()));
+
+        UserLanguage updatedUserLanguage = userLanguageRepository.save(userLanguage);
+
+        log.info("Idioma do usuário com id [{}] atualizado com sucesso", userLanguageId);
+
+        return userLanguageMapper.toDto(updatedUserLanguage);
+    }
+
+    @Transactional
+    public void deleteUserLanguage(Long userLanguageId){
+
+        log.info("Iniciando remoção do idioma do usuário com id [{}]", userLanguageId);
+
+        UserLanguage userLanguage = findUserLanguageOfAuthenticatedUser(userLanguageId);
+
+        userLanguageRepository.delete(userLanguage);
+
+        log.info("Idioma do usuário com id [{}] removido com sucesso", userLanguageId);
+    }
+
+    // Busca já filtrando pelo usuário autenticado: se o idioma for de outro usuário, retorna 404
+    private UserLanguage findUserLanguageOfAuthenticatedUser(Long userLanguageId){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return userLanguageRepository.findByUserLanguageIdAndUser_UserId(userLanguageId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Idioma do usuário com id: "+userLanguageId+" não encontrado"));
+    }
+
     private Map<Long, Language> getLanguagesByUserLanguagesRequest(List<UserLanguageRequest> userLanguageRequests){
         Set<Long> languagesIds = userLanguageRequests
                 .stream()

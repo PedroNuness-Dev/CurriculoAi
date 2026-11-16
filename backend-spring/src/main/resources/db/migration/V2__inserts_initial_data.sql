@@ -69,6 +69,7 @@ INSERT INTO institution (name) VALUES ('Outra');
 -- Role
 INSERT INTO role (type) VALUES ('ROLE_CANDIDATO');
 INSERT INTO role (type) VALUES ('ROLE_RECRUTADOR');
+INSERT INTO role (type) VALUES ('ROLE_ADMIN');
 
 -- Language
 INSERT INTO language (name) VALUES ('PORTUGUES');

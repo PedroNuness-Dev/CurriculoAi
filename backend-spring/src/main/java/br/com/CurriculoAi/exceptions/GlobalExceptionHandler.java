@@ -144,6 +144,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    // TODO(Pedro): AuthorizationDeniedException (negada pelo @PreAuthorize) e AuthenticationException
+    //  (ex.: BadCredentialsException no login) são lançadas dentro do controller e caem neste handler,
+    //  virando 500. O contrato documentado no Swagger é 401/403: decidir onde e como traduzir essas exceções.
     /**
      * Tratamento genérico para exceções não capturadas.
      */

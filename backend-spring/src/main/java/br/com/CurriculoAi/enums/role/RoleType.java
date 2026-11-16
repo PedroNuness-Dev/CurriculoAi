@@ -3,7 +3,8 @@ package br.com.CurriculoAi.enums.role;
 public enum RoleType {
 
     ROLE_CANDIDATO("ROLE_CANDIDATO"),
-    ROLE_RECRUTADOR("ROLE_RECRUTADOR");
+    ROLE_RECRUTADOR("ROLE_RECRUTADOR"),
+    ROLE_ADMIN("ROLE_ADMIN");
 
     private final String name;
 

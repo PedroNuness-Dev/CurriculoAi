@@ -4,24 +4,40 @@ import br.com.CurriculoAi.dto.institution.InstitutionRequest;
 import br.com.CurriculoAi.dto.institution.InstitutionResponse;
 import br.com.CurriculoAi.services.institution.InstitutionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static br.com.CurriculoAi.config.OpenApiResponseRefs.*;
+
 @RestController
+@Tag(name = "Catálogo - Instituições", description = "Instituições de ensino e certificadoras disponíveis para vincular às certificações. Leitura liberada para usuários autenticados; escrita restrita ao perfil ADMIN.")
 @RequestMapping("/api/institutions")
-@Tag(name = "Instituição Controller", description = "Responsável pelas ações relacionadas as instituições do sistema")
 @RequiredArgsConstructor
 public class InstitutionController {
 
     private final InstitutionService institutionService;
 
-    @Operation(summary = "Cadastrar uma instituição")
+    @Operation(
+            summary = "Cadastrar uma instituição",
+            description = "Cadastra uma nova instituição no catálogo da aplicação. Requer o perfil ADMIN. Retorna 400 se já existir uma instituição com o mesmo nome."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Instituição cadastrada com sucesso"),
+            @ApiResponse(responseCode = "400", ref = BAD_REQUEST),
+            @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
+            @ApiResponse(responseCode = "403", ref = FORBIDDEN)
+    })
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<InstitutionResponse> createInstitution(
             @Valid @RequestBody InstitutionRequest institutionRequest) {
@@ -31,7 +47,15 @@ public class InstitutionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(institutionResponse);
     }
 
-    @Operation(summary = "Listar todas as instituições")
+    @Operation(
+            summary = "Listar instituições",
+            description = "Retorna todas as instituições cadastradas no catálogo."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de instituições retornada com sucesso"),
+            @ApiResponse(responseCode = "401", ref = UNAUTHORIZED)
+    })
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<List<InstitutionResponse>> findAllInstitutions() {
 
@@ -40,18 +64,38 @@ public class InstitutionController {
         return ResponseEntity.ok(institutions);
     }
 
-    @Operation(summary = "Buscar uma instituição pelo id")
+    @Operation(
+            summary = "Buscar instituição por id",
+            description = "Retorna a instituição correspondente ao id informado."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Instituição encontrada"),
+            @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
+            @ApiResponse(responseCode = "404", ref = NOT_FOUND)
+    })
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{institutionId}")
-    public ResponseEntity<InstitutionResponse> getInstitutionById(@PathVariable Long institutionId) {
+    public ResponseEntity<InstitutionResponse> getInstitutionById(@Parameter(description = "Id da instituição") @PathVariable Long institutionId) {
 
         InstitutionResponse institutionResponse = institutionService.getInstitutionById(institutionId);
 
         return ResponseEntity.ok(institutionResponse);
     }
 
-    @Operation(summary = "Atualizar uma instituição")
+    @Operation(
+            summary = "Atualizar uma instituição",
+            description = "Atualiza os dados de uma instituição do catálogo. Requer o perfil ADMIN."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Instituição atualizada com sucesso"),
+            @ApiResponse(responseCode = "400", ref = BAD_REQUEST),
+            @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
+            @ApiResponse(responseCode = "403", ref = FORBIDDEN),
+            @ApiResponse(responseCode = "404", ref = NOT_FOUND)
+    })
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{institutionId}")
-    public ResponseEntity<InstitutionResponse> updateInstitution(@PathVariable Long institutionId,
+    public ResponseEntity<InstitutionResponse> updateInstitution(@Parameter(description = "Id da instituição") @PathVariable Long institutionId,
                                                                  @Valid @RequestBody InstitutionRequest institutionRequest) {
 
         InstitutionResponse institutionResponse = institutionService.updateInstitution(institutionId, institutionRequest);

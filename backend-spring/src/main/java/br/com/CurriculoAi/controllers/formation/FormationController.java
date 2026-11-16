@@ -50,4 +50,24 @@ public class FormationController {
 
         return ResponseEntity.ok(formationResponse);
     }
+
+    @Operation(summary = "Atualizar uma formação do usuário autenticado")
+    @PutMapping("/{formationId}")
+    public ResponseEntity<FormationResponse> updateFormation(
+            @PathVariable Long formationId,
+            @RequestBody @Valid FormationRequest formationRequest) {
+
+        FormationResponse formationResponse = formationService.updateFormation(formationId, formationRequest);
+
+        return ResponseEntity.ok(formationResponse);
+    }
+
+    @Operation(summary = "Remover uma formação do usuário autenticado")
+    @DeleteMapping("/{formationId}")
+    public ResponseEntity<Void> deleteFormation(@PathVariable Long formationId) {
+
+        formationService.deleteFormation(formationId);
+
+        return ResponseEntity.noContent().build();
+    }
 }

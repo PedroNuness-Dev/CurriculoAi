@@ -4,6 +4,9 @@ import br.com.CurriculoAi.dto.user.UserRegisterRequest;
 import br.com.CurriculoAi.dto.user.UserResponse;
 import br.com.CurriculoAi.enums.role.RoleType;
 import br.com.CurriculoAi.models.User;
+import br.com.CurriculoAi.mapper.user.UserMapper;
+import org.mapstruct.factory.Mappers;
+import org.mockito.Spy;
 import br.com.CurriculoAi.repositories.user.UserRepository;
 import br.com.CurriculoAi.services.role.RoleService;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +38,9 @@ class UserServiceTest {
 
     @Mock
     private RoleService roleService;
+
+    @Spy
+    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @InjectMocks
     private UserService userService;

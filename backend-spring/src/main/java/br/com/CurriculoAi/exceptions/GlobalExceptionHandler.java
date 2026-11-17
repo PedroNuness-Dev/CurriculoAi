@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(org.springframework.web.ErrorResponseException.class)
+    public ResponseEntity<ErrorResponse> handleHttpError(org.springframework.web.ErrorResponseException ex,
+                                                         HttpServletRequest request) {
+        var status = ex.getStatusCode();
+        return ResponseEntity.status(status).body(new ErrorResponse(status.value(), ex.getBody().getDetail(), request));
+    }
+
     /**
      * Tratamento para ResourceNotFoundException (recurso não encontrado).
      */

@@ -102,4 +102,69 @@ public class ExperienciaService {
 
         return enterpriseService.findAllEnterprisesByIds(enterprisesIds);
     }
+
+
+    public List<ExperienceResponse> findAllExperiencesOfUser(){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return experienceRepository.findAllByUser_UserIdOrderByExperienceIdAsc(userId)
+                .stream()
+                .map(experienceMapper::toDto)
+                .toList();
+    }
+
+    public ExperienceResponse getExperienceById(Long experienceId){
+
+        Experience experience = findExperienceOfAuthenticatedUser(experienceId);
+
+        return experienceMapper.toDto(experience);
+    }
+
+    @Transactional
+    public ExperienceResponse updateExperience(Long experienceId, ExperienceRequest experienceRequest){
+
+        log.info("Iniciando atualização da experiência com id [{}]", experienceId);
+
+        Experience experience = findExperienceOfAuthenticatedUser(experienceId);
+
+        Area area = areaService.findAreaById(experienceRequest.areaId());
+        Enterprise enterprise = enterpriseService.findEnterpriseById(experienceRequest.enterpriseId());
+
+        experience.setArea(area);
+        experience.setEnterprise(enterprise);
+        experience.setTitle(experienceRequest.title());
+        experience.setDescription(experienceRequest.description());
+        experience.setPosition(experienceRequest.position());
+        experience.setStartDate(experienceRequest.startDate());
+        experience.setFinishDate(experienceRequest.finishDate());
+        experience.setWorkCurrent(experienceRequest.finishDate() == null);
+
+        Experience updatedExperience = experienceRepository.save(experience);
+
+        log.info("Experiência com id [{}] atualizada com sucesso", experienceId);
+
+        return experienceMapper.toDto(updatedExperience);
+    }
+
+    @Transactional
+    public void deleteExperience(Long experienceId){
+
+        log.info("Iniciando remoção da experiência com id [{}]", experienceId);
+
+        Experience experience = findExperienceOfAuthenticatedUser(experienceId);
+
+        experienceRepository.delete(experience);
+
+        log.info("Experiência com id [{}] removida com sucesso", experienceId);
+    }
+
+    // Busca já filtrando pelo usuário autenticado: se a experiência for de outro usuário, retorna 404
+    private Experience findExperienceOfAuthenticatedUser(Long experienceId){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return experienceRepository.findByExperienceIdAndUser_UserId(experienceId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Experiência com id: "+experienceId+" não encontrada"));
+    }
 }

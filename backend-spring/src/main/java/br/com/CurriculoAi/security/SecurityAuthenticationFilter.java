@@ -5,10 +5,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,6 +18,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
@@ -24,23 +27,28 @@ public class SecurityAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String tokenJWT = decodeRequest(request);
+        String token = decodeRequest(request);
 
-        if (tokenJWT != null){
-
-            //Valida o token através do TokenService e pesquisa o usuário pelo Email do token (Analisar essa funcionalidade se esTÁ BOA)
-            String emailSubject = tokenService.validateTokenAndGetSubject(tokenJWT);
-            UserDetails usuarioAutenticado = userDetailsService.loadUserByUsername(emailSubject);
-
-            //Cria um novo contexto de autenticação e coloca os dados do usuário autenticado
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(usuarioAutenticado, null, usuarioAutenticado.getAuthorities());
-
-            //Pega o contexto de segurança do sistema e adiciona a autenticação gerada para o usuário (Durante a requisição do usuário)
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (token != null){
+            tokenService.validateTokenAndGetSubject(token)
+                    .ifPresent(this::authenticate);
         }
 
         filterChain.doFilter(request,response);
+    }
+
+    private void authenticate(String email){
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+        catch (UsernameNotFoundException e){
+
+            log.warn("Token válido, mas o usuário do subject não existe mais");
+        }
     }
 
     //Metodo responsável por pegar JWT no header Authorization

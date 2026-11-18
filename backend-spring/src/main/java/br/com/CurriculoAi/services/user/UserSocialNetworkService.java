@@ -66,6 +66,63 @@ public class UserSocialNetworkService {
                 .toList();
     }
 
+    public List<UserSocialNetworkResponse> getUserSocialNetworksOfUser(){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return userSocialNetworkRepository.findAllUserSocialNetworksOfUser(userId)
+                .stream()
+                .map(userSocialNetworkMapper::toDto)
+                .toList();
+    }
+
+    public UserSocialNetworkResponse getUserSocialNetworkById(Long userSocialNetworkId){
+
+        UserSocialNetwork userSocialNetwork = findUserSocialNetworkOfAuthenticatedUser(userSocialNetworkId);
+
+        return userSocialNetworkMapper.toDto(userSocialNetwork);
+    }
+
+    @Transactional
+    public UserSocialNetworkResponse updateUserSocialNetwork(Long userSocialNetworkId, UserSocialNetworkRequest userSocialNetworkRequest){
+
+        log.info("Iniciando atualização da rede social do usuário com id [{}]", userSocialNetworkId);
+
+        UserSocialNetwork userSocialNetwork = findUserSocialNetworkOfAuthenticatedUser(userSocialNetworkId);
+
+        SocialNetwork socialNetwork = socialNetworkService.findSocialNetworkById(userSocialNetworkRequest.socialNetworkId());
+
+        userSocialNetwork.setSocialNetwork(socialNetwork);
+        userSocialNetwork.setLink(userSocialNetworkRequest.link());
+
+        UserSocialNetwork updatedUserSocialNetwork = userSocialNetworkRepository.save(userSocialNetwork);
+
+        log.info("Rede social do usuário com id [{}] atualizada com sucesso", userSocialNetworkId);
+
+        return userSocialNetworkMapper.toDto(updatedUserSocialNetwork);
+    }
+
+    @Transactional
+    public void deleteUserSocialNetwork(Long userSocialNetworkId){
+
+        log.info("Iniciando remoção da rede social do usuário com id [{}]", userSocialNetworkId);
+
+        UserSocialNetwork userSocialNetwork = findUserSocialNetworkOfAuthenticatedUser(userSocialNetworkId);
+
+        userSocialNetworkRepository.delete(userSocialNetwork);
+
+        log.info("Rede social do usuário com id [{}] removida com sucesso", userSocialNetworkId);
+    }
+
+    // Busca já filtrando pelo usuário autenticado: se a rede social for de outro usuário, retorna 404
+    private UserSocialNetwork findUserSocialNetworkOfAuthenticatedUser(Long userSocialNetworkId){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return userSocialNetworkRepository.findByUserSocialNetworkIdAndUser_UserId(userSocialNetworkId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rede social do usuário com id: "+userSocialNetworkId+" não encontrada"));
+    }
+
     private Map<Long, SocialNetwork> findSocialNetworksByUserSocialNetworksRequest(List<UserSocialNetworkRequest> userSocialNetworkRequests){
         Set<Long> socialNetworksIds = userSocialNetworkRequests
                 .stream()

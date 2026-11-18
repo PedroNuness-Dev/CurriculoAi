@@ -1,5 +1,6 @@
 package br.com.CurriculoAi.services.availability;
 
+import br.com.CurriculoAi.exceptions.ResourceNotFoundException;
 import br.com.CurriculoAi.dto.availability.AvailabilityRequest;
 import br.com.CurriculoAi.dto.availability.AvailabilityResponse;
 import br.com.CurriculoAi.enums.availability.WorkModel;
@@ -30,6 +31,10 @@ public class AvailabilityService {
 
         User user = authService.getUserByTokenAuthenticate();
 
+        // O banco tem UNIQUE(user_id): sem essa checagem, o segundo cadastro estoura 500
+        if (availabilityRepository.existsByUser_UserId(user.getUserId()))
+            throw new IllegalArgumentException("Usuário já possui disponibilidade cadastrada. Use o PUT para atualizar");
+
         Availability availability = Availability.builder()
                 .startAvailability(availabilityRequest.startAvailability())
                 .workModel(WorkModel.from(availabilityRequest.workModel()))
@@ -41,5 +46,48 @@ public class AvailabilityService {
         log.info("Disponibilidade salva com sucesso! Com id: {}", availabilitySaved.getAvailabilityId());
 
         return availabilityMapper.toDto(availabilitySaved);
+    }
+
+
+    public AvailabilityResponse getAvailabilityOfUser(){
+
+        Availability availability = findAvailabilityOfAuthenticatedUser();
+
+        return availabilityMapper.toDto(availability);
+    }
+
+    @Transactional
+    public AvailabilityResponse updateAvailabilityOfUser(AvailabilityRequest availabilityRequest){
+
+        Availability availability = findAvailabilityOfAuthenticatedUser();
+
+        log.info("Iniciando atualização da disponibilidade com id [{}]", availability.getAvailabilityId());
+
+        availability.setStartAvailability(availabilityRequest.startAvailability());
+        availability.setWorkModel(WorkModel.from(availabilityRequest.workModel()));
+
+        Availability updatedAvailability = availabilityRepository.save(availability);
+
+        log.info("Disponibilidade com id [{}] atualizada com sucesso", updatedAvailability.getAvailabilityId());
+
+        return availabilityMapper.toDto(updatedAvailability);
+    }
+
+    @Transactional
+    public void deleteAvailabilityOfUser(){
+
+        Availability availability = findAvailabilityOfAuthenticatedUser();
+
+        availabilityRepository.delete(availability);
+
+        log.info("Disponibilidade com id [{}] removida com sucesso", availability.getAvailabilityId());
+    }
+
+    private Availability findAvailabilityOfAuthenticatedUser(){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return availabilityRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não possui disponibilidade cadastrada"));
     }
 }

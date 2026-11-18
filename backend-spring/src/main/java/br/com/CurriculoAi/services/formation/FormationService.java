@@ -77,10 +77,7 @@ public class FormationService {
 
     public FormationResponse getFormationUserByFormationId(Long formationId){
 
-        Long userId = authService.getUserIdByTokenAuthenticate();
-
-        Formation formation = formationRepository.findByFormationIdAndUser_UserId(formationId,userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Formação com id: "+formationId+" não encontrada"));
+        Formation formation = findFormationOfAuthenticatedUser(formationId);
 
         return formationMapper.toDto(formation);
     }
@@ -106,5 +103,49 @@ public class FormationService {
 
         return courseService
                 .findAllById(coursesIds);
+    }
+
+
+    @Transactional
+    public FormationResponse updateFormation(Long formationId, FormationRequest formationRequest){
+
+        log.info("Iniciando atualização da formação com id [{}]", formationId);
+
+        Formation formation = findFormationOfAuthenticatedUser(formationId);
+
+        Course course = courseService.findCourseById(formationRequest.courseId());
+
+        formation.setCourse(course);
+        formation.setFormationType(FormationType.from(formationRequest.formationType()));
+        formation.setStartDate(formationRequest.startDate());
+        formation.setFinishDate(formationRequest.finishDate());
+        formation.setInProgress(formationRequest.finishDate() == null);
+
+        Formation updatedFormation = formationRepository.save(formation);
+
+        log.info("Formação com id [{}] atualizada com sucesso", formationId);
+
+        return formationMapper.toDto(updatedFormation);
+    }
+
+    @Transactional
+    public void deleteFormation(Long formationId){
+
+        log.info("Iniciando remoção da formação com id [{}]", formationId);
+
+        Formation formation = findFormationOfAuthenticatedUser(formationId);
+
+        formationRepository.delete(formation);
+
+        log.info("Formação com id [{}] removida com sucesso", formationId);
+    }
+
+    // Busca já filtrando pelo usuário autenticado: se a formação for de outro usuário, retorna 404
+    private Formation findFormationOfAuthenticatedUser(Long formationId){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return formationRepository.findByFormationIdAndUser_UserId(formationId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Formação com id: "+formationId+" não encontrada"));
     }
 }

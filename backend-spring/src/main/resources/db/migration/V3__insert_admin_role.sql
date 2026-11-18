@@ -1,0 +1,7 @@
+INSERT INTO role (type)
+SELECT 'ROLE_ADMIN'
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM role
+    WHERE type = 'ROLE_ADMIN'
+);

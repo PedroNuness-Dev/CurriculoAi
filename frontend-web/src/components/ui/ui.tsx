@@ -103,22 +103,42 @@ export function Modal({
   width?: number;
 }) {
   const titleId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  useEffect(() => { closeRef.current = onClose; }, [onClose]);
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const dialog = dialogRef.current;
+    const workspace = !!dialog?.closest(".app-workspace");
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    if (workspace) {
+      const firstField = dialog?.querySelector<HTMLElement>(".modal-body input:not(:disabled), .modal-body select:not(:disabled), .modal-body textarea:not(:disabled), .modal-body button:not(:disabled)");
+      (firstField ?? dialog)?.focus();
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      if (e.key === "Escape") { e.preventDefault(); closeRef.current(); }
+      if (!workspace || e.key !== "Tab" || !dialog) return;
+      const controls = [...dialog.querySelectorAll<HTMLElement>("a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex='0']")].filter((element) => element.getClientRects().length);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (!first) { e.preventDefault(); dialog.focus(); }
+      else if (e.shiftKey && (document.activeElement === first || document.activeElement === dialog)) { e.preventDefault(); last?.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+      if (workspace && previousFocus?.isConnected && (document.activeElement === document.body || dialog?.contains(document.activeElement))) previousFocus.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
   return (
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby={titleId} style={width ? { width: `min(${width}px, 100%)` } : undefined}>
+      <div ref={dialogRef} className="modal" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} style={width ? { width: `min(${width}px, 100%)` } : undefined}>
         <div className="modal-head">
           <div className="row" style={{ alignItems: "flex-start", gap: 14 }}>
             {icon && <span className="icon-tile grad">{icon}</span>}
@@ -236,7 +256,7 @@ export function CatalogSelect({
   id?: string;
   invalid?: boolean;
 }) {
-  const { items, loading, upsert } = useCatalog(catalog);
+  const { items, loading, error, refresh, upsert } = useCatalog(catalog);
   const toast = useToast();
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
@@ -307,6 +327,15 @@ export function CatalogSelect({
     );
   }
 
+  if (error && items.length === 0) {
+    return (
+      <div className="stack" style={{ gap: 10 }}>
+        <select id={id} className="select" disabled><option>Opções indisponíveis no momento</option></select>
+        <CatalogFeedback onRetry={refresh}>Não foi possível carregar as opções.</CatalogFeedback>
+      </div>
+    );
+  }
+
   return (
     <select
       id={id}
@@ -335,5 +364,23 @@ export function AddButton({ children, onClick }: { children: ReactNode; onClick:
     <Button icon={<Plus size={18} />} onClick={onClick}>
       {children}
     </Button>
+  );
+}
+
+/** Retrying a failed catalog keeps the existing request and prevents double clicks. */
+export function CatalogFeedback({ children, onRetry }: { children: ReactNode; onRetry: () => Promise<unknown> }) {
+  const toast = useToast();
+  const [retrying, setRetrying] = useState(false);
+  async function retry() {
+    setRetrying(true);
+    try { await onRetry(); }
+    catch (error) { toast.error(error); }
+    finally { setRetrying(false); }
+  }
+  return (
+    <div className="alert error" role="alert">
+      <div className="grow">{children}</div>
+      <Button variant="secondary" size="sm" loading={retrying} onClick={retry}>Tentar novamente</Button>
+    </div>
   );
 }

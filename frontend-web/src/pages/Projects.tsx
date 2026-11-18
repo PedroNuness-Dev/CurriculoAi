@@ -1,16 +1,17 @@
 import { useState, type FormEvent } from "react";
-import { ExternalLink, FolderGit2, Plus } from "lucide-react";
+import { Check, ExternalLink, FolderGit2, Link2, Plus } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { useCatalog } from "../auth/CatalogContext";
 import { resumeApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
-import { Button, EmptyState, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
-import { ensureProtocol, prettyUrl } from "../lib/format";
+import { Button, CatalogFeedback, Field, ListSkeleton, Modal, PageHeader, Skeleton } from "../components/ui/ui";
+import { ensureProtocol, initials, prettyUrl } from "../lib/format";
+import "../styles/projects.css";
 
 const EMPTY = { title: "", description: "", link: "", abilitiesIds: [] as number[] };
 
 export default function Projects() {
-  const { profile, loading, reload } = useProfile();
+  const { profile, loading, error, reload } = useProfile();
   const abilities = useCatalog("abilities");
   const toast = useToast();
   const [open, setOpen] = useState(false);
@@ -67,11 +68,11 @@ export default function Projects() {
   const sortedAbilities = [...abilities.items].sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
   return (
-    <>
+    <div className="projects-page">
       <PageHeader
         eyebrow="Trajetória"
         title="Projetos"
-        text="Projetos pessoais, acadêmicos ou open source. Ótimos para quem está começando."
+        text="Dê visibilidade ao que você construiu. Reúna projetos pessoais, acadêmicos e profissionais que mostram suas habilidades na prática."
         actions={
           <Button icon={<Plus size={18} />} onClick={openModal}>
             Adicionar projeto
@@ -79,50 +80,54 @@ export default function Projects() {
         }
       />
 
+      {error && <CatalogFeedback onRetry={reload}>{error}</CatalogFeedback>}
       {loading ? (
-        <ListSkeleton />
-      ) : list.length === 0 ? (
-        <EmptyState
-          icon={<FolderGit2 size={26} />}
-          title="Nenhum projeto ainda"
-          text="Mostre na prática o que você sabe fazer. Um link para o GitHub já faz diferença."
-          action={
-            <Button icon={<Plus size={18} />} onClick={openModal}>
-              Adicionar projeto
-            </Button>
-          }
-        />
+        <div role="status" aria-label="Carregando projetos"><ListSkeleton /></div>
+      ) : error && !profile ? null : list.length === 0 ? (
+        <section className="empty project-empty" aria-labelledby="project-empty-title">
+          <div className="project-empty-main">
+            <div className="project-emblem" aria-hidden="true"><FolderGit2 size={34} /><span><Plus size={15} /></span></div>
+            <span className="project-kicker">Ideias que você colocou em prática</span>
+            <h2 id="project-empty-title">O que você construiu<br />merece ser visto.</h2>
+            <p>Você ainda não cadastrou projetos. Mostre o problema que resolveu, sua participação e as habilidades que usou para chegar ao resultado.</p>
+            <Button icon={<Plus size={18} />} onClick={openModal}>Adicionar o primeiro projeto</Button>
+          </div>
+          <aside className="project-guide" aria-label="Como apresentar seu projeto">
+            <span className="project-kicker">Do projeto para o currículo</span>
+            <ol>
+              <li><span>01</span><div><h3>Conte o que construiu</h3><p>Dê um nome e descreva o propósito e sua participação.</p></div></li>
+              <li><span>02</span><div><h3>Mostre onde encontrar</h3><p>Inclua um link para repositório, demonstração ou portfólio.</p></div></li>
+              <li><span>03</span><div><h3>Conecte suas habilidades</h3><p>Se quiser, associe as tecnologias utilizadas no projeto.</p></div></li>
+            </ol>
+            <p className="project-guide-note">Projetos pessoais, acadêmicos e profissionais ajudam a demonstrar o que você sabe fazer.</p>
+          </aside>
+        </section>
       ) : (
-        <div className="cat-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 14 }}>
+        <section className="project-portfolio" aria-labelledby="project-portfolio-title">
+          <header className="project-list-header"><div><span className="project-kicker">Seu portfólio no currículo</span><h2 id="project-portfolio-title">Ideias que ganharam forma.</h2></div><span className="project-count">{list.length} {list.length === 1 ? "projeto cadastrado" : "projetos cadastrados"}</span></header>
+          <div className="cat-grid project-grid">
           {list.map((p) => (
-            <article key={p.projectId} className="item" style={{ flexDirection: "column", gap: 12 }}>
-              <div className="row between">
-                <span className="icon-tile grad">
-                  <FolderGit2 size={20} />
-                </span>
-                <a href={ensureProtocol(p.link)} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
-                  <ExternalLink size={15} /> Abrir
-                </a>
-              </div>
-              <div>
-                <div className="item-title">{p.title}</div>
-                <div className="item-meta">
-                  <span style={{ wordBreak: "break-all" }}>{prettyUrl(p.link)}</span>
-                </div>
+            <article key={p.projectId} className="item project-record">
+              <div className="project-stage" aria-hidden="true"><span className="project-mark">{initials(p.title)}</span><FolderGit2 size={25} /></div>
+              <div className="project-record-body">
+                <span className="project-kicker">Projeto</span>
+                <h3 className="item-title">{p.title}</h3>
                 <p className="item-desc">{p.description}</p>
-              </div>
               {p.abilities.length > 0 && (
-                <div className="chip-group" style={{ gap: 6 }}>
+                <div className="project-stack"><span className="project-kicker">Tecnologias aplicadas</span><div className="chip-group">
                   {p.abilities.map((a) => (
                     <span key={a.abilityId} className="badge neutral">
                       {a.name}
                     </span>
                   ))}
-                </div>
+                </div></div>
               )}
+              </div>
+              {p.link.trim() && <div className="project-record-foot"><span className="project-url"><Link2 size={15} aria-hidden="true" /><span>{prettyUrl(p.link)}</span></span><a href={ensureProtocol(p.link)} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm" aria-label={`Abrir projeto ${p.title} em nova aba`}><ExternalLink size={15} aria-hidden="true" /> Abrir projeto</a></div>}
             </article>
           ))}
-        </div>
+          </div>
+        </section>
       )}
 
       <Modal
@@ -143,8 +148,11 @@ export default function Projects() {
           </>
         }
       >
-        <form id="proj-form" className="form-grid" onSubmit={save} noValidate>
-          <Field label="Nome do projeto" htmlFor="pr-title" error={err("title")}>
+        <form id="proj-form" className="project-form" onSubmit={save} noValidate>
+          <fieldset className="project-form-section">
+            <legend><span>01</span> Apresentação do projeto</legend><p>Conte o que você construiu e qual foi sua contribuição.</p>
+            <div className="form-grid">
+          <Field className="span-2" label="Nome do projeto" htmlFor="pr-title" error={err("title")}>
             <input
               id="pr-title"
               className="input"
@@ -152,16 +160,6 @@ export default function Projects() {
               value={form.title}
               onChange={(e) => set("title", e.target.value)}
               aria-invalid={!!err("title")}
-            />
-          </Field>
-          <Field label="Link" htmlFor="pr-link" error={err("link")}>
-            <input
-              id="pr-link"
-              className="input"
-              placeholder="github.com/voce/projeto"
-              value={form.link}
-              onChange={(e) => set("link", e.target.value)}
-              aria-invalid={!!err("link")}
             />
           </Field>
           <Field className="span-2" label="Descrição" htmlFor="pr-desc" error={err("description")}>
@@ -174,8 +172,21 @@ export default function Projects() {
               aria-invalid={!!err("description")}
             />
           </Field>
-          <Field className="span-2" label="Tecnologias usadas" optional hint={`${form.abilitiesIds.length} selecionada(s)`}>
-            <div className="chip-group">
+            </div>
+          </fieldset>
+          <fieldset className="project-form-section">
+            <legend><span>02</span> Acesso ao projeto</legend><p>Use um link para repositório, demonstração ou portfólio.</p>
+            <Field label="Link" htmlFor="pr-link" error={err("link")}>
+              <input id="pr-link" className="input" placeholder="github.com/voce/projeto" value={form.link} onChange={(e) => set("link", e.target.value)} aria-invalid={!!err("link")} />
+            </Field>
+          </fieldset>
+          <fieldset className="project-form-section">
+            <legend><span>03</span> Habilidades aplicadas</legend><p>Associe as tecnologias que você utilizou, se desejar.</p>
+          <Field label="Tecnologias usadas" optional hint={<span role="status">{form.abilitiesIds.length} selecionada(s)</span>}>
+            {abilities.error && <CatalogFeedback onRetry={abilities.refresh}>Não foi possível carregar as tecnologias.</CatalogFeedback>}
+            {abilities.loading && <div className="project-technologies-loading" role="status" aria-label="Carregando tecnologias"><Skeleton h={44} w="30%" /><Skeleton h={44} w="30%" /><Skeleton h={44} w="30%" /></div>}
+            {!abilities.loading && !abilities.error && sortedAbilities.length === 0 && <p className="project-technologies-empty">Nenhuma tecnologia disponível no momento.</p>}
+            <div className="chip-group project-technology-options" role="group" aria-label="Tecnologias usadas">
               {sortedAbilities.map((a) => (
                 <button
                   key={a.id}
@@ -184,13 +195,14 @@ export default function Projects() {
                   aria-pressed={form.abilitiesIds.includes(a.id)}
                   onClick={() => toggle(a.id)}
                 >
-                  {a.name}
+                  {form.abilitiesIds.includes(a.id) && <Check size={14} aria-hidden="true" />}{a.name}
                 </button>
               ))}
             </div>
           </Field>
+          </fieldset>
         </form>
       </Modal>
-    </>
+    </div>
   );
 }

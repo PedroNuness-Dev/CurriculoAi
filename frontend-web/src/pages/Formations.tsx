@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from "react";
-import { CalendarDays, ExternalLink, GraduationCap, Plus } from "lucide-react";
+import { BookOpen, CalendarDays, CheckCircle2, Clock, ExternalLink, GraduationCap, Plus } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi } from "../api/endpoints";
 import type { FormationResponse } from "../api/types";
 import { useToast } from "../components/ui/Toast";
-import { Button, CatalogSelect, EmptyState, Field, ListSkeleton, Modal, PageHeader, Skeleton } from "../components/ui/ui";
+import { Button, CatalogFeedback, CatalogSelect, Field, ListSkeleton, Modal, PageHeader, Skeleton } from "../components/ui/ui";
 import { FORMATION_TYPES, formationLabel } from "../lib/labels";
 import { duration, fullDate, isFuture, monthYear, period } from "../lib/format";
+import "../styles/formations.css";
 
 const EMPTY = {
   courseId: null as number | null,
@@ -19,7 +20,7 @@ const EMPTY = {
 const groups = Array.from(new Set(FORMATION_TYPES.map((f) => f.group)));
 
 export default function Formations() {
-  const { profile, loading, reload } = useProfile();
+  const { profile, loading, error, reload } = useProfile();
   const toast = useToast();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
@@ -90,11 +91,11 @@ export default function Formations() {
   }
 
   return (
-    <>
+    <div className="formations-page">
       <PageHeader
         eyebrow="Trajetória"
         title="Formação acadêmica"
-        text="Do ensino médio ao doutorado — inclua também cursos técnicos e livres."
+        text="O que você aprende abre novos caminhos. Reúna sua formação, do ensino médio aos cursos que ampliam suas possibilidades."
         actions={
           <Button icon={<Plus size={18} />} onClick={openModal}>
             Adicionar formação
@@ -102,52 +103,65 @@ export default function Formations() {
         }
       />
 
+      {error && <CatalogFeedback onRetry={reload}>{error}</CatalogFeedback>}
       {loading ? (
-        <ListSkeleton />
-      ) : list.length === 0 ? (
-        <EmptyState
-          icon={<GraduationCap size={26} />}
-          title="Nenhuma formação cadastrada"
-          text="Adicione sua formação para que ela apareça na seção Educação do currículo."
-          action={
-            <Button icon={<Plus size={18} />} onClick={openModal}>
-              Adicionar formação
-            </Button>
-          }
-        />
+        <div role="status" aria-label="Carregando formações"><ListSkeleton /></div>
+      ) : error && !profile ? null : list.length === 0 ? (
+        <section className="empty formation-empty" aria-labelledby="formation-empty-title">
+          <div className="formation-empty-main">
+            <div className="formation-emblem" aria-hidden="true"><GraduationCap size={34} /><span><Plus size={15} /></span></div>
+            <span className="formation-kicker">Conhecimento que faz parte de você</span>
+            <h2 id="formation-empty-title">Seu aprendizado<br />merece destaque.</h2>
+            <p>Você ainda não cadastrou formações. Inclua seus estudos para compor a seção Educação do currículo, mesmo que ainda estejam em andamento.</p>
+            <Button icon={<Plus size={18} />} onClick={openModal}>Adicionar a primeira formação</Button>
+          </div>
+          <aside className="formation-guide" aria-label="Como registrar sua formação">
+            <span className="formation-kicker"><BookOpen size={15} aria-hidden="true" /> Sua trajetória de aprendizado</span>
+            <ol>
+              <li><span>01</span><div><h3>Curso e nível</h3><p>Selecione o curso e o tipo de formação correspondente.</p></div></li>
+              <li><span>02</span><div><h3>Período de estudo</h3><p>Informe quando começou e a data de conclusão, inclusive se for prevista.</p></div></li>
+              <li><span>03</span><div><h3>Formação em andamento</h3><p>Se ainda estiver cursando, indique essa condição no cadastro.</p></div></li>
+            </ol>
+            <p className="formation-guide-note">Ensino médio, técnico, graduação e outros níveis: cada etapa ajuda a contar sua história.</p>
+          </aside>
+        </section>
       ) : (
-        <div className="item-list">
+        <section className="formation-history" aria-labelledby="formation-history-title">
+          <header className="formation-list-header">
+            <div><span className="formation-kicker">Sua trajetória educacional</span><h2 id="formation-history-title">Conhecimento em construção.</h2></div>
+            <span className="formation-count">{list.length} {list.length === 1 ? "formação cadastrada" : "formações cadastradas"}</span>
+          </header>
+          <div className="item-list formation-list">
           {list.map((f) => (
-            <article key={f.formationId} className="item">
-              <span className="icon-tile grad">
-                <GraduationCap size={20} />
-              </span>
+            <article key={f.formationId} className="item formation-record">
               <div className="item-body">
-                <div className="row between row-wrap" style={{ gap: 8 }}>
-                  <div className="item-title">{f.course.name}</div>
-                  {f.inProgress || isFuture(f.finishDate) ? (
-                    <span className="badge warning">Em andamento</span>
-                  ) : (
-                    <span className="badge success">Concluído</span>
-                  )}
+                <div className="formation-record-heading">
+                  <span className="icon-tile"><GraduationCap size={23} /></span>
+                  <div><span className="formation-kicker">{formationLabel(f.formationType)}</span><h3 className="item-title">{f.course.name}</h3></div>
                 </div>
-                <div className="item-meta">
-                  <span className="badge">{formationLabel(f.formationType)}</span>
-                  <span>
-                    <CalendarDays size={14} />{" "}
-                    {isFuture(f.finishDate)
-                      ? `${monthYear(f.startDate)} — previsão ${monthYear(f.finishDate)}`
-                      : period(f.startDate, f.finishDate, "em andamento")}
-                  </span>
-                  <span>{duration(f.startDate, f.finishDate)}</span>
+                <div className="formation-record-meta">
+                  {f.inProgress || isFuture(f.finishDate) ? (
+                    <span className="badge warning"><Clock size={13} /> Em andamento</span>
+                  ) : (
+                    <span className="badge success"><CheckCircle2 size={13} /> Concluído</span>
+                  )}
+                  <span><Clock size={14} aria-hidden="true" /> {duration(f.startDate, f.finishDate)}</span>
                 </div>
               </div>
+              <div className="formation-period">
+                <span className="formation-kicker"><CalendarDays size={14} aria-hidden="true" /> Período de estudo</span>
+                <p>{isFuture(f.finishDate)
+                      ? `${monthYear(f.startDate)} — previsão ${monthYear(f.finishDate)}`
+                      : period(f.startDate, f.finishDate, "em andamento")}</p>
               <Button variant="ghost" size="sm" onClick={() => openDetail(f.formationId)} icon={<ExternalLink size={15} />}>
                 Detalhes
               </Button>
+              </div>
             </article>
           ))}
-        </div>
+          </div>
+          <p className="formation-list-note">Formações organizadas pela data de início, da mais recente à mais antiga.</p>
+        </section>
       )}
 
       <Modal
@@ -167,7 +181,11 @@ export default function Formations() {
           </>
         }
       >
-        <form id="form-form" className="form-grid" onSubmit={save} noValidate>
+        <form id="form-form" className="formation-form" onSubmit={save} noValidate>
+          <fieldset className="formation-form-section">
+            <legend><span>01</span> Curso e nível</legend>
+            <p>Identifique o curso e como ele se encaixa na sua formação.</p>
+            <div className="form-grid">
           <Field className="span-2" label="Curso" htmlFor="fo-course" error={err("courseId")}>
             <CatalogSelect
               id="fo-course"
@@ -198,6 +216,12 @@ export default function Formations() {
               ))}
             </select>
           </Field>
+            </div>
+          </fieldset>
+          <fieldset className="formation-form-section">
+            <legend><span>02</span> Período de estudo</legend>
+            <p>Uma formação pode estar concluída, em andamento ou ter conclusão prevista.</p>
+            <div className="form-grid">
           <Field label="Início" htmlFor="fo-start" error={err("startDate")}>
             <input id="fo-start" type="date" className="input" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} />
           </Field>
@@ -216,6 +240,8 @@ export default function Formations() {
             <input type="checkbox" checked={form.inProgress} onChange={(e) => set("inProgress", e.target.checked)} />
             Ainda estou cursando
           </label>
+            </div>
+          </fieldset>
         </form>
       </Modal>
 
@@ -227,19 +253,19 @@ export default function Formations() {
         }}
         icon={<GraduationCap size={20} />}
         title="Detalhes da formação"
-        subtitle="Consulta individual — GET /api/formations/{id}"
+        subtitle="Informações da sua formação acadêmica."
         width={520}
       >
         {detailLoading || !detail ? (
-          <div className="stack">
+          <div className="stack" role="status" aria-label="Carregando detalhes da formação">
             <Skeleton h={20} w="60%" />
             <Skeleton h={16} w="40%" />
             <Skeleton h={16} w="50%" />
           </div>
         ) : (
-          <dl className="stack" style={{ gap: 12, margin: 0 }}>
-            <Detail label="Curso">{detail.course.name}</Detail>
-            <Detail label="Tipo">{formationLabel(detail.formationType)}</Detail>
+          <div className="formation-detail">
+            <div className="formation-detail-heading"><span className="icon-tile"><GraduationCap size={24} /></span><span className="formation-kicker">{formationLabel(detail.formationType)}</span><h3>{detail.course.name}</h3></div>
+          <dl className="formation-detail-list">
             <Detail label="Início">{fullDate(detail.startDate)}</Detail>
             <Detail label={isFuture(detail.finishDate) ? "Previsão de conclusão" : "Conclusão"}>
               {detail.finishDate ? fullDate(detail.finishDate) : "Em andamento"}
@@ -247,19 +273,20 @@ export default function Formations() {
             <Detail label="Situação">{detail.inProgress || isFuture(detail.finishDate) ? "Em andamento" : "Concluído"}</Detail>
             <Detail label="ID">#{detail.formationId}</Detail>
           </dl>
+          </div>
         )}
       </Modal>
-    </>
+    </div>
   );
 }
 
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="row between" style={{ borderBottom: "1px solid var(--line)", paddingBottom: 10 }}>
-      <dt className="muted" style={{ fontWeight: 650 }}>
+    <div className="formation-detail-row">
+      <dt>
         {label}
       </dt>
-      <dd style={{ margin: 0, fontWeight: 700, textAlign: "right" }}>{children}</dd>
+      <dd>{children}</dd>
     </div>
   );
 }

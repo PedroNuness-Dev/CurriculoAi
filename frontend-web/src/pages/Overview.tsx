@@ -15,8 +15,7 @@ import {
 } from "lucide-react";
 import { completeness, useProfile } from "../auth/ProfileContext";
 import { useAuth } from "../auth/AuthContext";
-import { Symbol } from "../components/brand/Brand";
-import { Button, Skeleton } from "../components/ui/ui";
+import { Button, PageHeader, Skeleton } from "../components/ui/ui";
 import { firstName, fullDate, period } from "../lib/format";
 import { goalLabel, workModelLabel } from "../lib/labels";
 
@@ -41,45 +40,42 @@ export default function Overview() {
   const ready = c.percent >= 45 && (profile?.experiences.length || profile?.formations.length);
 
   return (
-    <div className="stack-lg">
+    <div className="stack-lg overview-page">
+      <PageHeader eyebrow="Painel do candidato" title={`Olá, ${firstName(session?.name)}.`} text="Seu próximo passo começa pela sua trajetória." actions={<span className="overview-header-status">{loading ? "Carregando seu perfil…" : `${c.done} de ${c.total} seções preenchidas`}</span>} />
       <section className="hero-card">
-        <Symbol className="hero-symbol" tone="white" size={440} />
         <div className="hero-grid">
-          <div>
-            <div className="eyebrow" style={{ color: "rgba(255,255,255,.85)" }}>
-              Painel do candidato
-            </div>
-            <h2 style={{ marginTop: 10 }}>Olá, {firstName(session?.name)}! Vamos montar seu currículo?</h2>
-            <p style={{ marginTop: 12, opacity: 0.9, fontWeight: 600, maxWidth: 520 }}>
+          <div className="overview-copy">
+            <h2>Uma trajetória bem contada abre caminhos.</h2>
+            <p>
               Quanto mais completo seu perfil, melhor o currículo que a IA escreve para você.
             </p>
-            <div className="row row-wrap" style={{ marginTop: 22 }}>
-              <Link to="/app/gerar" className="btn btn-lime btn-lg">
-                <Sparkles size={19} /> Gerar currículo com IA
-              </Link>
-              <Link to={c.checks.find((x) => !x.done)?.to ?? "/app/perfil"} className="btn btn-white btn-lg">
+            <div className="row row-wrap overview-actions">
+              <Link to={c.checks.find((x) => !x.done)?.to ?? "/app/perfil"} className="btn btn-primary btn-lg">
                 {c.done === c.total ? "Revisar perfil" : "Completar perfil"}
+              </Link>
+              <Link to="/app/gerar" className="btn btn-secondary btn-lg">
+                <Sparkles size={19} /> Gerar currículo com IA
               </Link>
             </div>
           </div>
-          <div>
+          <div className="overview-progress">
             {loading ? (
-              <Skeleton h={104} w={200} />
+              <Skeleton h={142} w="100%" />
             ) : (
-              <div className="hero-pct">{c.percent}%</div>
+              <div className="overview-ring" role="progressbar" aria-label="Perfil preenchido" aria-valuemin={0} aria-valuemax={100} aria-valuenow={c.percent}>
+                <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" /><circle cx="50" cy="50" r="46" strokeDasharray={289.03} strokeDashoffset={289.03 * (1 - c.percent / 100)} /></svg>
+                <span className="overview-ring-value">{c.percent}%</span>
+              </div>
             )}
-            <p style={{ fontWeight: 700, marginTop: 8 }}>
-              do perfil preenchido · {c.done} de {c.total} seções
+            <p className="overview-progress-label">
+              {c.done} de {c.total} seções preenchidas
             </p>
-            <div className="progress" style={{ marginTop: 14 }}>
-              <span style={{ width: `${c.percent}%` }} />
-            </div>
             {ready ? (
-              <p className="small" style={{ marginTop: 10, opacity: 0.85 }}>
+              <p className="overview-progress-note">
                 Você já tem o suficiente para gerar uma primeira versão.
               </p>
             ) : (
-              <p className="small" style={{ marginTop: 10, opacity: 0.85 }}>
+              <p className="overview-progress-note">
                 Adicione ao menos uma experiência ou formação para começar.
               </p>
             )}

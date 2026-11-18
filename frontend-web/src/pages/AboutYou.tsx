@@ -1,25 +1,34 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { Briefcase, CalendarClock, CheckCircle2, Lock, MapPin, Search, Target } from "lucide-react";
+import { useEffect, useId, useState, type FormEvent } from "react";
+import { ArrowDown, Briefcase, CalendarClock, CheckCircle2, Circle, Lock, MapPin, Search, Target } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi, userApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
-import { Button, CatalogSelect, Field, PageHeader, Skeleton } from "../components/ui/ui";
+import { Button, CatalogFeedback, CatalogSelect, Field, PageHeader, Skeleton } from "../components/ui/ui";
 import { GOAL_TYPES, WORK_MODELS, goalLabel, workModelLabel } from "../lib/labels";
-import { fullDate, maskCep, onlyDigits } from "../lib/format";
+import { fullDate, initials, maskCep, onlyDigits } from "../lib/format";
 import type { GoalType, WorkModel } from "../api/types";
+import "../styles/profile.css";
 
 export default function AboutYou() {
-  const { loading } = useProfile();
+  const { profile, loading, error, reload } = useProfile();
+  const sections = [
+    { id: "profile-area", label: "Área de atuação", done: !!profile?.area },
+    { id: "profile-goal", label: "Objetivo", done: !!profile?.careerGoal },
+    { id: "profile-address", label: "Endereço", done: !!profile?.address },
+    { id: "profile-availability", label: "Disponibilidade", done: !!profile?.availability },
+  ];
+  const completed = sections.filter((section) => section.done).length;
   return (
-    <>
+    <div className="profile-page">
       <PageHeader
         eyebrow="Sobre você"
-        title="Quem é você no mercado?"
-        text="Essas informações orientam o tom e o foco do currículo que a IA vai escrever."
+        title="Seu próximo passo começa aqui."
+        text="Defina sua direção profissional e as informações que vão dar contexto ao seu currículo."
       />
       {loading ? (
-        <div className="two-col">
-          {[0, 1, 2, 3].map((i) => (
+        <div className="stack-lg profile-loading" role="status" aria-label="Carregando seu perfil">
+          <Skeleton h={180} />
+          {[0, 1].map((i) => (
             <div key={i} className="card card-pad stack">
               <Skeleton h={22} w="50%" />
               <Skeleton h={46} />
@@ -27,15 +36,33 @@ export default function AboutYou() {
             </div>
           ))}
         </div>
+      ) : error && !profile ? (
+        <CatalogFeedback onRetry={reload}>{error}</CatalogFeedback>
       ) : (
-        <div className="two-col">
-          <AreaCard />
-          <AddressCard />
-          <GoalCard />
-          <AvailabilityCard />
-        </div>
+        <>
+          <section className="hero-card profile-identity" aria-label="Resumo do perfil">
+            <div className="profile-person">
+              <span className="profile-avatar" aria-hidden="true">{initials(profile?.user.name)}</span>
+              <div><span className="profile-kicker">Seu perfil profissional</span><h2>{profile?.user.name || "Sobre você"}</h2><p>Uma direção clara para a sua próxima oportunidade.</p></div>
+            </div>
+            <div className="profile-completion" aria-live="polite">
+              <div><span>Informações desta página</span><strong>{completed}<small> / 4</small></strong></div>
+              <div className="profile-track" aria-hidden="true">{sections.map((section) => <span key={section.id} className={section.done ? "is-complete" : ""} />)}</div>
+              <p>{completed === 4 ? "Tudo preenchido. Seu perfil tem uma direção definida." : `${4 - completed} ${completed === 3 ? "informação para completar" : "informações para completar"}. No seu ritmo.`}</p>
+            </div>
+          </section>
+          <nav className="profile-shortcuts" aria-label="Informações do perfil">
+            {sections.map((section) => <a key={section.id} href={`#${section.id}`}><span>{section.done ? <CheckCircle2 size={16} /> : <Circle size={16} />}{section.label}<span className="sr-only">{section.done ? ": preenchido" : ": pendente"}</span></span><ArrowDown size={14} aria-hidden="true" /></a>)}
+          </nav>
+          {error && <CatalogFeedback onRetry={reload}>{error}</CatalogFeedback>}
+          <div className="stack-lg profile-groups">
+            <div className="card profile-group"><div className="profile-group-label"><span>01</span> Direção profissional</div><AreaCard /><GoalCard /></div>
+            <div className="card profile-group"><div className="profile-group-label"><span>02</span> Localização e rotina</div><AddressCard /><AvailabilityCard /></div>
+          </div>
+          <p className="profile-footnote">Cada seção é salva separadamente. Você pode completar seu perfil aos poucos.</p>
+        </>
       )}
-    </>
+    </div>
   );
 }
 
@@ -52,23 +79,23 @@ function SectionCard({
   done?: boolean;
   children: React.ReactNode;
 }) {
+  const titleId = useId();
+  const sectionIds: Record<string, string> = { "Área de atuação": "profile-area", "Endereço": "profile-address", "Objetivo de carreira": "profile-goal", "Disponibilidade": "profile-availability" };
   return (
-    <section className="card card-pad">
-      <div className="card-head">
-        <div className="row" style={{ alignItems: "flex-start", gap: 14 }}>
+    <section className="profile-section" id={sectionIds[title]} aria-labelledby={titleId}>
+      <div className="profile-section-heading">
           <span className={`icon-tile ${done ? "grad" : ""}`}>{icon}</span>
           <div>
-            <div className="card-title">{title}</div>
+            <h2 className="card-title" id={titleId}>{title}</h2>
             <p className="card-sub">{sub}</p>
           </div>
-        </div>
         {done && (
           <span className="badge success">
             <CheckCircle2 size={14} /> Salvo
           </span>
         )}
       </div>
-      {children}
+      <div className="profile-section-content">{children}</div>
     </section>
   );
 }
@@ -145,7 +172,7 @@ function AddressCard() {
     <SectionCard icon={<MapPin size={20} />} title="Endereço" sub="Buscamos automaticamente pelo CEP." done={!!addr}>
       <form className="stack" onSubmit={save}>
         <Field label="CEP" htmlFor="cep" hint="Somente números — ex.: 01001-000">
-          <div className="row" style={{ gap: 8 }}>
+          <div className="profile-cep-row">
             <input
               id="cep"
               className="input"
@@ -160,7 +187,7 @@ function AddressCard() {
           </div>
         </Field>
         {addr && (
-          <div className="item" style={{ padding: 14, background: "var(--surface-2)" }}>
+          <div className="profile-address-result">
             <div className="item-body">
               <div className="item-title" style={{ fontSize: 15 }}>
                 {[addr.street, addr.neighborhood].filter(Boolean).join(", ") || "Endereço do CEP"}
@@ -220,8 +247,8 @@ function GoalCard() {
             {goal.area && <span className="badge neutral">{goal.area.name}</span>}
           </div>
           <p style={{ color: "var(--ink-2)", whiteSpace: "pre-line" }}>{goal.description}</p>
-          <p className="small muted row" style={{ gap: 6 }}>
-            <Lock size={14} /> Definido em {fullDate(goal.createdAt)} · o backend ainda não permite editar.
+          <p className="profile-readonly-note">
+            <Lock size={14} /> Definido em {fullDate(goal.createdAt)} · edição indisponível no momento.
           </p>
         </div>
       </SectionCard>
@@ -311,8 +338,8 @@ function AvailabilityCard() {
               {av.startAvailability ? `A partir de ${fullDate(av.startAvailability)}` : "Início imediato"}
             </span>
           </div>
-          <p className="small muted row" style={{ gap: 6 }}>
-            <Lock size={14} /> O backend ainda não permite editar a disponibilidade.
+          <p className="profile-readonly-note">
+            <Lock size={14} /> Disponibilidade cadastrada · edição indisponível no momento.
           </p>
         </div>
       </SectionCard>

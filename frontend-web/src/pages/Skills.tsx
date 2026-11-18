@@ -4,7 +4,8 @@ import { useProfile } from "../auth/ProfileContext";
 import { useCatalog } from "../auth/CatalogContext";
 import { catalogApi, userApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
-import { Button, PageHeader, Skeleton } from "../components/ui/ui";
+import { Button, CatalogFeedback, PageHeader, Skeleton } from "../components/ui/ui";
+import "../styles/skills.css";
 
 export default function Skills() {
   const { reload } = useProfile();
@@ -91,68 +92,74 @@ export default function Skills() {
   const selectedItems = catalog.items.filter((a) => selected.includes(a.id));
 
   return (
-    <>
+    <div className="skills-page">
       <PageHeader
         eyebrow="Competências"
         title="Habilidades"
         text="Escolha as tecnologias e competências que você domina. Elas formam a seção Habilidades do currículo."
         actions={
           <Button icon={<Save size={18} />} onClick={save} loading={saving} disabled={!dirty}>
-            {dirty ? "Salvar alterações" : "Tudo salvo"}
+            {saved === null ? "Carregando…" : dirty ? "Salvar alterações" : "Tudo salvo"}
           </Button>
         }
       />
 
-      <div className="stack-lg">
-        <section className="card card-pad">
-          <div className="card-head">
-            <div>
-              <div className="card-title">
-                <span className="icon-tile grad">
-                  <Sparkles size={18} />
-                </span>
-                Selecionadas
-              </div>
-              <p className="card-sub">Clique para remover.</p>
-            </div>
-            <span className="badge">{selected.length}</span>
+      <div className="stack-lg skills-workspace">
+        <section className="card skills-selection" aria-labelledby="skills-selection-title">
+          <div className="skills-selection-head">
+            <span className="skills-kicker">Seu currículo</span>
+            <div><h2 id="skills-selection-title">Habilidades selecionadas</h2><span className="skills-count" aria-label={saved === null ? "Carregando seleção" : `${selected.length} habilidades selecionadas`}>{saved === null ? "—" : selected.length}</span></div>
+            <p>Revise as competências que você quer apresentar.</p>
           </div>
+          <div className="skills-selection-body">
           {saved === null ? (
-            <div className="row row-wrap">
+            <div className="row row-wrap" role="status" aria-label="Carregando suas habilidades">
               {[80, 110, 90, 70].map((w, i) => (
                 <Skeleton key={i} h={38} w={w} r={99} />
               ))}
             </div>
-          ) : selectedItems.length === 0 ? (
-            <p className="muted">Nenhuma habilidade selecionada ainda — escolha abaixo.</p>
+          ) : selected.length === 0 ? (
+            <div className="skills-selection-empty">
+              <span className="icon-tile"><Sparkles size={24} aria-hidden="true" /></span>
+              <h3>Seu repertório começa aqui.</h3>
+              <p>Selecione no catálogo as habilidades que fazem parte do seu perfil profissional.</p>
+              <a href="#skills-search" className="btn btn-secondary"><Search size={16} aria-hidden="true" /> Buscar habilidades</a>
+            </div>
           ) : (
-            <div className="chip-group">
+            <div className="chip-group skills-selected" role="group" aria-label="Habilidades selecionadas">
               {selectedItems.map((a) => (
-                <button key={a.id} className="chip" aria-pressed="true" onClick={() => toggle(a.id)}>
-                  {a.name} <X size={14} />
+                <button key={a.id} className="chip" aria-pressed="true" aria-label={`Remover ${a.name} da seleção`} onClick={() => toggle(a.id)}>
+                  <span>{a.name}</span> <X size={14} aria-hidden="true" />
                 </button>
               ))}
             </div>
           )}
+          {selectedItems.length < selected.length && <p className="skills-unavailable-names">Alguns nomes não estão disponíveis no catálogo. Sua seleção foi mantida.</p>}
           {dirty && (
-            <div className="alert" style={{ marginTop: 18 }}>
-              Você tem alterações não salvas. Clique em <b>&nbsp;Salvar alterações&nbsp;</b> para enviar.
+            <div className="skills-unsaved" role="status">
+              <span aria-hidden="true" /><p>Você tem alterações não salvas. Use <b>Salvar alterações</b> para atualizar o currículo.</p>
             </div>
           )}
+          {saved !== null && !dirty && selected.length > 0 && <p className="skills-saved-note"><Check size={15} aria-hidden="true" /> Sua seleção está salva.</p>}
+          </div>
+          <div className="skills-selection-foot"><span>01 Escolha</span><span>02 Revise</span><span>03 Salve</span></div>
         </section>
 
-        <section className="card card-pad">
-          <div className="card-head">
-            <div>
-              <div className="card-title">Catálogo de habilidades</div>
-              <p className="card-sub">Não encontrou? Digite e cadastre uma nova.</p>
-            </div>
+        <section className="card skills-catalog" aria-labelledby="skills-catalog-title">
+          <div className="skills-catalog-head">
+            <span className="skills-kicker">Suas competências, em destaque</span>
+            <h2 id="skills-catalog-title">Encontre o que você sabe fazer.</h2>
+            <p>Selecione uma ou várias habilidades. Não encontrou? Digite o nome e cadastre uma nova.</p>
           </div>
-          <div className="row" style={{ gap: 8, marginBottom: 18 }}>
-            <div className="input-wrap grow">
+          <div className="skills-catalog-body">
+          <label className="field-label" htmlFor="skills-search">Buscar ou criar habilidade</label>
+          <div className="skills-search-row">
+            <div className="input-wrap">
               <Search size={18} />
               <input
+                id="skills-search"
                 className="input"
+                aria-label="Buscar ou criar habilidade"
                 placeholder="Buscar ou criar habilidade…"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -167,27 +174,29 @@ export default function Skills() {
               </Button>
             )}
           </div>
-          {catalog.loading ? (
-            <div className="row row-wrap">
+          <div className="skills-results-head"><h3>Catálogo de habilidades</h3>{!catalog.loading && !catalog.error && <span role="status">{filtered.length} {filtered.length === 1 ? "opção" : "opções"}</span>}</div>
+          {catalog.error && catalog.items.length === 0 ? <CatalogFeedback onRetry={catalog.refresh}>Não foi possível carregar as habilidades.</CatalogFeedback> : catalog.loading ? (
+            <div className="row row-wrap" role="status" aria-label="Carregando catálogo de habilidades">
               {Array.from({ length: 10 }).map((_, i) => (
                 <Skeleton key={i} h={38} w={70 + ((i * 23) % 60)} r={99} />
               ))}
             </div>
           ) : (
-            <div className="chip-group">
+            <div className="skills-options" role="group" aria-label="Catálogo de habilidades">
               {filtered.map((a) => {
                 const on = selected.includes(a.id);
                 return (
                   <button key={a.id} className="chip" aria-pressed={on} onClick={() => toggle(a.id)}>
-                    {on ? <Check size={15} /> : <Plus size={15} />} {a.name}
+                    <span className="skills-option-mark" aria-hidden="true">{on ? <Check size={15} /> : <Plus size={15} />}</span><span>{a.name}</span>
                   </button>
                 );
               })}
-              {filtered.length === 0 && <p className="muted">Nada encontrado para “{query}”.</p>}
+              {filtered.length === 0 && <div className="skills-no-results"><Search size={23} aria-hidden="true" /><h3>{query.trim() ? "Nenhuma habilidade encontrada." : "O catálogo ainda está vazio."}</h3><p>{query.trim() ? `Nada encontrado para “${query}”. Você pode cadastrar essa habilidade pelo botão acima.` : "Digite o nome de uma habilidade para cadastrá-la."}</p></div>}
             </div>
           )}
+          </div>
         </section>
       </div>
-    </>
+    </div>
   );
 }

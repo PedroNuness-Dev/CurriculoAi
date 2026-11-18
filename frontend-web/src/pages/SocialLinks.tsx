@@ -3,21 +3,12 @@ import { ExternalLink, Globe, Link2, Plus } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { userApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
-import { Button, CatalogSelect, EmptyState, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
+import { Button, CatalogFeedback, CatalogSelect, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
 import { ensureProtocol, prettyUrl } from "../lib/format";
-
-// Cor de destaque discreta por rede (apenas o monograma).
-const NETWORK_TINT: Record<string, string> = {
-  linkedin: "#0a66c2",
-  github: "#0a0c12",
-  instagram: "#d62976",
-  twitter: "#0a0c12",
-  behance: "#1769ff",
-  dribbble: "#ea4c89",
-};
+import "../styles/social.css";
 
 export default function SocialLinks() {
-  const { profile, loading, reload } = useProfile();
+  const { profile, loading, error, reload } = useProfile();
   const toast = useToast();
   const [open, setOpen] = useState(false);
   const [networkId, setNetworkId] = useState<number | null>(null);
@@ -54,11 +45,11 @@ export default function SocialLinks() {
   }
 
   return (
-    <>
+    <div className="social-page">
       <PageHeader
         eyebrow="Competências"
         title="Redes e links"
-        text="LinkedIn, GitHub, portfólio… recrutadores sempre procuram por eles."
+        text="Conecte sua trajetória à sua presença digital. Reúna os perfis e canais que complementam seu currículo."
         actions={
           <Button icon={<Plus size={18} />} onClick={openModal}>
             Adicionar link
@@ -66,45 +57,47 @@ export default function SocialLinks() {
         }
       />
 
+      {error && <CatalogFeedback onRetry={reload}>{error}</CatalogFeedback>}
       {loading ? (
-        <ListSkeleton rows={2} />
-      ) : mine.length === 0 ? (
-        <EmptyState
-          icon={<Link2 size={26} />}
-          title="Nenhum link cadastrado"
-          text="Adicione pelo menos seu LinkedIn — é o primeiro lugar que o recrutador vai olhar."
-          action={
-            <Button icon={<Plus size={18} />} onClick={openModal}>
-              Adicionar link
-            </Button>
-          }
-        />
+        <div role="status" aria-label="Carregando redes e links"><ListSkeleton rows={2} /></div>
+      ) : error && !profile ? null : mine.length === 0 ? (
+        <section className="empty social-empty" aria-labelledby="social-empty-title">
+          <div className="social-empty-main">
+            <div className="social-emblem" aria-hidden="true"><Link2 size={34} /><span><Plus size={15} /></span></div>
+            <span className="social-kicker">Sua presença além do currículo</span>
+            <h2 id="social-empty-title">Mais caminhos para<br />conhecer seu trabalho.</h2>
+            <p>Você ainda não cadastrou links. Inclua os perfis e canais que ajudam a apresentar sua trajetória profissional.</p>
+            <Button icon={<Plus size={18} />} onClick={openModal}>Adicionar o primeiro link</Button>
+          </div>
+          <aside className="social-guide" aria-label="Como adicionar um perfil">
+            <span className="social-kicker">Da sua rede para o currículo</span>
+            <ol>
+              <li><span>01</span><div><h3>Escolha a plataforma</h3><p>Selecione a rede ou cadastre outra pelo seletor.</p></div></li>
+              <li><span>02</span><div><h3>Informe o endereço</h3><p>Inclua o link do perfil que você deseja apresentar.</p></div></li>
+              <li><span>03</span><div><h3>Conecte ao seu perfil</h3><p>Salve para reunir sua presença digital no currículo.</p></div></li>
+            </ol>
+            <p className="social-guide-note">Os links cadastrados podem ser acessados em uma nova aba.</p>
+          </aside>
+        </section>
       ) : (
-        <div className="item-list">
-          {mine.map((s) => {
-            const tint = NETWORK_TINT[s.socialNetwork.name.toLowerCase()];
-            return (
-              <article key={s.userSocialNetworkId} className="item" style={{ alignItems: "center" }}>
-                <span
-                  className="icon-tile"
-                  style={tint ? { background: tint, color: "#fff", fontWeight: 800 } : undefined}
-                  aria-hidden="true"
-                >
-                  {tint ? s.socialNetwork.name.slice(0, 2) : <Globe size={20} />}
-                </span>
-                <div className="item-body">
-                  <div className="item-title">{s.socialNetwork.name}</div>
-                  <div className="item-meta" style={{ wordBreak: "break-all" }}>
-                    {prettyUrl(s.link)}
-                  </div>
+        <section className="social-history" aria-labelledby="social-history-title">
+          <header className="social-list-header"><div><span className="social-kicker">Sua presença digital</span><h2 id="social-history-title">Conexões que complementam sua história.</h2></div><span className="social-count">{mine.length} {mine.length === 1 ? "link cadastrado" : "links cadastrados"}</span></header>
+          <div className="item-list social-list">
+          {mine.map((s) => (
+              <article key={s.userSocialNetworkId} className="item social-record">
+                <div className="social-platform-mark" aria-hidden="true">{s.socialNetwork.name.trim().slice(0, 2) || <Globe size={25} />}</div>
+                <div className="item-body social-record-body">
+                  <span className="social-kicker">Plataforma</span>
+                  <h3 className="item-title">{s.socialNetwork.name}</h3>
+                  <div className="social-url"><Link2 size={15} aria-hidden="true" /><span>{s.link.trim() ? prettyUrl(s.link) : "Endereço não informado"}</span></div>
                 </div>
-                <a href={ensureProtocol(s.link)} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
-                  <ExternalLink size={15} /> Abrir
-                </a>
+                {s.link.trim() && <a href={ensureProtocol(s.link)} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm" aria-label={`Abrir perfil em ${s.socialNetwork.name} em nova aba`}>
+                  <ExternalLink size={15} aria-hidden="true" /> Abrir perfil
+                </a>}
               </article>
-            );
-          })}
-        </div>
+          ))}
+          </div>
+        </section>
       )}
 
       <Modal
@@ -124,7 +117,8 @@ export default function SocialLinks() {
           </>
         }
       >
-        <form id="soc-form" className="stack" onSubmit={save} noValidate>
+        <form id="soc-form" className="social-form" onSubmit={save} noValidate>
+          <fieldset className="social-form-section"><legend><span>01</span> Plataforma</legend><p>Escolha onde está o perfil que deseja apresentar.</p>
           <Field label="Rede" htmlFor="sn-id" error={touched && !networkId ? "Escolha a rede" : null}>
             <CatalogSelect
               id="sn-id"
@@ -133,8 +127,11 @@ export default function SocialLinks() {
               onChange={setNetworkId}
               exclude={used}
               newLabel="Cadastrar outra rede…"
+              invalid={touched && !networkId}
             />
           </Field>
+          </fieldset>
+          <fieldset className="social-form-section"><legend><span>02</span> Endereço do perfil</legend><p>Informe o link para acessar sua página nessa plataforma.</p>
           <Field label="Link do perfil" htmlFor="sn-link" error={touched && link.trim().length <= 3 ? "Informe o link" : null}>
             <input
               id="sn-link"
@@ -142,10 +139,12 @@ export default function SocialLinks() {
               placeholder="linkedin.com/in/seu-perfil"
               value={link}
               onChange={(e) => setLink(e.target.value)}
+              aria-invalid={touched && link.trim().length <= 3}
             />
           </Field>
+          </fieldset>
         </form>
       </Modal>
-    </>
+    </div>
   );
 }

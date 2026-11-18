@@ -1,15 +1,16 @@
 import { useState, type FormEvent } from "react";
-import { Award, CalendarDays, Plus, School } from "lucide-react";
+import { Award, CalendarDays, Clock, Plus, School } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
-import { Button, CatalogSelect, EmptyState, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
+import { Button, CatalogFeedback, CatalogSelect, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
 import { isFuture, monthYear } from "../lib/format";
+import "../styles/certifications.css";
 
 const EMPTY = { name: "", institutionId: null as number | null, finishDate: "", inProgress: false };
 
 export default function Certifications() {
-  const { profile, loading, reload } = useProfile();
+  const { profile, loading, error, reload } = useProfile();
   const toast = useToast();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
@@ -53,7 +54,7 @@ export default function Certifications() {
   const list = (profile?.certifications ?? []).slice().sort((a, b) => (b.finishDate ?? "9999").localeCompare(a.finishDate ?? "9999"));
 
   return (
-    <>
+    <div className="certifications-page">
       <PageHeader
         eyebrow="Trajetória"
         title="Certificações e cursos"
@@ -65,45 +66,53 @@ export default function Certifications() {
         }
       />
 
+      {error && <CatalogFeedback onRetry={reload}>{error}</CatalogFeedback>}
       {loading ? (
-        <ListSkeleton />
-      ) : list.length === 0 ? (
-        <EmptyState
-          icon={<Award size={26} />}
-          title="Nenhuma certificação ainda"
-          text="Cursos da Alura, Udemy, DIO, Coursera… tudo conta para mostrar que você está se atualizando."
-          action={
-            <Button icon={<Plus size={18} />} onClick={openModal}>
-              Adicionar certificação
-            </Button>
-          }
-        />
+        <div role="status" aria-label="Carregando certificações"><ListSkeleton /></div>
+      ) : error && !profile ? null : list.length === 0 ? (
+        <section className="empty certification-empty" aria-labelledby="certification-empty-title">
+          <div className="certification-empty-main">
+            <div className="certification-emblem" aria-hidden="true"><Award size={34} /><span><Plus size={15} /></span></div>
+            <span className="certification-kicker">Seu desenvolvimento profissional</span>
+            <h2 id="certification-empty-title">Cada conquista<br />merece seu espaço.</h2>
+            <p>Você ainda não cadastrou certificações. Reúna os cursos, bootcamps e qualificações que reforçam seu perfil, inclusive os que estão em andamento.</p>
+            <Button icon={<Plus size={18} />} onClick={openModal}>Adicionar a primeira certificação</Button>
+          </div>
+          <aside className="certification-guide" aria-label="Como registrar uma certificação">
+            <span className="certification-kicker">O que vamos reunir</span>
+            <ol>
+              <li><span>01</span><div><h3>Certificação ou curso</h3><p>O nome que identifica essa etapa do seu aprendizado.</p></div></li>
+              <li><span>02</span><div><h3>Instituição responsável</h3><p>A organização associada à sua certificação ou ao seu curso.</p></div></li>
+              <li><span>03</span><div><h3>Conclusão ou andamento</h3><p>A data de conclusão, que pode ser prevista, ou a indicação de que você ainda está fazendo.</p></div></li>
+            </ol>
+            <p className="certification-guide-note">Organize suas qualificações para que elas também façam parte da sua história no currículo.</p>
+          </aside>
+        </section>
       ) : (
-        <div className="cat-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14 }}>
+        <section className="certification-history" aria-labelledby="certification-history-title">
+          <header className="certification-list-header">
+            <div><span className="certification-kicker">Suas qualificações</span><h2 id="certification-history-title">Aprendizado que agrega valor.</h2></div>
+            <span className="certification-count">{list.length} {list.length === 1 ? "certificação cadastrada" : "certificações cadastradas"}</span>
+          </header>
+          <div className="cat-grid certification-grid">
           {list.map((c) => (
-            <article key={c.certificationId} className="item" style={{ flexDirection: "column", gap: 14 }}>
-              <div className="row between">
-                <span className="icon-tile grad">
-                  <Award size={20} />
-                </span>
+            <article key={c.certificationId} className="item certification-record">
+              <div className="certification-record-top">
+                <span className="icon-tile"><Award size={23} /></span>
                 {c.inProgress || isFuture(c.finishDate) ? <span className="badge warning">Em andamento</span> : <span className="badge success">Concluído</span>}
               </div>
-              <div>
-                <div className="item-title">{c.name}</div>
-                <div className="item-meta">
-                  <span>
-                    <School size={14} /> {c.institution.name}
-                  </span>
-                  {c.finishDate && (
-                    <span>
-                      <CalendarDays size={14} /> {monthYear(c.finishDate)}
-                    </span>
-                  )}
-                </div>
+              <div className="certification-record-content">
+                <span className="certification-kicker">Certificação ou curso</span>
+                <h3 className="item-title">{c.name}</h3>
+                <p className="certification-institution"><School size={16} aria-hidden="true" /><span>{c.institution.name}</span></p>
+              </div>
+              <div className="certification-record-foot">
+                {c.finishDate ? <><CalendarDays size={17} aria-hidden="true" /><div><span className="certification-kicker">{isFuture(c.finishDate) ? "Conclusão prevista" : "Conclusão"}</span><p>{monthYear(c.finishDate)}</p></div></> : <><Clock size={17} aria-hidden="true" /><div><span className="certification-kicker">Conclusão</span><p>Data não informada</p></div></>}
               </div>
             </article>
           ))}
-        </div>
+          </div>
+        </section>
       )}
 
       <Modal
@@ -123,7 +132,11 @@ export default function Certifications() {
           </>
         }
       >
-        <form id="cert-form" className="form-grid" onSubmit={save} noValidate>
+        <form id="cert-form" className="certification-form" onSubmit={save} noValidate>
+          <fieldset className="certification-form-section">
+            <legend><span>01</span> Identificação da certificação</legend>
+            <p>Informe a qualificação e a instituição responsável.</p>
+            <div className="form-grid">
           <Field className="span-2" label="Nome" htmlFor="ce-name" error={err("name")}>
             <input
               id="ce-name"
@@ -134,7 +147,7 @@ export default function Certifications() {
               aria-invalid={!!err("name")}
             />
           </Field>
-          <Field label="Instituição" htmlFor="ce-inst" error={err("institutionId")}>
+          <Field className="span-2" label="Instituição" htmlFor="ce-inst" error={err("institutionId")}>
             <CatalogSelect
               id="ce-inst"
               catalog="institutions"
@@ -144,7 +157,13 @@ export default function Certifications() {
               invalid={!!err("institutionId")}
             />
           </Field>
-          <Field label="Data de conclusão" htmlFor="ce-date" error={err("finishDate")}>
+            </div>
+          </fieldset>
+          <fieldset className="certification-form-section">
+            <legend><span>02</span> Conclusão</legend>
+            <p>Informe a data ou indique que você ainda está fazendo.</p>
+            <div className="form-grid">
+          <Field className="span-2" label="Data de conclusão" htmlFor="ce-date" error={err("finishDate")}>
             <input
               id="ce-date"
               type="date"
@@ -158,8 +177,10 @@ export default function Certifications() {
             <input type="checkbox" checked={form.inProgress} onChange={(e) => set("inProgress", e.target.checked)} />
             Ainda estou fazendo
           </label>
+            </div>
+          </fieldset>
         </form>
       </Modal>
-    </>
+    </div>
   );
 }

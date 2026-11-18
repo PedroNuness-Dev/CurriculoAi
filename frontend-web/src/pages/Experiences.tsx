@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from "react";
-import { Briefcase, Building2, CalendarDays, Clock, Layers, Plus } from "lucide-react";
+import { ArrowUpRight, Briefcase, Building2, CalendarDays, CheckCircle2, Clock, Layers, Plus } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
-import { Button, CatalogSelect, EmptyState, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
+import { Button, CatalogFeedback, CatalogSelect, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
 import { duration, period, todayIso } from "../lib/format";
+import "../styles/experiences.css";
 
 const EMPTY = {
   title: "",
@@ -18,7 +19,7 @@ const EMPTY = {
 };
 
 export default function Experiences() {
-  const { profile, loading, reload } = useProfile();
+  const { profile, loading, error, reload } = useProfile();
   const toast = useToast();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
@@ -84,11 +85,11 @@ export default function Experiences() {
   const err = (k: keyof typeof errors): string | null => (touched && typeof errors[k] === "string" ? (errors[k] as string) : null);
 
   return (
-    <>
+    <div className="experiences-page">
       <PageHeader
         eyebrow="Trajetória"
         title="Experiências profissionais"
-        text="Empregos, estágios e freelas. A IA reescreve suas atividades com verbos de ação."
+        text="Cada experiência conta uma parte da sua história. Reúna aqui os trabalhos, estágios e freelas que construíram sua trajetória."
         actions={
           <Button icon={<Plus size={18} />} onClick={openModal}>
             Adicionar experiência
@@ -96,50 +97,54 @@ export default function Experiences() {
         }
       />
 
+      {error && <CatalogFeedback onRetry={reload}>{error}</CatalogFeedback>}
       {loading ? (
-        <ListSkeleton />
-      ) : list.length === 0 ? (
-        <EmptyState
-          icon={<Briefcase size={26} />}
-          title="Nenhuma experiência ainda"
-          text="Adicione seus trabalhos, estágios ou projetos freelance — mesmo os curtos contam."
-          action={
-            <Button icon={<Plus size={18} />} onClick={openModal}>
-              Adicionar a primeira
-            </Button>
-          }
-        />
+        <div role="status" aria-label="Carregando experiências"><ListSkeleton /></div>
+      ) : error && !profile ? null : list.length === 0 ? (
+        <section className="empty experience-empty" aria-labelledby="experience-empty-title">
+          <div className="experience-empty-main">
+            <div className="experience-emblem" aria-hidden="true"><Briefcase size={32} /><span><Plus size={15} /></span></div>
+            <span className="experience-kicker">Sua trajetória, em palavras</span>
+            <h2 id="experience-empty-title">Dê espaço à sua<br />primeira experiência.</h2>
+            <p>Você ainda não cadastrou experiências. Trabalhos, estágios e projetos freelance fazem parte da sua história — mesmo os curtos contam.</p>
+            <Button icon={<Plus size={18} />} onClick={openModal}>Adicionar a primeira</Button>
+          </div>
+          <aside className="experience-guide" aria-label="O que informar na experiência">
+            <span className="experience-kicker">O que vamos reunir</span>
+            <ol>
+              <li><span>01</span><div><h3>Seu papel</h3><p>O cargo, a empresa e a área em que você atuou.</p></div></li>
+              <li><span>02</span><div><h3>O período</h3><p>Quando começou e se esse trabalho continua hoje.</p></div></li>
+              <li><span>03</span><div><h3>Sua contribuição</h3><p>As atividades e conquistas que merecem destaque.</p></div></li>
+            </ol>
+            <div className="experience-guide-note"><ArrowUpRight size={18} /><p>Você conta o que fez.<br /><strong>A IA ajuda a transformar em currículo.</strong></p></div>
+          </aside>
+        </section>
       ) : (
-        <div className="item-list">
+        <section className="experience-history" aria-labelledby="experience-history-title">
+          <header className="experience-list-header"><div><span className="experience-kicker">Seu percurso profissional</span><h2 id="experience-history-title">Uma trajetória que evolui.</h2></div><span className="experience-count">{list.length} {list.length === 1 ? "experiência cadastrada" : "experiências cadastradas"}</span></header>
+          <div className="item-list experience-timeline">
           {list.map((x) => (
-            <article key={x.experienceId} className="item">
-              <span className="icon-tile grad">
-                <Building2 size={20} />
-              </span>
+            <article key={x.experienceId} className={`item experience-record ${x.workCurrent ? "is-current" : ""}`}>
+              <div className="experience-date"><span className="experience-timeline-dot" aria-hidden="true" /><span><CalendarDays size={15} aria-hidden="true" /> Período</span><strong>{period(x.startDate, x.finishDate, "o momento")}</strong><span><Clock size={14} aria-hidden="true" /> {duration(x.startDate, x.finishDate)}</span></div>
               <div className="item-body">
-                <div className="row between row-wrap" style={{ gap: 8 }}>
-                  <div className="item-title">
-                    {x.position} <span className="muted">· {x.enterprise.name}</span>
-                  </div>
-                  {x.workCurrent ? <span className="badge lime">Atual</span> : null}
+                <div className="experience-record-heading">
+                  <span className="icon-tile"><Building2 size={21} /></span>
+                  <div><h3 className="item-title">{x.position}</h3><p className="experience-company">{x.enterprise.name}</p></div>
+                  {x.workCurrent ? <span className="badge lime"><CheckCircle2 size={13} /> Trabalho atual</span> : null}
                 </div>
                 <div className="item-meta">
                   <span>
                     <Layers size={14} /> {x.title}
                   </span>
-                  <span>
-                    <CalendarDays size={14} /> {period(x.startDate, x.finishDate, "o momento")}
-                  </span>
-                  <span>
-                    <Clock size={14} /> {duration(x.startDate, x.finishDate)}
-                  </span>
                   <span className="badge neutral">{x.area.name}</span>
                 </div>
-                <p className="item-desc">{x.description}</p>
+                <div className="experience-description"><span className="experience-kicker">Atividades e conquistas</span><p className="item-desc">{x.description}</p></div>
               </div>
             </article>
           ))}
-        </div>
+          </div>
+          <p className="experience-list-note">Trabalhos atuais primeiro. Depois, as experiências mais recentes.</p>
+        </section>
       )}
 
       <Modal
@@ -160,7 +165,8 @@ export default function Experiences() {
           </>
         }
       >
-        <form id="exp-form" className="form-grid" onSubmit={save} noValidate>
+        <form id="exp-form" className="experience-form" onSubmit={save} noValidate>
+          <fieldset className="experience-form-section"><legend><span>01</span> Seu papel</legend><p>Identifique a experiência e onde ela aconteceu.</p><div className="form-grid">
           <Field label="Cargo" htmlFor="ex-pos" error={err("position")}>
             <input
               id="ex-pos"
@@ -201,6 +207,8 @@ export default function Experiences() {
               invalid={!!err("areaId")}
             />
           </Field>
+          </div></fieldset>
+          <fieldset className="experience-form-section"><legend><span>02</span> Período de atuação</legend><p>Informe as datas e indique se este é seu trabalho atual.</p><div className="form-grid">
           <Field label="Início" htmlFor="ex-start" error={err("startDate")}>
             <input
               id="ex-start"
@@ -228,6 +236,8 @@ export default function Experiences() {
             <input type="checkbox" checked={form.current} onChange={(e) => set("current", e.target.checked)} />
             Trabalho aqui atualmente
           </label>
+          </div></fieldset>
+          <fieldset className="experience-form-section"><legend><span>03</span> Sua contribuição</legend><p>Conte o que você fazia e os resultados do seu trabalho.</p>
           <Field
             className="span-2"
             label="Atividades e conquistas"
@@ -244,8 +254,9 @@ export default function Experiences() {
               aria-invalid={!!err("description")}
             />
           </Field>
+          </fieldset>
         </form>
       </Modal>
-    </>
+    </div>
   );
 }

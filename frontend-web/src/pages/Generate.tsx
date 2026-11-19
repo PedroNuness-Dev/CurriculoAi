@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, ArrowUpRight, Check, Download, FileText, RefreshCw, Sparkles, X } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Check, Download, FileText, GitBranch, RefreshCw, Sparkles, X } from "lucide-react";
 import { completeness, useProfile } from "../auth/ProfileContext";
 import { useAuth } from "../auth/AuthContext";
 import { resumeApi } from "../api/endpoints";
 import { errorMessage } from "../api/client";
 import { Symbol } from "../components/brand/Brand";
+import { GenerationVisual, type GenerationPhase } from "../components/generate/GenerationVisual";
 import { Button, CatalogFeedback, PageHeader, Skeleton } from "../components/ui/ui";
 import { useToast } from "../components/ui/Toast";
 import "../styles/generate.css";
 
-type Phase = "idle" | "running" | "done" | "error";
+type Phase = GenerationPhase;
 
 export default function Generate() {
   const { profile, loading, error: profileError, reload } = useProfile();
@@ -76,17 +77,41 @@ export default function Generate() {
       ) : (
         <>
           {profileError && <CatalogFeedback onRetry={reload}>{profileError}</CatalogFeedback>}
-          <p><Link to="/app/github">Importar projetos do GitHub</Link> para incluir no seu perfil.</p>
+          <section className="card generation-review" aria-labelledby="generation-review-title">
+            <div className="generation-review-head">
+              <div className="generation-review-intro">
+                <span className="generation-review-kicker">Antes de gerar</span>
+                <h2 id="generation-review-title">Seu perfil, em revisão.</h2>
+                <p>A geração usa os dados cadastrados. Clique em uma seção para conferir ou completar.</p>
+              </div>
+              <div className="generation-review-meta">
+                <span className="generation-profile-count">{profileError && !profile ? "Dados do perfil indisponíveis" : `${c.done} de ${c.total} seções preenchidas`}</span>
+                <Link to="/app/github" className="btn btn-secondary btn-sm"><GitBranch size={15} aria-hidden="true" /> Importar projetos do GitHub</Link>
+              </div>
+            </div>
+            <div className="generation-profile-sections">
+              {c.checks.map((section) => (
+                <Link key={section.key} to={section.to} className={section.done ? "is-complete" : ""}>
+                  <span className="generation-check" aria-hidden="true">{section.done ? <Check size={13} /> : <PlusMark />}</span>
+                  {section.label}
+                  <span className="sr-only">{profileError && !profile ? ": consulta indisponível" : section.done ? ": preenchido" : ": não informado"}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
           <div className="generation-workspace">
             <div className="stack-lg generation-main">
               <section className="gen-stage generation-stage" aria-label="Geração do currículo" aria-busy={phase === "running"}>
                 <div className="generation-stage-body">
                   <div className="generation-stage-top"><div className={"gen-orb " + (phase === "running" ? "busy" : "")} aria-hidden="true"><Symbol size={42} /></div><span className="badge lime"><Sparkles size={14} /> Powered by Cerebras</span></div>
+                  <div className="generation-stage-grid">
                   <div className="generation-state" key={phase}>
                     <span className="generation-kicker">{phase === "running" ? "Solicitação em processamento" : phase === "done" ? "Documento disponível" : phase === "error" ? "Geração não concluída" : "Do seu perfil para o PDF"}</span>
                     <h2 role={phase === "running" || phase === "done" ? "status" : undefined}>{phase === "running" ? "Estamos gerando seu currículo." : phase === "done" ? "Seu currículo está pronto." : phase === "error" ? "Vamos tentar novamente?" : "Sua história, pronta para o mercado."}</h2>
                     <p>{phase === "running" ? "Aguardando o retorno da geração. O documento aparecerá aqui assim que estiver disponível." : phase === "done" ? "Confira a pré-visualização abaixo e baixe o mesmo arquivo para usar nas suas candidaturas." : phase === "error" ? "Confira a mensagem abaixo. Você pode tentar novamente com as informações já cadastradas." : "A IA usa os dados do seu perfil para escrever e organizar o currículo. Revise o PDF antes de baixar."}</p>
                     {phase === "running" ? <div className="generation-activity"><span className="spinner" aria-hidden="true" /><span>Gerando · {elapsed}s decorridos</span></div> : <div className="generation-format"><FileText size={17} aria-hidden="true" /><span>Documento em PDF · Currículo em português</span></div>}
+                  </div>
+                  <GenerationVisual key={`visual-${phase}`} phase={phase} />
                   </div>
                 </div>
                 <div className="generation-actions">
@@ -100,10 +125,6 @@ export default function Generate() {
               {weak && phase === "idle" && !profileError && <div className="alert warning generation-profile-warning"><AlertTriangle size={18} /><div>Seu perfil ainda não tem experiências nem formações. <Link to="/app/experiencias">Adicione uma experiência</Link> ou <Link to="/app/formacao">formação</Link> para dar mais contexto ao currículo. Você também pode gerar com as informações atuais.</div></div>}
               {phase === "error" && error && <div className="alert error generation-error" role="alert"><AlertTriangle size={18} /><div><b>Não foi possível gerar o currículo.</b> {error.title}{error.details.length > 0 && <div className="small">{error.details.join(" · ")}</div>}<p>Tente novamente em alguns instantes. Seus dados continuam salvos no perfil.</p></div></div>}
             </div>
-            <aside className="card generation-review" aria-labelledby="generation-review-title">
-              <div className="generation-review-head"><span className="generation-review-kicker">Antes de gerar</span><h2 id="generation-review-title">Seu perfil, em revisão.</h2><p>A geração usa os dados cadastrados. Acesse uma seção para conferir suas informações.</p><span className="generation-profile-count">{profileError && !profile ? "Dados do perfil indisponíveis" : `${c.done} de ${c.total} seções preenchidas`}</span></div>
-              <div className="generation-profile-sections">{c.checks.map((section) => <Link key={section.key} to={section.to} className={section.done ? "is-complete" : ""}><span className="generation-check" aria-hidden="true">{section.done ? <Check size={13} /> : <PlusMark />}</span><span><strong>{section.label}</strong><small>{profileError && !profile ? "Consulta indisponível" : section.done ? "Preenchido" : "Não informado"}</small></span><ArrowUpRight size={14} aria-hidden="true" /></Link>)}</div>
-            </aside>
           </div>
           {pdfUrl && <section className="card generation-preview" aria-labelledby="generation-preview-title">
             <div className="generation-preview-head"><div><span className="generation-review-kicker">O resultado da sua trajetória</span><h2 id="generation-preview-title" tabIndex={-1}><FileText size={21} aria-hidden="true" /> Pré-visualização do currículo</h2><p>A prévia e o download usam o mesmo arquivo PDF.</p></div><a href={pdfUrl} download={fileName} className="btn btn-secondary btn-sm"><Download size={16} /> {fileName}</a></div>

@@ -1,0 +1,14 @@
+.github-page { display: grid; gap: 24px; }
+.github-search { display: flex; gap: 20px; padding: 24px; align-items: end; }
+.github-search .field { flex: 1; min-width: 0; }
+.github-profile { padding: 24px; display: flex; gap: 18px; align-items: start; }
+.github-profile p { margin-top: 8px; }
+.github-repositories { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.github-repository { padding: 22px; display: grid; gap: 14px; align-content: start; overflow-wrap: anywhere; }
+.github-choice { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.github-choice input { width: 18px; height: 18px; }
+.github-meta, .github-pagination { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.github-review { padding: 24px; display: grid; gap: 20px; }
+.github-review fieldset { border: 1px solid #dce2ec; border-radius: 12px; padding: 20px; display: grid; gap: 16px; min-width: 0; }
+.github-review legend { padding: 0 8px; font-weight: 650; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .github-search { align-items: stretch; flex-direction: column; } }

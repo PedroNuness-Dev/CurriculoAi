@@ -132,7 +132,7 @@ public class CerebrasService {
             String source = normalizeWhitespace(text);
             var verified = analysis.melhorias().stream()
                     .filter(item -> source.contains(normalizeWhitespace(item.trechoOriginal())))
-                    .map(CurriculumAnalysis.Melhoria::verificarExemplo).toList();
+                    .map(br.com.CurriculoAi.dto.cerebras.Melhoria::verificarExemplo).toList();
             if (!analysis.melhorias().isEmpty() && verified.isEmpty()) {
                 throw new IllegalStateException("Trechos citados não encontrados no documento");
             }

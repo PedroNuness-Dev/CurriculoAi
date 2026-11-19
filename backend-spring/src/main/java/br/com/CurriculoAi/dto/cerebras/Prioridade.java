@@ -1,0 +1,1 @@
+package br.com.CurriculoAi.dto.cerebras; public enum Prioridade { ALTA, MEDIA, BAIXA }

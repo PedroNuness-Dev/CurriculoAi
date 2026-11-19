@@ -87,8 +87,8 @@ class CurriculumAnalysisTest {
 
     @Test
     void removesExampleWithUnsupportedMetric() {
-        var item = new br.com.CurriculoAi.dto.cerebras.CurriculumAnalysis.Melhoria(
-                br.com.CurriculoAi.dto.cerebras.CurriculumAnalysis.Prioridade.ALTA,
+        var item = new br.com.CurriculoAi.dto.cerebras.Melhoria(
+                br.com.CurriculoAi.dto.cerebras.Prioridade.ALTA,
                 "Experiência", "Testei 12 rotas.", "Impacto desconhecido", "Descreva o impacto",
                 "Testei 12 rotas e reduzi falhas em 30%.", "Qual foi o resultado?");
         assertNull(item.verificarExemplo().exemplo());

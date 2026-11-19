@@ -6,33 +6,38 @@ import {
   Briefcase,
   Database,
   FolderGit2,
+  GitBranch,
   GraduationCap,
   LayoutDashboard,
   Languages as LanguagesIcon,
   Link2,
   LogOut,
   Menu,
+  ScanSearch,
   Sparkles,
   UserRound,
   X,
 } from "lucide-react";
 import { useAuth } from "../../auth/AuthContext";
-import { completeness, useProfile } from "../../auth/ProfileContext";
+import { completeness, useIsAdmin, useProfile } from "../../auth/ProfileContext";
 import { firstName, initials } from "../../lib/format";
 import { Wordmark } from "../brand/Brand";
 import { Button } from "../ui/ui";
+import AppIntro from "./AppIntro";
 import "../../styles/app.css";
 
 const PAGE_NAMES: Record<string, string> = {
   "/app": "Visão geral", "/app/perfil": "Sobre você", "/app/experiencias": "Experiências",
   "/app/formacao": "Formação", "/app/certificacoes": "Certificações", "/app/projetos": "Projetos",
   "/app/habilidades": "Habilidades", "/app/idiomas": "Idiomas", "/app/redes": "Redes e links",
-  "/app/gerar": "Gerar com IA", "/app/catalogos": "Catálogos",
+  "/app/gerar": "Gerar currículo", "/app/analisar": "Analisar currículo", "/app/github": "Importar do GitHub",
+  "/app/catalogos": "Catálogos",
 };
 
 export default function AppShell() {
   const { session, logout } = useAuth();
   const { profile, loading } = useProfile();
+  const isAdmin = useIsAdmin();
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const sidebarRef = useRef<HTMLElement>(null);
@@ -42,9 +47,11 @@ export default function AppShell() {
 
   useEffect(() => {
     setOpen(false);
-    window.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0, behavior: "instant" });
     if (previousPath.current !== location.pathname) mainRef.current?.focus({ preventScroll: true });
     previousPath.current = location.pathname;
+    // Se a lista da sidebar rolar (telas baixas), mantém o item ativo à vista.
+    sidebarRef.current?.querySelector<HTMLElement>(".workspace-nav-scroll .nav-link.active")?.scrollIntoView({ block: "nearest", behavior: "instant" });
   }, [location.pathname]);
 
   useEffect(() => {
@@ -108,22 +115,45 @@ export default function AppShell() {
 
   return (
     <div className={`shell app-workspace ${open ? "nav-open" : ""}`}>
+      <AppIntro />
       <a className="workspace-skip" href="#workspace-main">Pular para o conteúdo</a>
       <header className="workspace-header">
         <button ref={menuRef} type="button" className="btn btn-white btn-icon workspace-menu" onClick={() => setOpen((value) => !value)} aria-label={open ? "Fechar menu" : "Abrir menu"} aria-expanded={open} aria-controls="workspace-navigation">{open ? <X size={20} /> : <Menu size={20} />}</button>
         <Link to="/app" className="workspace-logo" aria-label="CurrículoAI — visão geral"><Wordmark height={22} tone="white" /></Link>
         <span className="workspace-header-caption">Seu espaço profissional</span>
+        <Link
+          to="/app"
+          className={`workspace-progress ${c.percent === 100 ? "is-complete" : ""}`}
+          aria-label={loading ? "Carregando progresso do perfil" : `Perfil ${c.percent}% preenchido, ${c.done} de ${c.total} seções. Ver o que falta`}
+          title="Ver o que falta preencher"
+        >
+          <span className="workspace-progress-label">{c.percent === 100 ? "Perfil completo" : "Perfil preenchido"}</span>
+          <span className="progress" aria-hidden="true"><span style={{ width: `${loading ? 0 : c.percent}%` }} /></span>
+          <b aria-hidden="true">{loading ? "—" : `${c.percent}%`}</b>
+        </Link>
         <Link to="/app/perfil" className="workspace-account" aria-label="Meu perfil"><span className="avatar">{initials(session?.name)}</span><span>{firstName(session?.name)}</span></Link>
       </header>
       {open && <div className="scrim" onClick={() => setOpen(false)} />}
 
       <aside id="workspace-navigation" ref={sidebarRef} className="sidebar" aria-label="Navegação principal" role={open ? "dialog" : undefined} aria-modal={open || undefined}>
         <div className="workspace-sidebar-head"><span>Seu currículo</span><Button variant="ghost" iconOnly className="workspace-menu-close" onClick={() => setOpen(false)} aria-label="Fechar menu"><X size={19} /></Button></div>
-        <div className="workspace-profile-progress">
-          <div><span>{loading ? "Carregando perfil…" : "Perfil preenchido"}</span><b>{loading ? "—" : `${c.percent}%`}</b></div>
-          <div className="progress on-light"><span style={{ width: `${c.percent}%` }} /></div>
-        </div>
         <div className="workspace-nav-scroll">
+          <section className="nav-featured" aria-labelledby="nav-featured-title">
+            <div className="nav-label" id="nav-featured-title">Ferramentas com IA</div>
+            <nav className="nav-group" aria-labelledby="nav-featured-title">
+              <NavLink to="/app/gerar" className="nav-link cta">
+                <Sparkles size={19} /> Gerar currículo <span className="lime-dot" />
+              </NavLink>
+              <NavLink to="/app/analisar" className="nav-link">
+                <ScanSearch size={19} /> Analisar currículo
+              </NavLink>
+              <NavLink to="/app/github" className="nav-link">
+                <GitBranch size={19} /> Importar do GitHub
+              </NavLink>
+            </nav>
+          </section>
+
+          <div className="nav-label">Meu perfil</div>
           <nav className="nav-group">
             <NavLink to="/app" end className="nav-link">
               <LayoutDashboard size={19} /> Visão geral
@@ -162,27 +192,23 @@ export default function AppShell() {
             </NavLink>
           </nav>
 
-          <div className="nav-label">Currículo</div>
-          <nav className="nav-group">
-            <NavLink to="/app/analisar" className="nav-link"><BookOpen size={19} /> Analisar currículo</NavLink>
-          <NavLink to="/app/github" className="nav-link"><FolderGit2 size={19} /> Importar do GitHub</NavLink>
-          <NavLink to="/app/gerar" className="nav-link cta">
-              <Sparkles size={19} /> Gerar com IA <span className="lime-dot" />
-            </NavLink>
-            <NavLink to="/app/catalogos" className="nav-link">
-              <Database size={19} /> Catálogos
-            </NavLink>
-          </nav>
-
+          {isAdmin && (
+            <>
+              <div className="nav-label">Administração</div>
+              <nav className="nav-group">
+                <NavLink to="/app/catalogos" className="nav-link">
+                  <Database size={19} /> Catálogos
+                </NavLink>
+              </nav>
+            </>
+          )}
         </div>
 
         <div className="sidebar-user">
           <span className="avatar">{initials(session?.name)}</span>
           <div className="who">
             <b>{session?.name}</b>
-            <span>
-              {c.done} de {c.total} seções preenchidas
-            </span>
+            <span>{loading ? "Carregando perfil…" : `${c.done} de ${c.total} seções preenchidas`}</span>
           </div>
           <Button variant="ghost" size="sm" iconOnly onClick={logout} aria-label="Sair" title="Sair">
             <LogOut size={18} />

@@ -7,7 +7,8 @@ import br.com.CurriculoAi.dto.cerebras.MessageDTO;
 import br.com.CurriculoAi.dto.cerebras.CurriculumAnalysis;
 import br.com.CurriculoAi.dto.cerebras.AnalysisSchema;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.web.client.RestClientException;
+import feign.FeignException;
+import br.com.CurriculoAi.client.cerebras.CerebrasClient;
 import br.com.CurriculoAi.dto.certification.CertificationResponse;
 import br.com.CurriculoAi.dto.experience.ExperienceResponse;
 import br.com.CurriculoAi.dto.formation.FormationResponse;
@@ -19,12 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -34,13 +30,7 @@ import java.util.List;
 @Slf4j
 public class CerebrasService {
 
-    @Value("${cerebras.api.key}")
-    private String apiKey;
-
-    @Value("${cerebras.api.url}")
-    private String apiUrl;
-
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final CerebrasClient cerebrasClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UserService userService;
     private final CurriculumRepository curriculumRepository;
@@ -146,7 +136,7 @@ public class CerebrasService {
             }
             return new CurriculumAnalysis(analysis.resumo(), analysis.pontosFortes(), analysis.pontosDeMelhoria(),
                     analysis.sugestoes(), analysis.compatibilidade(), verified);
-        } catch (JsonProcessingException | RestClientException | IllegalStateException e) {
+        } catch (JsonProcessingException | FeignException | IllegalStateException e) {
             log.warn("Falha ao validar ou obter diagnóstico: {}", e.getClass().getSimpleName());
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.BAD_GATEWAY, "Não foi possível obter a análise da Cerebras.");
@@ -174,7 +164,7 @@ public class CerebrasService {
                     "vaga", vaga == null ? "" : vaga, "respostas", answers));
             return complete(new CerebrasRequestDTO(List.of(new MessageDTO("system", instructions),
                     new MessageDTO("user", input))));
-        } catch (JsonProcessingException | RestClientException | IllegalStateException e) {
+        } catch (JsonProcessingException | FeignException | IllegalStateException e) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.BAD_GATEWAY, "Não foi possível revisar o currículo.");
         }
@@ -183,16 +173,7 @@ public class CerebrasService {
     private String complete(CerebrasRequestDTO requestDTO) throws JsonProcessingException {
         String bodyJson = objectMapper.writeValueAsString(requestDTO);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(apiKey);
-
-        HttpEntity<String> request = new HttpEntity<>(bodyJson, headers);
-
-        log.info("Enviando request para Cerebras");
-
-        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, request, String.class);
-        String body = response.getBody();
+        String body = cerebrasClient.complete(bodyJson);
         var content = body == null ? null : objectMapper.readTree(body).at("/choices/0/message/content");
         if (content == null || !content.isTextual() || content.textValue().isBlank()) {
             throw new IllegalStateException("Resposta inválida da API Cerebras");

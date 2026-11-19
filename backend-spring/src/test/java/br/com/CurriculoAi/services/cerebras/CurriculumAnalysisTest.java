@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayOutputStream;
@@ -21,30 +19,27 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 class CurriculumAnalysisTest {
-    private final CerebrasService cerebras = new CerebrasService(null, null);
+    private final br.com.CurriculoAi.client.cerebras.CerebrasClient client = org.mockito.Mockito.mock(br.com.CurriculoAi.client.cerebras.CerebrasClient.class);
+    private final CerebrasService cerebras = new CerebrasService(client, null, null);
     private final CerebrasController controller = new CerebrasController(cerebras, null, new CurriculumTextExtractor());
 
-    private MockRestServiceServer provider(String feedback) throws Exception {
+    private Runnable provider(String feedback) throws Exception {
         return provider(feedback, null);
     }
 
-    private MockRestServiceServer provider(String feedback, String vaga) throws Exception {
-        ReflectionTestUtils.setField(cerebras, "apiKey", "test");
-        ReflectionTestUtils.setField(cerebras, "apiUrl", "https://example.test/chat");
-        var client = (RestTemplate) ReflectionTestUtils.getField(cerebras, "restTemplate");
-        var server = MockRestServiceServer.bindTo(client).build();
+    private Runnable provider(String feedback, String vaga) throws Exception {
         var response = Map.of("choices", List.of(Map.of("message", Map.of("content", feedback))));
         String input = vaga == null ? "Experiencia com Java" : new ObjectMapper()
                 .writeValueAsString(Map.of("curriculo", "Experiencia com Java", "vaga", vaga));
-        server.expect(requestTo("https://example.test/chat"))
-                .andExpect(header("Authorization", "Bearer test"))
-                .andExpect(jsonPath("$.messages[1].content").value(input))
-                .andRespond(withSuccess(new ObjectMapper().writeValueAsString(response), MediaType.APPLICATION_JSON));
-        return server;
+        org.mockito.Mockito.when(client.complete(org.mockito.ArgumentMatchers.anyString()))
+                .thenAnswer(invocation -> {
+                    var payload = new ObjectMapper().readTree((String) invocation.getArgument(0));
+                    assertEquals(input, payload.at("/messages/1/content").asText());
+                    return new ObjectMapper().writeValueAsString(response);
+                });
+        return () -> org.mockito.Mockito.verify(client).complete(org.mockito.ArgumentMatchers.anyString());
     }
 
     private MockMultipartFile pdf(boolean withText) throws Exception {
@@ -71,7 +66,7 @@ class CurriculumAnalysisTest {
                  "pontosDeMelhoria":[],"sugestoes":["Descreva um projeto."],"melhorias":[]}
                 """);
         assertEquals(List.of("Descreva um projeto."), controller.analyze(pdf(true), "  ").sugestoes());
-        server.verify();
+        server.run();
     }
 
     @Test
@@ -85,7 +80,7 @@ class CurriculumAnalysisTest {
         var result = controller.analyze(pdf(true), vaga).compatibilidade();
         assertEquals(List.of("Java"), result.requisitosAtendidos());
         assertEquals(List.of("Kubernetes"), result.requisitosSemEvidencia());
-        server.verify();
+        server.run();
     }
 
     @Test
@@ -124,6 +119,6 @@ class CurriculumAnalysisTest {
         var file = pdf(true);
         var error = assertThrows(ResponseStatusException.class, () -> controller.analyze(file, null));
         assertEquals(HttpStatus.BAD_GATEWAY, error.getStatusCode());
-        server.verify();
+        server.run();
     }
 }

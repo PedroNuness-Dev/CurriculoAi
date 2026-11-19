@@ -1,14 +1,12 @@
 package br.com.CurriculoAi.services.cerebras;
 
+import br.com.CurriculoAi.client.cerebras.CerebrasClient;
 import br.com.CurriculoAi.dto.area.AreaResponse;
 import br.com.CurriculoAi.dto.availability.AvailabilityResponse;
-import br.com.CurriculoAi.dto.cerebras.CerebrasRequestDTO;
-import br.com.CurriculoAi.dto.cerebras.MessageDTO;
-import br.com.CurriculoAi.dto.cerebras.CurriculumAnalysis;
 import br.com.CurriculoAi.dto.cerebras.AnalysisSchema;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import feign.FeignException;
-import br.com.CurriculoAi.client.cerebras.CerebrasClient;
+import br.com.CurriculoAi.dto.cerebras.CerebrasRequestDTO;
+import br.com.CurriculoAi.dto.cerebras.CurriculumAnalysis;
+import br.com.CurriculoAi.dto.cerebras.MessageDTO;
 import br.com.CurriculoAi.dto.certification.CertificationResponse;
 import br.com.CurriculoAi.dto.experience.ExperienceResponse;
 import br.com.CurriculoAi.dto.formation.FormationResponse;
@@ -16,7 +14,9 @@ import br.com.CurriculoAi.dto.user.UserFullContent;
 import br.com.CurriculoAi.dto.user.UserLanguageResponse;
 import br.com.CurriculoAi.repositories.curriculum.CurriculumRepository;
 import br.com.CurriculoAi.services.user.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

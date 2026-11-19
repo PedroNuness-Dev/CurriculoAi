@@ -76,3 +76,16 @@ export function ensureProtocol(url: string) {
   if (!t) return t;
   return /^https?:\/\//i.test(t) ? t : `https://${t}`;
 }
+
+/**
+ * Extrai o usuário de um link do GitHub ("http://www.github.com/fulano/repo?tab=x" → "fulano").
+ * Segue a mesma regra de nome do backend; devolve null se o link não for de um perfil válido.
+ */
+export function githubUsername(link: string | null | undefined): string | null {
+  if (!link?.trim()) return null;
+  let url: URL;
+  try { url = new URL(ensureProtocol(link)); } catch { return null; }
+  if (!/^(www\.)?github\.com$/i.test(url.hostname)) return null;
+  const user = url.pathname.split("/").filter(Boolean)[0] ?? "";
+  return /^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?$/i.test(user) && !user.includes("--") ? user : null;
+}

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FolderGit2, Search } from "lucide-react";
 import { request, errorMessage } from "../api/client";
 import { useProfile } from "../auth/ProfileContext";
 import { Button, Field, PageHeader } from "../components/ui/ui";
+import { githubUsername } from "../lib/format";
 import "../styles/github.css";
 
 interface Repository {
@@ -29,13 +30,22 @@ interface Selection { repository: string; title: string; description: string }
 export default function ImportGitHub() {
   const { profile, reload } = useProfile();
   const [username, setUsername] = useState("");
+  const [typed, setTyped] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [selected, setSelected] = useState<Record<string, Selection>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const choices = Object.values(selected);
+  // GitHub cadastrado em "Redes e links" (procura pelo nome, não pelo id, que depende do seed).
+  const suggested = githubUsername(profile?.socialNetworks
+    .find(item => item.socialNetwork.name.trim().toLowerCase() === "github")?.link);
   const existing = new Set(profile?.projects.map(project => project.link.toLowerCase().replace(/\/$/, "").replace(/\.git$/, "")));
+
+  // Preenche com o GitHub sugerido assim que o perfil carrega, sem sobrescrever o que o usuário digitou.
+  useEffect(() => {
+    if (suggested && !typed) setUsername(suggested);
+  }, [suggested, typed]);
 
   async function search(page = 1) {
     setBusy(true);
@@ -79,11 +89,21 @@ export default function ImportGitHub() {
     <PageHeader eyebrow="Currículo" title="Traga seus projetos do GitHub."
       text="Consulte seu perfil público, escolha os projetos e descreva sua contribuição antes de incluí-los no currículo." />
     <form className="card github-search" onSubmit={e => { e.preventDefault(); void search(); }}>
-      <Field label="Usuário ou link do GitHub" htmlFor="github-profile">
-        <input id="github-profile" value={username} onChange={e => setUsername(e.target.value)}
-          placeholder="https://github.com/seu-usuario" required disabled={busy} maxLength={100} />
-      </Field>
-      <Button type="submit" loading={busy} disabled={!username.trim()} icon={<Search size={18} />}>Buscar perfil</Button>
+      <div className="github-search-row">
+        <Field label="Usuário ou link do GitHub" htmlFor="github-profile">
+          <input id="github-profile" value={username} onChange={e => { setTyped(true); setUsername(e.target.value); }}
+            placeholder="https://github.com/seu-usuario" required disabled={busy} maxLength={100}
+            aria-describedby="github-suggestion" />
+        </Field>
+        <Button type="submit" loading={busy} disabled={!username.trim()} icon={<Search size={18} />}>Buscar perfil</Button>
+      </div>
+      <p className="github-suggestion" id="github-suggestion">
+        {!suggested && <>Cadastre seu GitHub em <Link to="/app/redes">Redes e links</Link> para ele aparecer aqui.</>}
+        {suggested && username.trim() === suggested && <>Sugerido a partir do GitHub cadastrado em Redes e links.</>}
+        {suggested && username.trim() !== suggested && <>Seu GitHub cadastrado:{" "}
+          <button type="button" className="github-suggestion-use" disabled={busy}
+            onClick={() => setUsername(suggested)}>usar @{suggested}</button></>}
+      </p>
     </form>
     {error && <div className="alert error" role="alert">{error}</div>}
     {saved && <div className="alert" role="status">Projetos salvos. <Link to="/app/gerar">Gerar currículo</Link></div>}

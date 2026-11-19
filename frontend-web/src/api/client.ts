@@ -68,7 +68,11 @@ interface RequestOptions {
 
 export async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
   const { method = "GET", body, auth = true, responseType = "json", signal } = opts;
-  const headers: Record<string, string> = { Accept: responseType === "blob" ? "application/pdf" : "application/json" };
+  // Para PDF também aceita JSON: se a geração falhar, o backend consegue devolver o erro em JSON.
+  // Aceitando só PDF, o Spring não consegue escrever o erro, cai no /error e responde um 401 enganoso.
+  const headers: Record<string, string> = {
+    Accept: responseType === "blob" ? "application/pdf, application/json" : "application/json",
+  };
 
   if (body !== undefined && !(body instanceof FormData)) headers["Content-Type"] = "application/json";
 
@@ -101,9 +105,13 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
     } catch {
       /* corpo vazio */
     }
-    if (res.status === 401 || res.status === 403) {
+    // 401 = token ausente/inválido (encerra a sessão). 403 = logado, mas sem permissão (mantém a sessão).
+    if (res.status === 401) {
       if (auth) unauthorizedListeners.forEach((fn) => fn());
       throw new ApiError(res.status, auth ? "Sua sessão expirou. Entre novamente." : "E-mail ou senha incorretos.");
+    }
+    if (res.status === 403) {
+      throw new ApiError(res.status, parsed?.message || "Você não tem permissão para esta ação.");
     }
     if (res.status === 502 || res.status === 504) {
       throw new ApiError(res.status, parsed?.message || "O serviço está indisponível. Tente novamente em instantes.");

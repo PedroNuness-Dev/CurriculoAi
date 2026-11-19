@@ -140,13 +140,13 @@ function normalize(key: CatalogKey, raw: any): CatalogItem {
 
 export const catalogApi = {
   list: async (key: CatalogKey): Promise<CatalogItem[]> => {
-    const data = await request<any[]>(defs[key].base, { auth: false });
+    const data = await request<any[]>(defs[key].base);
     return data.map((d) => normalize(key, d));
   },
   get: async (key: CatalogKey, id: number): Promise<CatalogItem> =>
-    normalize(key, await request<any>(`${defs[key].base}/${id}`, { auth: false })),
+    normalize(key, await request<any>(`${defs[key].base}/${id}`)),
   create: async (key: CatalogKey, name: string): Promise<CatalogItem> =>
-    normalize(key, await request<any>(defs[key].createPath, { method: "POST", body: { name }, auth: false })),
+    normalize(key, await request<any>(defs[key].createPath, { method: "POST", body: { name } })),
   update: async (key: CatalogKey, id: number, name: string): Promise<CatalogItem> =>
-    normalize(key, await request<any>(`${defs[key].base}/${id}`, { method: "PUT", body: { name }, auth: false })),
+    normalize(key, await request<any>(`${defs[key].base}/${id}`, { method: "PUT", body: { name } })),
 };

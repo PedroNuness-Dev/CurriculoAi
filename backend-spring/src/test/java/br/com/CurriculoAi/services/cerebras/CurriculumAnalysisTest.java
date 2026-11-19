@@ -30,12 +30,14 @@ class CurriculumAnalysisTest {
     }
 
     private Runnable provider(String feedback, String vaga) throws Exception {
+        ReflectionTestUtils.setField(cerebras, "model", "test-model");
         var response = Map.of("choices", List.of(Map.of("message", Map.of("content", feedback))));
         String input = vaga == null ? "Experiencia com Java" : new ObjectMapper()
                 .writeValueAsString(Map.of("curriculo", "Experiencia com Java", "vaga", vaga));
         org.mockito.Mockito.when(client.complete(org.mockito.ArgumentMatchers.anyString()))
                 .thenAnswer(invocation -> {
                     var payload = new ObjectMapper().readTree((String) invocation.getArgument(0));
+                    assertEquals("test-model", payload.path("model").asText());
                     assertEquals(input, payload.at("/messages/1/content").asText());
                     return new ObjectMapper().writeValueAsString(response);
                 });

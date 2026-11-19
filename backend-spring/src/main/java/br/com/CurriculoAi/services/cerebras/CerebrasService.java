@@ -30,6 +30,8 @@ import java.util.List;
 @Slf4j
 public class CerebrasService {
 
+    @Value("${cerebras.model}")
+    private String model;
     private final CerebrasClient cerebrasClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UserService userService;
@@ -51,7 +53,7 @@ public class CerebrasService {
 
         log.info("Iniciando geração de markdown");
 
-        return complete(new CerebrasRequestDTO(List.of(
+        return complete(new CerebrasRequestDTO(model, List.of(
                 new MessageDTO("system", RESUME_INSTRUCTIONS),
                 new MessageDTO("user", montarPrompt(userFullContent)))));
     }
@@ -119,7 +121,7 @@ public class CerebrasService {
                         """;
                 input = objectMapper.writeValueAsString(java.util.Map.of("curriculo", text, "vaga", vaga.strip()));
             }
-            var request = new CerebrasRequestDTO(List.of(
+            var request = new CerebrasRequestDTO(model, List.of(
                     new MessageDTO("system", instructions), new MessageDTO("user", input)), AnalysisSchema.responseFormat(compare));
             var analysis = objectMapper.readerFor(CurriculumAnalysis.class)
                     .with(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
@@ -162,7 +164,7 @@ public class CerebrasService {
         try {
             String input = objectMapper.writeValueAsString(java.util.Map.of("curriculo", text,
                     "vaga", vaga == null ? "" : vaga, "respostas", answers));
-            return complete(new CerebrasRequestDTO(List.of(new MessageDTO("system", instructions),
+            return complete(new CerebrasRequestDTO(model, List.of(new MessageDTO("system", instructions),
                     new MessageDTO("user", input))));
         } catch (JsonProcessingException | FeignException | IllegalStateException e) {
             throw new org.springframework.web.server.ResponseStatusException(

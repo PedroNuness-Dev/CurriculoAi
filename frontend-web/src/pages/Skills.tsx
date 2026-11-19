@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, Plus, Save, Search, Sparkles, X } from "lucide-react";
-import { useProfile } from "../auth/ProfileContext";
+import { useIsAdmin, useProfile } from "../auth/ProfileContext";
 import { useCatalog } from "../auth/CatalogContext";
 import { catalogApi, userApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
@@ -11,6 +11,9 @@ export default function Skills() {
   const { reload } = useProfile();
   const catalog = useCatalog("abilities");
   const toast = useToast();
+  // Só ADMIN cadastra habilidade nova no catálogo (o backend devolve 403 para os demais).
+  const canCreate = useIsAdmin();
+  const searchLabel = canCreate ? "Buscar ou criar habilidade" : "Buscar habilidade";
 
   const [saved, setSaved] = useState<number[] | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
@@ -53,7 +56,7 @@ export default function Skills() {
   // POST /api/abilities
   async function createAbility() {
     const name = query.trim();
-    if (!name) return;
+    if (!name || !canCreate) return;
     setCreating(true);
     try {
       const item = await catalogApi.create("abilities", name);
@@ -149,26 +152,26 @@ export default function Skills() {
           <div className="skills-catalog-head">
             <span className="skills-kicker">Suas competências, em destaque</span>
             <h2 id="skills-catalog-title">Encontre o que você sabe fazer.</h2>
-            <p>Selecione uma ou várias habilidades. Não encontrou? Digite o nome e cadastre uma nova.</p>
+            <p>Selecione uma ou várias habilidades.{canCreate && " Não encontrou? Digite o nome e cadastre uma nova."}</p>
           </div>
           <div className="skills-catalog-body">
-          <label className="field-label" htmlFor="skills-search">Buscar ou criar habilidade</label>
+          <label className="field-label" htmlFor="skills-search">{searchLabel}</label>
           <div className="skills-search-row">
             <div className="input-wrap">
               <Search size={18} />
               <input
                 id="skills-search"
                 className="input"
-                aria-label="Buscar ou criar habilidade"
-                placeholder="Buscar ou criar habilidade…"
+                aria-label={searchLabel}
+                placeholder={`${searchLabel}…`}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && query.trim() && !exact) void createAbility();
+                  if (e.key === "Enter" && canCreate && query.trim() && !exact) void createAbility();
                 }}
               />
             </div>
-            {query.trim() && !exact && (
+            {canCreate && query.trim() && !exact && (
               <Button variant="secondary" icon={<Plus size={17} />} loading={creating} onClick={createAbility}>
                 Criar “{query.trim()}”
               </Button>
@@ -191,7 +194,7 @@ export default function Skills() {
                   </button>
                 );
               })}
-              {filtered.length === 0 && <div className="skills-no-results"><Search size={23} aria-hidden="true" /><h3>{query.trim() ? "Nenhuma habilidade encontrada." : "O catálogo ainda está vazio."}</h3><p>{query.trim() ? `Nada encontrado para “${query}”. Você pode cadastrar essa habilidade pelo botão acima.` : "Digite o nome de uma habilidade para cadastrá-la."}</p></div>}
+              {filtered.length === 0 && <div className="skills-no-results"><Search size={23} aria-hidden="true" /><h3>{query.trim() ? "Nenhuma habilidade encontrada." : "O catálogo ainda está vazio."}</h3><p>{query.trim() ? `Nada encontrado para “${query}”.${canCreate ? " Você pode cadastrar essa habilidade pelo botão acima." : " Tente outro termo."}` : canCreate ? "Digite o nome de uma habilidade para cadastrá-la." : "Ainda não há habilidades cadastradas."}</p></div>}
             </div>
           )}
           </div>

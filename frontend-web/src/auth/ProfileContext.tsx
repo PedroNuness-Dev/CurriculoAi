@@ -44,6 +44,15 @@ export function useProfile() {
   return ctx;
 }
 
+/**
+ * Indica se o usuário logado é ADMIN, lendo as roles do perfil.
+ * Serve só para esconder ações na interface: quem garante a permissão é o backend.
+ */
+export function useIsAdmin() {
+  const { profile } = useProfile();
+  return !!profile?.user.roles?.some((role) => role.type === "ROLE_ADMIN");
+}
+
 /** Calcula o quanto do perfil já foi preenchido. */
 export function completeness(p: UserFullContent | null) {
   const checks = [

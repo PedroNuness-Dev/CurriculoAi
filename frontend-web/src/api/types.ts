@@ -32,7 +32,7 @@ export interface UserRegisterRequest {
 }
 
 export interface RoleResponse {
-  type: "ROLE_CANDIDATO" | "ROLE_RECRUTADOR";
+  type: "ROLE_CANDIDATO" | "ROLE_RECRUTADOR" | "ROLE_ADMIN";
 }
 
 export interface UserResponse {

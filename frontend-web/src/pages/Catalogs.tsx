@@ -1,6 +1,8 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { AlertTriangle, Check, Layers, Pencil, Plus, RefreshCw, Search, X } from "lucide-react";
+import { Navigate } from "react-router-dom";
 import { useCatalog } from "../auth/CatalogContext";
+import { useIsAdmin, useProfile } from "../auth/ProfileContext";
 import { catalogApi, type CatalogItem, type CatalogKey } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
 import { Button, PageHeader, Skeleton } from "../components/ui/ui";
@@ -27,7 +29,16 @@ const USAGE: Record<CatalogKey, string> = {
   languages: "Idiomas",
 };
 
+/** Tela exclusiva de ADMIN: os demais voltam para a visão geral (o backend também bloqueia com 403). */
 export default function Catalogs() {
+  const { loading } = useProfile();
+  const isAdmin = useIsAdmin();
+  if (loading) return null;
+  if (!isAdmin) return <Navigate to="/app" replace />;
+  return <CatalogsAdmin />;
+}
+
+function CatalogsAdmin() {
   const [tab, setTab] = useState<CatalogKey>("areas");
   const meta = TABS.find((t) => t.key === tab)!;
 

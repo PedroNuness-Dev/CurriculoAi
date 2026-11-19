@@ -2,3 +2,6 @@ node_modules
 dist
 .env
 *.local
+
+# Cache incremental do TypeScript (gerado pelo build)
+*.tsbuildinfo

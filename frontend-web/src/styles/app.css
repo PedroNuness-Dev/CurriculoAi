@@ -215,6 +215,9 @@ html:has(.app-workspace) { scrollbar-gutter: stable; }
 .app-workspace .modal-head h2 { line-height: 1.3; }
 .app-workspace .modal-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 24px; }
 .app-workspace .modal-foot { flex: none; padding: 18px 24px; border-top: 1px solid var(--line); background: var(--surface-2); gap: 10px; flex-wrap: wrap; }
+.app-workspace .modal-backdrop.is-drawer { place-items: stretch end; padding: 0; }
+.app-workspace .modal-backdrop.is-drawer > .modal { width: min(560px, 100%); max-height: none; height: 100dvh; border-radius: 22px 0 0 22px; animation: workspace-drawer 300ms var(--workspace-ease); }
+@keyframes workspace-drawer { from { transform: translateX(40px); opacity: 0; } }
 @keyframes workspace-backdrop { from { opacity: 0; } }
 @keyframes workspace-dialog { from { opacity: .3; transform: translateY(12px); } }
 body:has(.app-workspace) .toast { background: var(--surface); color: var(--ink-2); border: 1px solid var(--line); border-radius: 15px; box-shadow: var(--shadow-pop); align-items: center; }
@@ -304,6 +307,8 @@ body:has(.app-workspace) .toast .btn { width: 44px; height: 44px; min-width: 44p
   .app-workspace .item > .item-body { flex-basis: calc(100% - 60px); }
   .app-workspace .modal-backdrop { padding: 12px; }
   .app-workspace .modal { max-height: calc(100dvh - 24px); border-radius: 18px; }
+  .app-workspace .modal-backdrop.is-drawer { padding: 0; }
+  .app-workspace .modal-backdrop.is-drawer > .modal { max-height: none; border-radius: 0; }
   .app-workspace .modal-head, .app-workspace .modal-body { padding: 20px; }
   .app-workspace .modal-foot { padding: 16px 20px; }
   .app-workspace .empty { padding: 42px 22px; }

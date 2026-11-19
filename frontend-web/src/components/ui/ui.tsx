@@ -93,6 +93,7 @@ export function Modal({
   children,
   footer,
   width,
+  variant = "center",
 }: {
   open: boolean;
   onClose: () => void;
@@ -102,6 +103,8 @@ export function Modal({
   children: ReactNode;
   footer?: ReactNode;
   width?: number;
+  /** "drawer" abre o diálogo como painel lateral à direita. */
+  variant?: "center" | "drawer";
 }) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -138,7 +141,7 @@ export function Modal({
 
   if (!open) return null;
   return (
-    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div className={variant === "drawer" ? "modal-backdrop is-drawer" : "modal-backdrop"} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div ref={dialogRef} className="modal" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} style={width ? { width: `min(${width}px, 100%)` } : undefined}>
         <div className="modal-head">
           <div className="row" style={{ alignItems: "flex-start", gap: 14 }}>

@@ -38,9 +38,9 @@ public class CerebrasController {
             description = "Requer JWT. Envie o PDF em file e, opcionalmente, a descrição da vaga em vaga para comparar os requisitos.")
     @PostMapping(value = "/curriculum/analysis", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CurriculumAnalysis analyze(@RequestPart(value = "file", required = false) MultipartFile file,
+    public ResponseEntity<CurriculumAnalysis> analyze(@RequestPart(value = "file", required = false) MultipartFile file,
                                       @RequestPart(value = "vaga", required = false) String vaga) {
-        return cerebrasService.analyze(textExtractor.extract(file), vaga);
+        return ResponseEntity.ok(cerebrasService.analyze(textExtractor.extract(file), vaga));
     }
 
     @Operation(summary = "Gerar PDF revisado com as respostas do candidato")

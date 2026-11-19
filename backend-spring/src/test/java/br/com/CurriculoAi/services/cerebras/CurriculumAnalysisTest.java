@@ -65,7 +65,7 @@ class CurriculumAnalysisTest {
                 {"resumo":"Experiência em Java","pontosFortes":["Tecnologia explícita"],
                  "pontosDeMelhoria":[],"sugestoes":["Descreva um projeto."],"melhorias":[]}
                 """);
-        assertEquals(List.of("Descreva um projeto."), controller.analyze(pdf(true), "  ").sugestoes());
+        assertEquals(List.of("Descreva um projeto."), controller.analyze(pdf(true), "  ").getBody().sugestoes());
         server.run();
     }
 
@@ -77,7 +77,7 @@ class CurriculumAnalysisTest {
                  "melhorias":[],"compatibilidade":{"resumo":"Há evidência do requisito obrigatório.",
                  "requisitosAtendidos":["Java"],"requisitosSemEvidencia":["Kubernetes"]}}
                 """, vaga);
-        var result = controller.analyze(pdf(true), vaga).compatibilidade();
+        var result = controller.analyze(pdf(true), vaga).getBody().compatibilidade();
         assertEquals(List.of("Java"), result.requisitosAtendidos());
         assertEquals(List.of("Kubernetes"), result.requisitosSemEvidencia());
         server.run();

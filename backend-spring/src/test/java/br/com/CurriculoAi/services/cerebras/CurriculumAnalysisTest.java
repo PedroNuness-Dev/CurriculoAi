@@ -68,7 +68,7 @@ class CurriculumAnalysisTest {
     void returnsFeedbackForUploadedPdf() throws Exception {
         var server = provider("""
                 {"resumo":"Experiência em Java","pontosFortes":["Tecnologia explícita"],
-                 "pontosDeMelhoria":[],"sugestoes":["Descreva um projeto."]}
+                 "pontosDeMelhoria":[],"sugestoes":["Descreva um projeto."],"melhorias":[]}
                 """);
         assertEquals(List.of("Descreva um projeto."), controller.analyze(pdf(true), "  ").sugestoes());
         server.verify();
@@ -79,13 +79,35 @@ class CurriculumAnalysisTest {
         String vaga = "Java obrigatório. Kubernetes desejável.";
         var server = provider("""
                 {"resumo":"Experiência em Java","pontosFortes":[],"pontosDeMelhoria":[],"sugestoes":[],
-                 "compatibilidade":{"resumo":"Há evidência do requisito obrigatório.",
+                 "melhorias":[],"compatibilidade":{"resumo":"Há evidência do requisito obrigatório.",
                  "requisitosAtendidos":["Java"],"requisitosSemEvidencia":["Kubernetes"]}}
                 """, vaga);
         var result = controller.analyze(pdf(true), vaga).compatibilidade();
         assertEquals(List.of("Java"), result.requisitosAtendidos());
         assertEquals(List.of("Kubernetes"), result.requisitosSemEvidencia());
         server.verify();
+    }
+
+    @Test
+    void removesExampleWithUnsupportedMetric() {
+        var item = new br.com.CurriculoAi.dto.cerebras.CurriculumAnalysis.Melhoria(
+                br.com.CurriculoAi.dto.cerebras.CurriculumAnalysis.Prioridade.ALTA,
+                "Experiência", "Testei 12 rotas.", "Impacto desconhecido", "Descreva o impacto",
+                "Testei 12 rotas e reduzi falhas em 30%.", "Qual foi o resultado?");
+        assertNull(item.verificarExemplo().exemplo());
+        assertEquals(item.perguntaAoUsuario(), item.verificarExemplo().perguntaAoUsuario());
+    }
+
+    @Test
+    void rejectsInventedQuotation() throws Exception {
+        provider("""
+                {"resumo":"Resumo","pontosFortes":[],"pontosDeMelhoria":[],"sugestoes":[],
+                 "melhorias":[{"prioridade":"ALTA","secao":"Experiência","trechoOriginal":"Fiz deploy",
+                 "problema":"Falta contexto","sugestao":"Descreva o projeto"}]}
+                """);
+        var file = pdf(true);
+        assertEquals(HttpStatus.BAD_GATEWAY,
+                assertThrows(ResponseStatusException.class, () -> controller.analyze(file, null)).getStatusCode());
     }
 
     @Test

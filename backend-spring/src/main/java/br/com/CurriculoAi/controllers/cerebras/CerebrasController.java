@@ -43,6 +43,17 @@ public class CerebrasController {
         return cerebrasService.analyze(textExtractor.extract(file), vaga);
     }
 
+    @Operation(summary = "Gerar PDF revisado com as respostas do candidato")
+    @PostMapping(value = "/curriculum/revision", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> revise(@RequestPart("file") MultipartFile file,
+            @RequestPart(value = "vaga", required = false) String vaga,
+            @RequestPart("respostas") String answers) throws Exception {
+        String revised = cerebrasService.revise(textExtractor.extract(file), vaga, answers);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=curriculo-revisado.pdf")
+                .contentType(MediaType.APPLICATION_PDF).body(pdfService.generatePdfFromText(revised));
+    }
+
     @Operation(
             summary = "Gerar currículo em PDF",
             description = "Monta o currículo do candidato autenticado com IA a partir do perfil cadastrado e retorna o arquivo PDF (`Content-Disposition: attachment; filename=curriculo.pdf`)."

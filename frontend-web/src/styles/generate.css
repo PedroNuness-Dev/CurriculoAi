@@ -1,0 +1,83 @@
+/* The document remains the actual API PDF. Motion follows request state only. */
+.app-workspace .generation-page { min-width: 0; }
+.app-workspace .generation-page > .alert { margin-bottom: 22px; }
+.app-workspace .generation-loading { display: grid; gap: 22px; }
+.app-workspace .generation-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.app-workspace .generation-main { min-width: 0; }
+.app-workspace .generation-page .generation-stage { padding: 0; border: 1px solid var(--brand-900); background-size: 280% 100%; }
+.app-workspace .generation-stage-body { padding: 28px; }
+.app-workspace .generation-stage-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px; margin-bottom: 24px; }
+.app-workspace .generation-stage .gen-orb { position: relative; width: 54px; height: 54px; border-radius: 16px; }
+.app-workspace .generation-stage .gen-orb.busy::after { content: ""; position: absolute; inset: -6px; border: 1px solid color-mix(in srgb, var(--surface) 35%, transparent); border-top-color: var(--surface); border-radius: 25px; animation: generation-activity 1.8s linear infinite; pointer-events: none; }
+.app-workspace .generation-stage .badge { font-size: 10px; }
+.app-workspace .generation-kicker { display: block; color: var(--surface); font-size: 10px; font-weight: 750; letter-spacing: .08em; }
+.app-workspace .generation-state { min-width: 0; animation: generation-state-in 220ms var(--workspace-ease); }
+.app-workspace .generation-stage .generation-state h2 { margin-top: 13px; max-width: 590px; font-size: clamp(28px, 2.7vw, 34px); font-weight: 700; line-height: 1.18; letter-spacing: -.045em; color: var(--surface); }
+.app-workspace .generation-state > p { max-width: 560px; margin-top: 18px; color: var(--surface); font-size: 14px; line-height: 1.8; }
+.app-workspace .generation-format, .app-workspace .generation-activity { display: flex; align-items: center; gap: 10px; min-height: 32px; margin-top: 18px; color: var(--surface); font-size: 12px; line-height: 1.7; }
+.app-workspace .generation-format svg, .app-workspace .generation-activity .spinner { flex: none; }
+.app-workspace .generation-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 22px 28px; border-radius: 0 0 21px 21px; background: var(--surface); color: var(--ink); }
+.app-workspace .generation-actions > p { flex-basis: 100%; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .generation-stage .generation-actions .btn:focus-visible { outline-color: var(--brand-900); }
+.app-workspace .generation-preview-link { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; color: var(--brand-900); font-size: 13px; font-weight: 700; }
+.app-workspace .generation-profile-warning { font-size: 13px; line-height: 1.8; }
+.app-workspace .generation-profile-warning svg, .app-workspace .generation-error > svg { flex: none; }
+.app-workspace .generation-error { align-items: flex-start; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+.app-workspace .generation-error p { margin-top: 10px; }
+.app-workspace .generation-review { min-width: 0; padding: 0; }
+.app-workspace .generation-review-head { padding: 24px; border-bottom: 1px solid var(--line); }
+.app-workspace .generation-review-kicker { display: block; color: var(--brand-900); font-size: 10px; font-weight: 800; letter-spacing: .07em; }
+.app-workspace .generation-review-head h2 { margin-top: 10px; font-size: 23px; font-weight: 750; line-height: 1.25; letter-spacing: -.035em; }
+.app-workspace .generation-review-head > p { margin-top: 13px; color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+.app-workspace .generation-profile-count { display: inline-flex; margin-top: 18px; padding: 7px 10px; border-radius: 9px; background: var(--brand-50); color: var(--brand-900); font-size: 11px; font-weight: 700; }
+.app-workspace .generation-profile-sections { display: grid; padding: 12px; }
+.app-workspace .generation-profile-sections > a { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 54px; padding: 10px; border-radius: 10px; color: var(--ink-2); text-decoration: none; transition: background-color 200ms; }
+.app-workspace .generation-profile-sections > a > span:nth-child(2) { flex: 1; min-width: 0; }
+.app-workspace .generation-profile-sections strong { display: block; font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
+.app-workspace .generation-profile-sections small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+.app-workspace .generation-profile-sections > a > svg { flex: none; color: var(--brand-900); transition: transform 200ms var(--workspace-ease); }
+.app-workspace .generation-check { display: grid; place-items: center; width: 23px; height: 23px; flex: none; border: 1px solid var(--line); border-radius: 8px; color: var(--brand-900); background: var(--surface-2); }
+.app-workspace .is-complete .generation-check { border-color: var(--lime); background: var(--lime); color: var(--lime-ink); }
+.app-workspace .generation-missing-mark { width: 7px; height: 1px; background: var(--ink-2); }
+.app-workspace .generation-preview { margin-top: 28px; padding: 0; min-width: 0; }
+.app-workspace .generation-preview-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 22px; padding: 28px; border-bottom: 1px solid var(--line); }
+.app-workspace .generation-preview-head > div { min-width: 0; flex: 1 1 330px; }
+.app-workspace .generation-preview-head h2 { display: flex; align-items: center; gap: 10px; margin-top: 11px; font-size: 22px; font-weight: 750; line-height: 1.4; letter-spacing: -.035em; scroll-margin-top: 105px; }
+.app-workspace .generation-preview-head h2 svg { flex: none; color: var(--brand-900); }
+.app-workspace .generation-preview-head p { margin-top: 10px; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .generation-preview-head .btn { overflow-wrap: anywhere; text-align: left; }
+.app-workspace .generation-paper { padding: 24px; border-radius: 0 0 18px 18px; background: var(--surface-2); }
+.app-workspace .generation-document-label { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; color: var(--ink-2); font-size: 11px; }
+.app-workspace .generation-page .pdf-frame { display: block; width: 100%; height: min(85dvh, 1100px); min-height: 500px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface); box-shadow: var(--shadow-card); }
+.app-workspace .generation-preview-status { min-height: 34px; }
+.app-workspace .generation-preview-loading { display: flex; align-items: center; gap: 9px; margin: 0; color: var(--brand-900); font-size: 12px; }
+@keyframes generation-state-in { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes generation-activity { to { transform: rotate(360deg); } }
+@media (hover: hover) {
+  .app-workspace .generation-profile-sections > a:hover { background: var(--brand-50); }
+  .app-workspace .generation-profile-sections > a:hover > svg { transform: translate(1px, -1px); }
+}
+@media (max-width: 1200px) {
+  .app-workspace .generation-workspace { grid-template-columns: minmax(0, 1fr); }
+  .app-workspace .generation-profile-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .app-workspace .generation-stage-body { padding: 26px 22px; }
+  .app-workspace .generation-stage-top { margin-bottom: 28px; }
+  .app-workspace .generation-stage .generation-state h2 { font-size: 29px; }
+  .app-workspace .generation-actions { padding: 22px; }
+  .app-workspace .generation-actions .btn { width: 100%; }
+  .app-workspace .generation-preview-link { justify-content: center; width: 100%; }
+  .app-workspace .generation-review-head { padding: 24px 20px; }
+  .app-workspace .generation-profile-sections { grid-template-columns: minmax(0, 1fr); }
+  .app-workspace .generation-preview-head { padding: 24px 20px; }
+  .app-workspace .generation-preview-head .btn { width: 100%; }
+  .app-workspace .generation-preview-head h2 { font-size: 21px; }
+  .app-workspace .generation-paper { padding: 16px 12px; }
+  .app-workspace .generation-page .pdf-frame { min-height: 420px; height: 70dvh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace .generation-state, .app-workspace .generation-stage .gen-orb.busy::after { animation: none; }
+  .app-workspace .generation-profile-sections > a, .app-workspace .generation-profile-sections > a > svg { transition: none; }
+  .app-workspace .generation-profile-sections > a:hover > svg { transform: none; }
+}

@@ -2,11 +2,10 @@ package br.com.CurriculoAi.security;
 
 import br.com.CurriculoAi.dto.auth.TokenDetails;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -14,18 +13,20 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
+@Slf4j
 public class TokenService {
 
-    @Value("${api.security.token.secret}")
-    private String keySecret;
-    @Value("${api.security.token.issuer}")
-    private String issuer;
+    private final SecretKey secretKey;
+    private final String issuer;
 
-    private SecretKey getSigningKey(){
-        return Keys.hmacShaKeyFor(keySecret.getBytes(StandardCharsets.UTF_8));
+    public TokenService(TokenProperties tokenProperties){
+        secretKey = Keys.hmacShaKeyFor(tokenProperties.secret().getBytes(StandardCharsets.UTF_8));
+        issuer = tokenProperties.issuer();
     }
+
 
     public TokenDetails generateToken(UserDetailsImpl userDetails){
 
@@ -34,7 +35,7 @@ public class TokenService {
 
         String token = Jwts.builder()
                 .issuer(issuer)
-                .signWith(getSigningKey())
+                .signWith(secretKey)
                 .subject(userDetails.getUsername()) // User's email
                 .claim("id", userDetails.getUserId())
                 .claim("name", userDetails.getName())
@@ -45,30 +46,21 @@ public class TokenService {
         return new TokenDetails(token, expiration);
     }
 
-    public String validateTokenAndGetSubject(String token){
+    public Optional<String> validateTokenAndGetSubject(String token){
 
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-        return claims.getSubject();
-    }
-
-    public boolean isTokenValid(String token){
-        try{
-            Jwts.parser()
-                    .verifyWith(getSigningKey())
+        try {
+            Claims claims = Jwts.parser()
+                    .requireIssuer(issuer)
+                    .verifyWith(secretKey)
                     .build()
-                    .parseSignedClaims(token);
-            return true;
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return Optional.ofNullable(claims.getSubject());
         }
-        catch (ExpiredJwtException e){
-            return false;
-        }
-        catch (JwtException e){
-            return false;
+        catch (JwtException | IllegalArgumentException e){
+            log.warn("Token inválido: {}", e.getMessage());
+            return Optional.empty();
         }
     }
 }

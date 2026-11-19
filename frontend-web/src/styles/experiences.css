@@ -1,0 +1,82 @@
+/* Scoped to the experience route; shared buttons, inputs and dialogs remain intact. */
+.app-workspace .experiences-page { min-width: 0; }
+.app-workspace .experiences-page > .alert { margin-bottom: 22px; }
+.app-workspace .experience-kicker { display: block; color: var(--brand-900); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.app-workspace .experience-empty { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .8fr); gap: 48px; padding: 40px; text-align: left; align-items: center; background: var(--surface); border-color: var(--line); }
+.app-workspace .experience-empty-main { min-width: 0; }
+.app-workspace .experience-emblem { position: relative; display: grid; place-items: center; width: 74px; height: 74px; margin-bottom: 28px; border-radius: 22px; color: var(--surface); background: var(--grad); background-size: 220% 100%; }
+.app-workspace .experience-emblem > span { position: absolute; right: -7px; bottom: -4px; display: grid; place-items: center; width: 27px; height: 27px; border: 3px solid var(--surface); border-radius: 9px; color: var(--lime-ink); background: var(--lime); }
+.app-workspace .experience-empty h2 { margin-top: 12px; color: var(--ink); font-size: clamp(27px, 3vw, 38px); font-weight: 750; line-height: 1.16; letter-spacing: -.045em; }
+.app-workspace .experience-empty-main > p { max-width: 430px; margin: 18px 0 26px; color: var(--ink-2); font-size: 14px; line-height: 1.8; }
+.app-workspace .experience-guide { min-width: 0; padding: 28px; border: 1px solid var(--brand-100); border-radius: 18px; background: var(--grad-soft); }
+.app-workspace .experience-guide ol { display: flex; flex-direction: column; gap: 26px; list-style: none; padding: 0; margin: 27px 0; }
+.app-workspace .experience-guide li { display: flex; gap: 14px; align-items: flex-start; }
+.app-workspace .experience-guide li > span { flex: none; display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid var(--brand-100); border-radius: 9px; background: var(--surface); color: var(--brand-900); font-size: 10px; font-weight: 750; }
+.app-workspace .experience-guide h3 { color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .experience-guide li p { margin-top: 6px; color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+.app-workspace .experience-guide-note { display: flex; align-items: flex-start; gap: 10px; padding-top: 22px; border-top: 1px solid var(--brand-100); color: var(--brand-900); }
+.app-workspace .experience-guide-note svg { flex: none; margin-top: 2px; }
+.app-workspace .experience-guide-note p { color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .experience-guide-note strong { color: var(--brand-900); font-weight: 650; }
+.app-workspace .experience-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 34px 0 24px; }
+.app-workspace .experience-list-header h2 { margin-top: 8px; font-size: 23px; font-weight: 750; letter-spacing: -.035em; }
+.app-workspace .experience-count { padding: 9px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink-2); font-size: 12px; font-weight: 650; }
+.app-workspace .experience-timeline { gap: 18px; }
+.app-workspace .experience-record { position: relative; display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 0; padding: 0; background: var(--surface); transition: border-color 220ms; }
+.app-workspace .experience-record.is-current { border-color: var(--brand-100); }
+.app-workspace .experience-date { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 11px; min-width: 0; padding: 28px 20px 28px 36px; border-right: 1px solid var(--line); background: var(--surface-2); border-radius: 18px 0 0 18px; }
+.app-workspace .experience-date > span:not(.experience-timeline-dot) { display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 11px; line-height: 1.6; }
+.app-workspace .experience-date strong { color: var(--brand-900); font-size: 14px; font-weight: 700; line-height: 1.7; overflow-wrap: anywhere; }
+.app-workspace .experience-timeline-dot { position: absolute; width: 8px; height: 8px; left: 14px; top: 32px; border: 2px solid var(--brand-900); border-radius: 50%; background: var(--surface); z-index: 1; }
+.app-workspace .experience-record.is-current .experience-timeline-dot { background: var(--brand-900); }
+.app-workspace .experience-record:not(:last-child)::before { content: ""; position: absolute; left: 17px; top: 40px; bottom: -50px; width: 1px; background: var(--brand-100); z-index: 1; pointer-events: none; }
+.app-workspace .experience-record > .item-body { padding: 28px; }
+.app-workspace .experience-record-heading { display: flex; align-items: flex-start; gap: 13px; }
+.app-workspace .experience-record-heading > .icon-tile { flex: none; }
+.app-workspace .experience-record-heading > div { min-width: 0; flex: 1; }
+.app-workspace .experience-record-heading .item-title { margin: 0; font-size: 20px; font-weight: 750; letter-spacing: -.025em; }
+.app-workspace .experience-record-heading > .badge { flex: none; }
+.app-workspace .experience-company { margin-top: 5px; color: var(--ink-2); font-size: 14px; overflow-wrap: anywhere; }
+.app-workspace .experience-record .item-meta { margin: 20px 0; }
+.app-workspace .experience-description { padding-top: 20px; border-top: 1px solid var(--line); }
+.app-workspace .experience-description .item-desc { margin-top: 9px; white-space: pre-line; }
+.app-workspace .experience-list-note { margin-top: 22px; text-align: right; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.app-workspace .experience-form { display: flex; flex-direction: column; gap: 28px; }
+.app-workspace .experience-form-section { padding: 0; margin: 0; min-width: 0; border: 0; }
+.app-workspace .experience-form-section + .experience-form-section { padding-top: 24px; border-top: 1px solid var(--line); }
+.app-workspace .experience-form-section legend { display: flex; align-items: center; gap: 10px; padding: 0; color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .experience-form-section legend > span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--brand-50); color: var(--brand-900); font-size: 10px; }
+.app-workspace .experience-form-section > p { margin: 10px 0 22px; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .experience-form .check { gap: 11px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); cursor: pointer; transition: background-color 200ms, border-color 200ms; }
+.app-workspace .experience-form .check:has(input:checked) { background: var(--brand-50); border-color: var(--brand-900); }
+.app-workspace .experience-form .textarea { min-height: 170px; }
+@media (hover: hover) {
+  .app-workspace .experience-record:hover { border-color: var(--brand-900); }
+}
+@media (min-width: 981px) and (max-width: 1200px), (max-width: 720px) {
+  .app-workspace .experience-empty { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
+  .app-workspace .experience-record { grid-template-columns: 150px minmax(0, 1fr); }
+  .app-workspace .experience-record-heading { flex-wrap: wrap; }
+  .app-workspace .experience-record-heading > .badge { margin-left: 55px; }
+}
+@media (max-width: 600px) {
+  .app-workspace .experience-empty { padding: 24px 20px; }
+  .app-workspace .experience-empty-main > .btn { width: 100%; }
+  .app-workspace .experience-guide { padding: 22px 18px; }
+  .app-workspace .experience-empty-main > p { font-size: 15px; }
+  .app-workspace .experience-guide li p { font-size: 14px; }
+  .app-workspace .experience-record { grid-template-columns: 1fr; }
+  .app-workspace .experience-date { border-right: 0; border-bottom: 1px solid var(--line); border-radius: 18px 18px 0 0; padding: 20px 20px 20px 36px; gap: 7px; }
+  .app-workspace .experience-timeline-dot { top: 26px; }
+  .app-workspace .experience-record:not(:last-child)::before { display: none; }
+  .app-workspace .experience-record > .item-body { padding: 22px 20px; }
+  .app-workspace .experience-record-heading .item-title { font-size: 19px; }
+  .app-workspace .experience-list-header h2 { font-size: 22px; }
+  .app-workspace .experiences-page .modal-foot .btn { flex: 1 1 130px; }
+  .app-workspace .experience-form .form-grid { grid-template-columns: 1fr; }
+  .app-workspace .experience-form .span-2 { grid-column: auto; }
+  .app-workspace .experience-form-section > p { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace .experience-record, .app-workspace .experience-form .check { transition: none; }
+}

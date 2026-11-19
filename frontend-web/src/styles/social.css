@@ -1,0 +1,62 @@
+/* Social links use the workspace palette; monograms come from real platform names. */
+.app-workspace .social-page { min-width: 0; }
+.app-workspace .social-page > .alert { margin-bottom: 22px; }
+.app-workspace .social-kicker { display: block; color: var(--brand-900); font-size: 10px; font-weight: 800; letter-spacing: .07em; }
+.app-workspace .social-empty { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .8fr); gap: 48px; padding: 40px; text-align: left; align-items: center; background: var(--surface); border-color: var(--line); }
+.app-workspace .social-empty-main { min-width: 0; }
+.app-workspace .social-emblem { position: relative; display: grid; place-items: center; width: 74px; height: 74px; margin-bottom: 28px; border-radius: 22px; color: var(--surface); background: var(--grad); background-size: 220% 100%; }
+.app-workspace .social-emblem > span { position: absolute; right: -7px; bottom: -4px; display: grid; place-items: center; width: 27px; height: 27px; border: 3px solid var(--surface); border-radius: 9px; color: var(--lime-ink); background: var(--lime); }
+.app-workspace .social-empty h2 { margin-top: 12px; color: var(--ink); font-size: clamp(27px, 3vw, 38px); font-weight: 750; line-height: 1.16; letter-spacing: -.045em; }
+.app-workspace .social-empty-main > p { max-width: 430px; margin: 18px 0 26px; color: var(--ink-2); font-size: 14px; line-height: 1.8; }
+.app-workspace .social-guide { min-width: 0; padding: 28px; border: 1px solid var(--brand-100); border-radius: 18px; background: var(--grad-soft); }
+.app-workspace .social-guide ol { display: flex; flex-direction: column; gap: 26px; list-style: none; padding: 0; margin: 27px 0; }
+.app-workspace .social-guide li { display: flex; gap: 14px; align-items: flex-start; }
+.app-workspace .social-guide li > span { flex: none; display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid var(--brand-100); border-radius: 9px; background: var(--surface); color: var(--brand-900); font-size: 10px; font-weight: 750; }
+.app-workspace .social-guide h3 { color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .social-guide li p { margin-top: 6px; color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+.app-workspace .social-guide-note { padding-top: 22px; border-top: 1px solid var(--brand-100); color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+.app-workspace .social-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 34px 0 24px; }
+.app-workspace .social-list-header h2 { margin-top: 8px; font-size: 23px; font-weight: 750; letter-spacing: -.035em; }
+.app-workspace .social-count { padding: 9px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink-2); font-size: 12px; font-weight: 650; }
+.app-workspace .social-list { gap: 18px; }
+.app-workspace .social-record { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 24px; padding: 28px; background: var(--surface); transition: border-color 220ms, box-shadow 220ms; }
+.app-workspace .social-platform-mark { display: grid; place-items: center; width: 64px; height: 64px; border: 1px solid var(--brand-100); border-radius: 19px; background: var(--grad-soft); color: var(--brand-900); font-size: 22px; font-weight: 750; text-transform: uppercase; letter-spacing: -.04em; transition: transform 240ms var(--workspace-ease); }
+.app-workspace .social-record .item-title { margin: 8px 0 13px; font-size: 23px; line-height: 1.4; font-weight: 750; letter-spacing: -.035em; }
+.app-workspace .social-url { display: flex; align-items: flex-start; gap: 8px; min-width: 0; color: var(--ink-2); font-size: 13px; line-height: 1.8; }
+.app-workspace .social-url svg { flex: none; margin-top: 4px; color: var(--brand-900); }
+.app-workspace .social-url > span { min-width: 0; overflow-wrap: anywhere; }
+.app-workspace .social-record .btn svg { transition: transform 200ms var(--workspace-ease); }
+.app-workspace .social-record:focus-within { border-color: var(--brand-900); }
+.app-workspace .social-form { display: flex; flex-direction: column; gap: 28px; }
+.app-workspace .social-form-section { padding: 0; margin: 0; min-width: 0; border: 0; }
+.app-workspace .social-form-section + .social-form-section { padding-top: 24px; border-top: 1px solid var(--line); }
+.app-workspace .social-form-section legend { display: flex; align-items: center; gap: 10px; padding: 0; color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .social-form-section legend > span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--brand-50); color: var(--brand-900); font-size: 10px; }
+.app-workspace .social-form-section > p { margin: 10px 0 22px; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+@media (hover: hover) {
+  .app-workspace .social-record:hover { border-color: var(--brand-900); box-shadow: var(--shadow-card); }
+  .app-workspace .social-record:hover .social-platform-mark { transform: translateY(-2px); }
+  .app-workspace .social-record .btn:hover svg { transform: translate(1px, -1px); }
+}
+@media (min-width: 981px) and (max-width: 1200px), (max-width: 720px) {
+  .app-workspace .social-empty { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
+}
+@media (max-width: 600px) {
+  .app-workspace .social-empty { padding: 24px 20px; }
+  .app-workspace .social-empty-main > .btn { width: 100%; }
+  .app-workspace .social-guide { padding: 22px 18px; }
+  .app-workspace .social-empty-main > p { font-size: 15px; }
+  .app-workspace .social-guide li p { font-size: 14px; }
+  .app-workspace .social-record { grid-template-columns: 48px minmax(0, 1fr); align-items: start; gap: 16px; padding: 24px 20px; }
+  .app-workspace .social-platform-mark { width: 48px; height: 48px; border-radius: 14px; font-size: 18px; }
+  .app-workspace .social-record .item-title { font-size: 21px; }
+  .app-workspace .social-record .btn { grid-column: 1 / -1; width: 100%; }
+  .app-workspace .social-url { margin-left: -64px; padding-top: 7px; }
+  .app-workspace .social-list-header h2 { font-size: 22px; }
+  .app-workspace .social-page .modal-foot .btn { flex: 1 1 130px; }
+  .app-workspace .social-form-section > p { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace .social-record, .app-workspace .social-platform-mark, .app-workspace .social-record .btn svg { transition: none; }
+  .app-workspace .social-record:hover .social-platform-mark, .app-workspace .social-record .btn:hover svg { transform: none; }
+}

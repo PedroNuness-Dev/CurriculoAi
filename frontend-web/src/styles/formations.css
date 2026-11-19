@@ -1,0 +1,79 @@
+/* Formation route: the same workspace controls and motion, with academic hierarchy. */
+.app-workspace .formations-page { min-width: 0; }
+.app-workspace .formations-page > .alert { margin-bottom: 22px; }
+.app-workspace .formation-kicker { display: flex; align-items: center; gap: 8px; color: var(--brand-900); font-size: 10px; font-weight: 800; letter-spacing: .07em; }
+.app-workspace .formation-kicker svg { flex: none; }
+.app-workspace .formation-empty { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .8fr); gap: 48px; padding: 40px; text-align: left; align-items: center; background: var(--surface); border-color: var(--line); }
+.app-workspace .formation-empty-main { min-width: 0; }
+.app-workspace .formation-emblem { position: relative; display: grid; place-items: center; width: 74px; height: 74px; margin-bottom: 28px; border-radius: 22px; color: var(--surface); background: var(--grad); background-size: 220% 100%; }
+.app-workspace .formation-emblem > span { position: absolute; right: -7px; bottom: -4px; display: grid; place-items: center; width: 27px; height: 27px; border: 3px solid var(--surface); border-radius: 9px; color: var(--lime-ink); background: var(--lime); }
+.app-workspace .formation-empty h2 { margin-top: 12px; color: var(--ink); font-size: clamp(27px, 3vw, 38px); font-weight: 750; line-height: 1.16; letter-spacing: -.045em; }
+.app-workspace .formation-empty-main > p { max-width: 430px; margin: 18px 0 26px; color: var(--ink-2); font-size: 14px; line-height: 1.8; }
+.app-workspace .formation-guide { min-width: 0; padding: 28px; border: 1px solid var(--brand-100); border-radius: 18px; background: var(--grad-soft); }
+.app-workspace .formation-guide ol { display: flex; flex-direction: column; gap: 26px; list-style: none; padding: 0; margin: 27px 0; }
+.app-workspace .formation-guide li { display: flex; gap: 14px; align-items: flex-start; }
+.app-workspace .formation-guide li > span { flex: none; display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid var(--brand-100); border-radius: 9px; background: var(--surface); color: var(--brand-900); font-size: 10px; font-weight: 750; }
+.app-workspace .formation-guide h3 { color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .formation-guide li p { margin-top: 6px; color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+.app-workspace .formation-guide-note { padding-top: 22px; border-top: 1px solid var(--brand-100); color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+.app-workspace .formation-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 34px 0 24px; }
+.app-workspace .formation-list-header h2 { margin-top: 8px; font-size: 23px; font-weight: 750; letter-spacing: -.035em; }
+.app-workspace .formation-count { padding: 9px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink-2); font-size: 12px; font-weight: 650; }
+.app-workspace .formation-list { gap: 18px; }
+.app-workspace .formation-record { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, .5fr); gap: 0; padding: 0; background: var(--surface); transition: border-color 220ms; }
+.app-workspace .formation-record > .item-body { padding: 28px; }
+.app-workspace .formation-record-heading { display: flex; align-items: flex-start; gap: 15px; }
+.app-workspace .formation-record-heading > .icon-tile { flex: none; width: 46px; height: 46px; border-radius: 14px; }
+.app-workspace .formation-record-heading > div { min-width: 0; }
+.app-workspace .formation-record .item-title { margin: 8px 0 0; font-size: 21px; line-height: 1.4; font-weight: 750; letter-spacing: -.025em; }
+.app-workspace .formation-record-meta { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 22px; }
+.app-workspace .formation-record-meta > span:not(.badge) { display: flex; align-items: center; gap: 7px; color: var(--ink-2); font-size: 12px; }
+.app-workspace .formation-period { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 28px; border-left: 1px solid var(--line); border-radius: 0 18px 18px 0; background: var(--surface-2); }
+.app-workspace .formation-period p { color: var(--ink-2); font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
+.app-workspace .formation-period .btn { margin-top: auto; margin-left: -10px; }
+.app-workspace .formation-list-note { margin-top: 22px; text-align: right; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.app-workspace .formation-form { display: flex; flex-direction: column; gap: 28px; }
+.app-workspace .formation-form-section { padding: 0; margin: 0; min-width: 0; border: 0; }
+.app-workspace .formation-form-section + .formation-form-section { padding-top: 24px; border-top: 1px solid var(--line); }
+.app-workspace .formation-form-section legend { display: flex; align-items: center; gap: 10px; padding: 0; color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .formation-form-section legend > span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--brand-50); color: var(--brand-900); font-size: 10px; }
+.app-workspace .formation-form-section > p { margin: 10px 0 22px; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .formation-form .check { gap: 11px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); cursor: pointer; transition: background-color 200ms, border-color 200ms; }
+.app-workspace .formation-form .check:has(input:checked) { background: var(--brand-50); border-color: var(--brand-900); }
+.app-workspace .formation-detail-heading { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 24px; padding: 24px; border: 1px solid var(--brand-100); border-radius: 16px; background: var(--grad-soft); }
+.app-workspace .formation-detail-heading h3 { margin: 0; font-size: 24px; line-height: 1.4; font-weight: 750; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.app-workspace .formation-detail-list { margin: 0; }
+.app-workspace .formation-detail-row { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); gap: 18px; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.7; }
+.app-workspace .formation-detail-row:last-child { border-bottom: 0; }
+.app-workspace .formation-detail-row dt { color: var(--ink-2); font-weight: 550; }
+.app-workspace .formation-detail-row dd { margin: 0; color: var(--ink); font-weight: 700; text-align: right; overflow-wrap: anywhere; }
+@media (hover: hover) {
+  .app-workspace .formation-record:hover { border-color: var(--brand-900); }
+}
+@media (min-width: 981px) and (max-width: 1200px), (max-width: 720px) {
+  .app-workspace .formation-empty { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
+  .app-workspace .formation-record { grid-template-columns: minmax(0, 1fr) 210px; }
+  .app-workspace .formation-record > .item-body, .app-workspace .formation-period { padding: 22px; }
+}
+@media (max-width: 600px) {
+  .app-workspace .formation-empty { padding: 24px 20px; }
+  .app-workspace .formation-empty-main > .btn { width: 100%; }
+  .app-workspace .formation-guide { padding: 22px 18px; }
+  .app-workspace .formation-empty-main > p { font-size: 15px; }
+  .app-workspace .formation-guide li p { font-size: 14px; }
+  .app-workspace .formation-record { grid-template-columns: 1fr; }
+  .app-workspace .formation-record > .item-body { padding: 24px 20px; }
+  .app-workspace .formation-period { padding: 20px; border-left: 0; border-top: 1px solid var(--line); border-radius: 0 0 18px 18px; }
+  .app-workspace .formation-record .item-title { font-size: 20px; }
+  .app-workspace .formation-period .btn { align-self: flex-end; margin-left: 0; }
+  .app-workspace .formation-list-header h2 { font-size: 22px; }
+  .app-workspace .formations-page .modal-foot .btn { flex: 1 1 130px; }
+  .app-workspace .formation-form .form-grid { grid-template-columns: 1fr; }
+  .app-workspace .formation-form .span-2 { grid-column: auto; }
+  .app-workspace .formation-form-section > p { font-size: 13px; }
+  .app-workspace .formation-detail-heading { padding: 20px; }
+  .app-workspace .formation-detail-heading h3 { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace .formation-record, .app-workspace .formation-form .check { transition: none; }
+}

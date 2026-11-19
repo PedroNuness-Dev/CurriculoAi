@@ -2,10 +2,11 @@ package br.com.CurriculoAi.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,9 +20,11 @@ import java.util.List;
  * Centraliza o tratamento de todos os erros e retorna um formato padronizado.
  */
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+
 
     @ExceptionHandler(org.springframework.web.ErrorResponseException.class)
     public ResponseEntity<ErrorResponse> handleHttpError(org.springframework.web.ErrorResponseException ex,
@@ -29,6 +32,8 @@ public class GlobalExceptionHandler {
         var status = ex.getStatusCode();
         return ResponseEntity.status(status).body(new ErrorResponse(status.value(), ex.getBody().getDetail(), request));
     }
+
+
 
     /**
      * Tratamento para ResourceNotFoundException (recurso não encontrado).
@@ -39,7 +44,7 @@ public class GlobalExceptionHandler {
             ResourceNotFoundException ex,
             HttpServletRequest request) {
 
-        logger.warn("Recurso não encontrado: {}", ex.getMessage());
+        log.warn("Recurso não encontrado: {}", ex.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
@@ -59,7 +64,7 @@ public class GlobalExceptionHandler {
             ListIsEmptyException ex,
             HttpServletRequest request) {
 
-        logger.warn("Lista vazia: {}", ex.getMessage());
+        log.warn("Lista vazia: {}", ex.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -86,7 +91,7 @@ public class GlobalExceptionHandler {
                 errors.add(error.getField() + ": " + error.getDefaultMessage())
         );
 
-        logger.warn("Erro de validação: {}", errors);
+        log.warn("Erro de validação: {}", errors);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -119,7 +124,7 @@ public class GlobalExceptionHandler {
             errors.add(field + ": " + violation.getMessage());
         });
 
-        logger.warn("Erro de validação de parâmetros: {}", errors);
+        log.warn("Erro de validação de parâmetros: {}", errors);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -140,7 +145,7 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex,
             HttpServletRequest request) {
 
-        logger.warn("Argumento inválido: {}", ex.getMessage());
+        log.warn("Argumento inválido: {}", ex.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -151,9 +156,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    // TODO(Pedro): AuthorizationDeniedException (negada pelo @PreAuthorize) e AuthenticationException
-    //  (ex.: BadCredentialsException no login) são lançadas dentro do controller e caem neste handler,
-    //  virando 500. O contrato documentado no Swagger é 401/403: decidir onde e como traduzir essas exceções.
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handlerAuthorizationDeniedException(AuthorizationDeniedException ex, HttpServletRequest request){
+
+        log.warn("Erro de acesso negado: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                "Você não tem permissão para acessar este recurso",
+                request
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handlerAuthenticationException(AuthenticationException ex, HttpServletRequest request){
+
+        log.warn("Erro acesso não autorizado: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Não autenticado ou credenciais inválidas",
+                request
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
     /**
      * Tratamento genérico para exceções não capturadas.
      */
@@ -163,7 +193,7 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
 
-        logger.error("Erro interno não tratado", ex);
+        log.error("Erro interno não tratado", ex);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),

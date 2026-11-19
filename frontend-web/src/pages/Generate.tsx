@@ -66,16 +66,17 @@ export default function Generate() {
   }
 
   const fileName = `curriculo-${(session?.name ?? "candidato").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-")}.pdf`;
-  const weak = (profile?.experiences.length ?? 0) + (profile?.formations.length ?? 0) === 0;
+  const weak = (profile?.experiences.length ?? 0) + (profile?.formations.length ?? 0) + (profile?.projects.length ?? 0) === 0;
 
   return (
     <div className="generation-page">
-      <PageHeader eyebrow="Currículo" title="Sua trajetória, pronta para o próximo passo." text="Revise seu perfil e gere o currículo em PDF com auxílio de IA." />
+      <PageHeader eyebrow="Currículo" title="Sua trajetória, pronta para o próximo passo." text="Revise seu perfil e gere um currículo A4 com projetos, habilidades e links profissionais." />
       {loading ? (
         <div className="generation-loading" role="status" aria-label="Carregando informações do perfil"><Skeleton h={320} /><Skeleton h={220} /></div>
       ) : (
         <>
           {profileError && <CatalogFeedback onRetry={reload}>{profileError}</CatalogFeedback>}
+          <p><Link to="/app/github">Importar projetos do GitHub</Link> para incluir no seu perfil.</p>
           <div className="generation-workspace">
             <div className="stack-lg generation-main">
               <section className="gen-stage generation-stage" aria-label="Geração do currículo" aria-busy={phase === "running"}>

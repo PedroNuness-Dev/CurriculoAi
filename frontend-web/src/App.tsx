@@ -17,6 +17,7 @@ import Languages from "./pages/Languages";
 import SocialLinks from "./pages/SocialLinks";
 import Analyze from "./pages/Analyze";
 import Generate from "./pages/Generate";
+import ImportGitHub from "./pages/ImportGitHub";
 import Catalogs from "./pages/Catalogs";
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -73,6 +74,7 @@ export default function App() {
         <Route path="redes" element={<SocialLinks />} />
         <Route path="analisar" element={<Analyze />} />
         <Route path="gerar" element={<Generate />} />
+        <Route path="github" element={<ImportGitHub />} />
         <Route path="catalogos" element={<Catalogs />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

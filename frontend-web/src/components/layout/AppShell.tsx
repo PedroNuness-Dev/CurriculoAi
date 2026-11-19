@@ -165,6 +165,7 @@ export default function AppShell() {
           <div className="nav-label">Currículo</div>
           <nav className="nav-group">
             <NavLink to="/app/analisar" className="nav-link"><BookOpen size={19} /> Analisar currículo</NavLink>
+          <NavLink to="/app/github" className="nav-link"><FolderGit2 size={19} /> Importar do GitHub</NavLink>
           <NavLink to="/app/gerar" className="nav-link cta">
               <Sparkles size={19} /> Gerar com IA <span className="lime-dot" />
             </NavLink>

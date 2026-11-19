@@ -7,7 +7,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @ConfigurationPropertiesScan
 @EnableFeignClients
-@org.springframework.boot.context.properties.ConfigurationPropertiesScan
 @SpringBootApplication
 public class CurriculoAiApplication {
 

@@ -4,20 +4,20 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.stream.Stream;
 
-public record CurriculumAnalysis(String resumo, List<String> pontosFortes,
-                                 List<String> pontosDeMelhoria, List<String> sugestoes,
-                                 @JsonInclude(JsonInclude.Include.NON_NULL) Compatibilidade compatibilidade,
-                                 List<Melhoria> melhorias) {
+public record CurriculumAnalysis(String summary, List<String> strengths,
+                                 List<String> weaknesses, List<String> suggestions,
+                                 @JsonInclude(JsonInclude.Include.NON_NULL) JobCompatibility compatibility,
+                                 List<Improvement> improvements) {
     @SafeVarargs
     static boolean invalidLists(List<String>... lists) {
         return Stream.of(lists).anyMatch(list -> list == null
                 || list.stream().anyMatch(item -> item == null || item.isBlank()));
     }
     public CurriculumAnalysis {
-        if (resumo == null || resumo.isBlank() || melhorias == null || melhorias.stream().anyMatch(java.util.Objects::isNull)
-                || invalidLists(pontosFortes, pontosDeMelhoria, sugestoes)) {
+        if (summary == null || summary.isBlank() || improvements == null || improvements.stream().anyMatch(java.util.Objects::isNull)
+                || invalidLists(strengths, weaknesses, suggestions)) {
             throw new IllegalArgumentException("Análise incompleta");
         }
-        melhorias = melhorias.stream().sorted(java.util.Comparator.comparing(Melhoria::prioridade)).toList();
+        improvements = improvements.stream().sorted(java.util.Comparator.comparing(Improvement::priority)).toList();
     }
 }

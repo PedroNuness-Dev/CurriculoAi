@@ -70,7 +70,7 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
   const { method = "GET", body, auth = true, responseType = "json", signal } = opts;
   const headers: Record<string, string> = { Accept: responseType === "blob" ? "application/pdf" : "application/json" };
 
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+  if (body !== undefined && !(body instanceof FormData)) headers["Content-Type"] = "application/json";
 
   if (auth) {
     const session = readSession();
@@ -86,7 +86,7 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
     res = await fetch(BASE_URL + path, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body instanceof FormData ? body : JSON.stringify(body),
       signal,
     });
   } catch (err) {
@@ -106,7 +106,7 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
       throw new ApiError(res.status, auth ? "Sua sessão expirou. Entre novamente." : "E-mail ou senha incorretos.");
     }
     if (res.status === 502 || res.status === 504) {
-      throw new ApiError(res.status, "O backend não respondeu. Ele está rodando em localhost:8080?");
+      throw new ApiError(res.status, parsed?.message || "O serviço está indisponível. Tente novamente em instantes.");
     }
     throw new ApiError(
       res.status,

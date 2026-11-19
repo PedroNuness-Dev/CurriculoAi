@@ -164,7 +164,8 @@ export default function AppShell() {
 
           <div className="nav-label">Currículo</div>
           <nav className="nav-group">
-            <NavLink to="/app/gerar" className="nav-link cta">
+            <NavLink to="/app/analisar" className="nav-link"><BookOpen size={19} /> Analisar currículo</NavLink>
+          <NavLink to="/app/gerar" className="nav-link cta">
               <Sparkles size={19} /> Gerar com IA <span className="lime-dot" />
             </NavLink>
             <NavLink to="/app/catalogos" className="nav-link">

@@ -35,21 +35,21 @@ public class CerebrasController {
     private final CurriculumTextExtractor textExtractor;
 
     @Operation(summary = "Analisar o texto de um currículo em PDF",
-            description = "Requer JWT. Envie o PDF em file e, opcionalmente, a descrição da vaga em vaga para comparar os requisitos.")
+            description = "Requer JWT. Envie o PDF em file e, opcionalmente, a descrição da vaga em jobDescription para comparar os requisitos.")
     @PostMapping(value = "/curriculum/analysis", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CurriculumAnalysis> analyze(@RequestPart(value = "file", required = false) MultipartFile file,
-                                      @RequestPart(value = "vaga", required = false) String vaga) {
-        return ResponseEntity.ok(cerebrasService.analyze(textExtractor.extract(file), vaga));
+                                      @RequestPart(value = "jobDescription", required = false) String jobDescription) {
+        return ResponseEntity.ok(cerebrasService.analyze(textExtractor.extract(file), jobDescription));
     }
 
     @Operation(summary = "Gerar PDF revisado com as respostas do candidato")
     @PostMapping(value = "/curriculum/revision", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> revise(@RequestPart("file") MultipartFile file,
-            @RequestPart(value = "vaga", required = false) String vaga,
-            @RequestPart("respostas") String answers) throws Exception {
-        String revised = cerebrasService.revise(textExtractor.extract(file), vaga, answers);
+            @RequestPart(value = "jobDescription", required = false) String jobDescription,
+            @RequestPart("answers") String answers) throws Exception {
+        String revised = cerebrasService.revise(textExtractor.extract(file), jobDescription, answers);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=curriculo-revisado.pdf")
                 .contentType(MediaType.APPLICATION_PDF).body(pdfService.generatePdfFromText(revised));
     }
@@ -69,7 +69,7 @@ public class CerebrasController {
     @PostMapping("/curriculum")
     public ResponseEntity<byte[]> generateCurriculum() throws Exception {
 
-        String markdown = cerebrasService.gerarMarkdawn();
+        String markdown = cerebrasService.generateMarkdown();
 
         byte[] curriculum = pdfService.generatePdfFromMarkdown(markdown);
 

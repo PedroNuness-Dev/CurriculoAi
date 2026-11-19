@@ -29,11 +29,11 @@ class CurriculumAnalysisTest {
         return provider(feedback, null);
     }
 
-    private Runnable provider(String feedback, String vaga) throws Exception {
+    private Runnable provider(String feedback, String jobDescription) throws Exception {
         ReflectionTestUtils.setField(cerebras, "model", "test-model");
         var response = Map.of("choices", List.of(Map.of("message", Map.of("content", feedback))));
-        String input = vaga == null ? "Experiencia com Java" : new ObjectMapper()
-                .writeValueAsString(Map.of("curriculo", "Experiencia com Java", "vaga", vaga));
+        String input = jobDescription == null ? "Experiencia com Java" : new ObjectMapper()
+                .writeValueAsString(Map.of("resume", "Experiencia com Java", "jobDescription", jobDescription));
         org.mockito.Mockito.when(client.complete(org.mockito.ArgumentMatchers.anyString()))
                 .thenAnswer(invocation -> {
                     var payload = new ObjectMapper().readTree((String) invocation.getArgument(0));
@@ -64,43 +64,43 @@ class CurriculumAnalysisTest {
     @Test
     void returnsFeedbackForUploadedPdf() throws Exception {
         var server = provider("""
-                {"resumo":"Experiência em Java","pontosFortes":["Tecnologia explícita"],
-                 "pontosDeMelhoria":[],"sugestoes":["Descreva um projeto."],"melhorias":[]}
+                {"summary":"Experiência em Java","strengths":["Tecnologia explícita"],
+                 "weaknesses":[],"suggestions":["Descreva um projeto."],"improvements":[]}
                 """);
-        assertEquals(List.of("Descreva um projeto."), controller.analyze(pdf(true), "  ").getBody().sugestoes());
+        assertEquals(List.of("Descreva um projeto."), controller.analyze(pdf(true), "  ").getBody().suggestions());
         server.run();
     }
 
     @Test
     void comparesJobRequirementsWhenDescriptionIsProvided() throws Exception {
-        String vaga = "Java obrigatório. Kubernetes desejável.";
+        String jobDescription = "Java obrigatório. Kubernetes desejável.";
         var server = provider("""
-                {"resumo":"Experiência em Java","pontosFortes":[],"pontosDeMelhoria":[],"sugestoes":[],
-                 "melhorias":[],"compatibilidade":{"resumo":"Há evidência do requisito obrigatório.",
-                 "requisitosAtendidos":["Java"],"requisitosSemEvidencia":["Kubernetes"]}}
-                """, vaga);
-        var result = controller.analyze(pdf(true), vaga).getBody().compatibilidade();
-        assertEquals(List.of("Java"), result.requisitosAtendidos());
-        assertEquals(List.of("Kubernetes"), result.requisitosSemEvidencia());
+                {"summary":"Experiência em Java","strengths":[],"weaknesses":[],"suggestions":[],
+                 "improvements":[],"compatibility":{"summary":"Há evidência do requisito obrigatório.",
+                 "matchedRequirements":["Java"],"requirementsWithoutEvidence":["Kubernetes"]}}
+                """, jobDescription);
+        var result = controller.analyze(pdf(true), jobDescription).getBody().compatibility();
+        assertEquals(List.of("Java"), result.matchedRequirements());
+        assertEquals(List.of("Kubernetes"), result.requirementsWithoutEvidence());
         server.run();
     }
 
     @Test
     void removesExampleWithUnsupportedMetric() {
-        var item = new br.com.CurriculoAi.dto.cerebras.Melhoria(
-                br.com.CurriculoAi.dto.cerebras.Prioridade.ALTA,
+        var item = new br.com.CurriculoAi.dto.cerebras.Improvement(
+                br.com.CurriculoAi.dto.cerebras.Priority.HIGH,
                 "Experiência", "Testei 12 rotas.", "Impacto desconhecido", "Descreva o impacto",
                 "Testei 12 rotas e reduzi falhas em 30%.", "Qual foi o resultado?");
-        assertNull(item.verificarExemplo().exemplo());
-        assertEquals(item.perguntaAoUsuario(), item.verificarExemplo().perguntaAoUsuario());
+        assertNull(item.validateExample().example());
+        assertEquals(item.question(), item.validateExample().question());
     }
 
     @Test
     void rejectsInventedQuotation() throws Exception {
         provider("""
-                {"resumo":"Resumo","pontosFortes":[],"pontosDeMelhoria":[],"sugestoes":[],
-                 "melhorias":[{"prioridade":"ALTA","secao":"Experiência","trechoOriginal":"Fiz deploy",
-                 "problema":"Falta contexto","sugestao":"Descreva o projeto"}]}
+                {"summary":"Resumo","strengths":[],"weaknesses":[],"suggestions":[],
+                 "improvements":[{"priority":"HIGH","section":"Experiência","originalExcerpt":"Fiz deploy",
+                 "problem":"Falta contexto","suggestion":"Descreva o projeto"}]}
                 """);
         var file = pdf(true);
         assertEquals(HttpStatus.BAD_GATEWAY,
@@ -117,7 +117,7 @@ class CurriculumAnalysisTest {
 
     @Test
     void rejectsIncompleteFeedback() throws Exception {
-        var server = provider("{\"resumo\":\"Teste\"}");
+        var server = provider("{\"summary\":\"Teste\"}");
         var file = pdf(true);
         var error = assertThrows(ResponseStatusException.class, () -> controller.analyze(file, null));
         assertEquals(HttpStatus.BAD_GATEWAY, error.getStatusCode());

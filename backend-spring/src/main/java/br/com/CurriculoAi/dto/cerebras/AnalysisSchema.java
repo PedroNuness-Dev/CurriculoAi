@@ -17,17 +17,17 @@ public final class AnalysisSchema {
         var text = Map.of("type", "string");
         var optional = Map.of("type", List.of("string", "null"));
         var strings = Map.of("type", "array", "items", text);
-        var item = object(Map.of("prioridade", Map.of("type", "string", "enum", List.of("ALTA","MEDIA","BAIXA")),
-                "secao", text, "trechoOriginal", text, "problema", text, "sugestao", text,
-                "exemplo", optional, "perguntaAoUsuario", optional));
+        var item = object(Map.of("priority", Map.of("type", "string", "enum", List.of("HIGH","MEDIUM","LOW")),
+                "section", text, "originalExcerpt", text, "problem", text, "suggestion", text,
+                "example", optional, "question", optional));
         Map<String, Object> fields = new LinkedHashMap<>();
-        fields.put("resumo", text);
-        fields.put("pontosFortes", strings);
-        fields.put("pontosDeMelhoria", strings);
-        fields.put("sugestoes", strings);
-        fields.put("melhorias", Map.of("type", "array", "items", item));
-        if (compare) fields.put("compatibilidade", object(Map.of("resumo", text, "requisitosAtendidos", strings,
-                "requisitosSemEvidencia", strings)));
+        fields.put("summary", text);
+        fields.put("strengths", strings);
+        fields.put("weaknesses", strings);
+        fields.put("suggestions", strings);
+        fields.put("improvements", Map.of("type", "array", "items", item));
+        if (compare) fields.put("compatibility", object(Map.of("summary", text, "matchedRequirements", strings,
+                "requirementsWithoutEvidence", strings)));
         return Map.of("type", "json_schema", "json_schema", Map.of("name", "diagnostico",
                 "strict", true, "schema", object(fields)));
     }

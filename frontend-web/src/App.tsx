@@ -15,6 +15,7 @@ import Projects from "./pages/Projects";
 import Skills from "./pages/Skills";
 import Languages from "./pages/Languages";
 import SocialLinks from "./pages/SocialLinks";
+import Analyze from "./pages/Analyze";
 import Generate from "./pages/Generate";
 import Catalogs from "./pages/Catalogs";
 
@@ -70,6 +71,7 @@ export default function App() {
         <Route path="habilidades" element={<Skills />} />
         <Route path="idiomas" element={<Languages />} />
         <Route path="redes" element={<SocialLinks />} />
+        <Route path="analisar" element={<Analyze />} />
         <Route path="gerar" element={<Generate />} />
         <Route path="catalogos" element={<Catalogs />} />
       </Route>

@@ -34,6 +34,11 @@ public class CerebrasController {
     private final  PdfService pdfService;
     private final CurriculumTextExtractor textExtractor;
 
+    @PostMapping("/profile/study")
+    public java.util.List<br.com.CurriculoAi.dto.cerebras.ProfileInsight> study() throws Exception {
+        return cerebrasService.studyProfile();
+    }
+
     @Operation(summary = "Analisar o texto de um currículo em PDF",
             description = "Requer JWT. Envie o PDF em file e, opcionalmente, a descrição da vaga em jobDescription para comparar os requisitos.")
     @PostMapping(value = "/curriculum/analysis", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -67,9 +72,11 @@ public class CerebrasController {
             @ApiResponse(responseCode = "503", ref = SERVICE_UNAVAILABLE)
     })
     @PostMapping("/curriculum")
-    public ResponseEntity<byte[]> generateCurriculum() throws Exception {
+    public ResponseEntity<byte[]> generateCurriculum(
+            @org.springframework.web.bind.annotation.RequestBody(required = false)
+            br.com.CurriculoAi.dto.cerebras.GenerationRequest options) throws Exception {
 
-        String markdown = cerebrasService.generateMarkdown();
+        String markdown = cerebrasService.generateMarkdown(options);
 
         byte[] curriculum = pdfService.generatePdfFromMarkdown(markdown);
 

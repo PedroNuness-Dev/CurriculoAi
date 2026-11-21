@@ -4,7 +4,7 @@ public record JobCompatibility(String summary, List<String> matchedRequirements,
                                   List<String> requirementsWithoutEvidence, AssessmentScore score) {
         public JobCompatibility {
             if (score == null || summary == null || summary.isBlank() || CurriculumAnalysis.invalidLists(matchedRequirements, requirementsWithoutEvidence)) {
-                throw new IllegalArgumentException("ComparaÃ§Ã£o com a jobDescription incompleta");
+                throw new IllegalArgumentException("Comparação com a jobDescription incompleta");
             }
         }
     }

@@ -16,7 +16,7 @@ public record CurriculumAnalysis(String summary, List<String> strengths,
     public CurriculumAnalysis {
         if (structureScore == null || contentScore == null || summary == null || summary.isBlank() || improvements == null || improvements.stream().anyMatch(java.util.Objects::isNull)
                 || invalidLists(strengths, weaknesses, suggestions)) {
-            throw new IllegalArgumentException("AnÃ¡lise incompleta");
+            throw new IllegalArgumentException("Análise incompleta");
         }
         improvements = improvements.stream().sorted(java.util.Comparator.comparing(Improvement::priority)).toList();
     }

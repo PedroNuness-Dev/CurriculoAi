@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Formato solicitado Ã  Cerebras antes da validaÃ§Ã£o dos valores e das citaÃ§Ãµes. */
+/** Formato solicitado à Cerebras antes da validação dos valores e das citações. */
 public final class AnalysisSchema {
     private AnalysisSchema() {}
 

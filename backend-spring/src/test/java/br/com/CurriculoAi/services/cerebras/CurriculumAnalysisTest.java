@@ -38,6 +38,10 @@ class CurriculumAnalysisTest {
                 .thenAnswer(invocation -> {
                     var payload = new ObjectMapper().readTree((String) invocation.getArgument(0));
                     assertEquals("test-model", payload.path("model").asText());
+                    String instructions = payload.at("/messages/0/content").asText();
+                    assertFalse(instructions.contains("Não atribua nota"));
+                    assertTrue(instructions.contains("structureScore"));
+                    assertTrue(instructions.contains("contentScore"));
                     assertEquals(input, payload.at("/messages/1/content").asText());
                     return new ObjectMapper().writeValueAsString(response);
                 });

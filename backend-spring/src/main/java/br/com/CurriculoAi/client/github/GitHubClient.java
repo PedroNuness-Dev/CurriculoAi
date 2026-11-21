@@ -15,4 +15,10 @@ public interface GitHubClient {
 
     @GetMapping("/repos/{username}/{repository}")
     String repository(@PathVariable String username, @PathVariable String repository);
+
+    @GetMapping("/repos/{username}/{repository}/git/trees/{ref}?recursive=1")
+    String tree(@PathVariable String username, @PathVariable String repository, @PathVariable String ref);
+
+    @GetMapping("/repos/{username}/{repository}/git/blobs/{sha}")
+    String blob(@PathVariable String username, @PathVariable String repository, @PathVariable String sha);
 }

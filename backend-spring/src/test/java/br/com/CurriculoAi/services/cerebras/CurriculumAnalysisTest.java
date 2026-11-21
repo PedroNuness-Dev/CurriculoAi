@@ -65,7 +65,7 @@ class CurriculumAnalysisTest {
     void returnsFeedbackForUploadedPdf() throws Exception {
         var server = provider("""
                 {"summary":"Experiência em Java","strengths":["Tecnologia explícita"],
-                 "weaknesses":[],"suggestions":["Descreva um projeto."],"improvements":[]}
+                 "weaknesses":[],"suggestions":["Descreva um projeto."],"structureScore":{"value":60,"rationale":"Seções pouco claras"}, "contentScore":{"value":50,"rationale":"Faltam contribuições"}, "improvements":[]}
                 """);
         assertEquals(List.of("Descreva um projeto."), controller.analyze(pdf(true), "  ").getBody().suggestions());
         server.run();
@@ -76,7 +76,7 @@ class CurriculumAnalysisTest {
         String jobDescription = "Java obrigatório. Kubernetes desejável.";
         var server = provider("""
                 {"summary":"Experiência em Java","strengths":[],"weaknesses":[],"suggestions":[],
-                 "improvements":[],"compatibility":{"summary":"Há evidência do requisito obrigatório.",
+                 "structureScore":{"value":60,"rationale":"Seções pouco claras"}, "contentScore":{"value":50,"rationale":"Faltam contribuições"}, "improvements":[],"compatibility":{"score":{"value":67,"rationale":"Java obrigatório comprovado, Kubernetes desejável sem evidência"},"summary":"Há evidência do requisito obrigatório.",
                  "matchedRequirements":["Java"],"requirementsWithoutEvidence":["Kubernetes"]}}
                 """, jobDescription);
         var result = controller.analyze(pdf(true), jobDescription).getBody().compatibility();
@@ -99,7 +99,7 @@ class CurriculumAnalysisTest {
     void rejectsInventedQuotation() throws Exception {
         provider("""
                 {"summary":"Resumo","strengths":[],"weaknesses":[],"suggestions":[],
-                 "improvements":[{"priority":"HIGH","section":"Experiência","originalExcerpt":"Fiz deploy",
+                 "structureScore":{"value":60,"rationale":"Seções pouco claras"}, "contentScore":{"value":50,"rationale":"Faltam contribuições"}, "improvements":[{"priority":"HIGH","section":"Experiência","originalExcerpt":"Fiz deploy",
                  "problem":"Falta contexto","suggestion":"Descreva o projeto"}]}
                 """);
         var file = pdf(true);
@@ -113,6 +113,13 @@ class CurriculumAnalysisTest {
         assertThrows(IllegalArgumentException.class, () -> controller.analyze(blank, null));
         assertThrows(IllegalArgumentException.class,
                 () -> controller.analyze(new MockMultipartFile("file", new byte[]{1, 2}), null));
+    }
+
+    @Test
+    void validatesScoresWithoutTurningMissingEvidenceIntoZero() {
+        assertNull(new br.com.CurriculoAi.dto.cerebras.AssessmentScore(null, "Vaga sem requisitos").value());
+        assertThrows(IllegalArgumentException.class, () -> new br.com.CurriculoAi.dto.cerebras.AssessmentScore(101, "Inválido"));
+        assertThrows(IllegalArgumentException.class, () -> new br.com.CurriculoAi.dto.cerebras.AssessmentScore(-1, "Inválido"));
     }
 
     @Test

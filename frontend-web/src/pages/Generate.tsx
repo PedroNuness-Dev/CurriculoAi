@@ -112,7 +112,7 @@ export default function Generate() {
           </section>
           <section className="card stack-lg" aria-label="Descobertas sobre seu perfil">
             <h2>O que sua trajetória revela</h2>
-            <p>A IA cruza experiências, estudos e projetos cadastrados para encontrar competências pouco exploradas. As interpretações abaixo são hipóteses: confirme sua contribuição antes de incluí-la no currículo.</p>
+            <p>A IA cruza experiências, estudos, projetos cadastrados e amostras públicas de até três repositórios GitHub vinculados. A leitura é parcial e não comprova autoria. As interpretações abaixo são hipóteses: confirme sua contribuição antes de incluí-la no currículo.</p>
             <Button onClick={study} disabled={studying || phase === "running"}>{studying ? "Estudando seu perfil…" : "Investigar meu perfil"}</Button>
             {insights?.map((item, index) => <article key={index}>
               <h3>{item.skill}</h3><blockquote>{item.evidence}</blockquote>

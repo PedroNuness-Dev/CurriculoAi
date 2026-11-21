@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CurriculumAnalysisTest {
     private final br.com.CurriculoAi.client.cerebras.CerebrasClient client = org.mockito.Mockito.mock(br.com.CurriculoAi.client.cerebras.CerebrasClient.class);
-    private final CerebrasService cerebras = new CerebrasService(client, null, null);
+    private final CerebrasService cerebras = new CerebrasService(client, null, null, null);
     private final CerebrasController controller = new CerebrasController(cerebras, null, new CurriculumTextExtractor());
 
     private Runnable provider(String feedback) throws Exception {

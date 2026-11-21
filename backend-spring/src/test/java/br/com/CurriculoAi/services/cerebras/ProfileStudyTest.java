@@ -23,7 +23,7 @@ class ProfileStudyTest {
                 """;
         when(client.complete(anyString())).thenReturn(new ObjectMapper().writeValueAsString(
                 Map.of("choices", List.of(Map.of("message", Map.of("content", content))))));
-        var service = new CerebrasService(client, users, null);
+        var service = new CerebrasService(client, users, null, null);
         org.springframework.test.util.ReflectionTestUtils.setField(service, "model", "test-model");
         assertTrue(service.studyProfile().isEmpty());
     }

@@ -19,21 +19,24 @@ interface Improvement {
   example?: string | null;
   question?: string | null;
 }
+interface Score { value: number | null; rationale: string }
 interface Analysis {
+  structureScore: Score;
+  contentScore: Score;
   summary: string;
   strengths: string[];
   weaknesses: string[];
   suggestions: string[];
   improvements: Improvement[];
-  compatibility?: { summary: string; matchedRequirements: string[]; requirementsWithoutEvidence: string[] };
+  compatibility?: { score: Score; summary: string; matchedRequirements: string[]; requirementsWithoutEvidence: string[] };
 }
 
-/** Limites conferidos também pelo backend (CurriculumTextExtractor e CerebrasService). */
+/** Limites conferidos tambÃ©m pelo backend (CurriculumTextExtractor e CerebrasService). */
 const MAX_FILE_BYTES = 1024 * 1024;
 const MAX_TEXT = 16000;
 const PRIORITY: Record<Priority, { label: string; short: string }> = {
   HIGH: { label: "Prioridade alta", short: "Alta" },
-  MEDIUM: { label: "Prioridade média", short: "Média" },
+  MEDIUM: { label: "Prioridade mÃ©dia", short: "MÃ©dia" },
   LOW: { label: "Prioridade baixa", short: "Baixa" },
 };
 
@@ -76,7 +79,7 @@ export default function Analyze() {
   }
 
   function newAnalysis() {
-    if (clarifications && !window.confirm("Começar uma nova análise? Suas respostas atuais serão descartadas.")) return;
+    if (clarifications && !window.confirm("ComeÃ§ar uma nova anÃ¡lise? Suas respostas atuais serÃ£o descartadas.")) return;
     reset();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -85,9 +88,9 @@ export default function Analyze() {
     if (!candidate) return;
     reset();
     if (candidate.type !== "application/pdf" && !candidate.name.toLowerCase().endsWith(".pdf")) {
-      setError("Envie o currículo em formato PDF."); return;
+      setError("Envie o currÃ­culo em formato PDF."); return;
     }
-    if (candidate.size > MAX_FILE_BYTES) { setError("Envie um PDF de até 1 MB."); return; }
+    if (candidate.size > MAX_FILE_BYTES) { setError("Envie um PDF de atÃ© 1 MB."); return; }
     setFile(candidate);
   }
 
@@ -106,8 +109,8 @@ export default function Analyze() {
   async function submit(revision: boolean) {
     if (!file || busy) return;
     setError("");
-    if (file.size > MAX_FILE_BYTES) { setError("Envie um PDF de até 1 MB."); return; }
-    if (revision && clarifications.length > MAX_TEXT) { setError("As respostas juntas devem ter até 16 mil caracteres."); return; }
+    if (file.size > MAX_FILE_BYTES) { setError("Envie um PDF de atÃ© 1 MB."); return; }
+    if (revision && clarifications.length > MAX_TEXT) { setError("As respostas juntas devem ter atÃ© 16 mil caracteres."); return; }
     const body = new FormData();
     body.append("file", file);
     if (job.trim()) body.append("jobDescription", job.trim());
@@ -118,7 +121,7 @@ export default function Analyze() {
         body.append("answers", clarifications);
         const blob = await request<Blob>("/api/cerebras/curriculum/revision", { method: "POST", body, responseType: "blob" });
         setPdf(URL.createObjectURL(blob));
-        toast.success("Versão revisada pronta.");
+        toast.success("VersÃ£o revisada pronta.");
         setTimeout(() => revisionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
       } else {
         const result = await request<Analysis>("/api/cerebras/curriculum/analysis", { method: "POST", body });
@@ -135,15 +138,15 @@ export default function Analyze() {
 
   async function copy(text: string) {
     try { await navigator.clipboard.writeText(text); toast.success("Exemplo copiado."); }
-    catch { toast.error("Não foi possível copiar o exemplo."); }
+    catch { toast.error("NÃ£o foi possÃ­vel copiar o exemplo."); }
   }
 
   return <div className="analyze-page">
-    <PageHeader eyebrow="Currículo" title="Analise seu currículo com IA."
-      text="Envie o PDF, receba um diagnóstico com melhorias por prioridade e gere uma versão revisada com as suas respostas." />
+    <PageHeader eyebrow="CurrÃ­culo" title="Analise seu currÃ­culo com IA."
+      text="Envie o PDF, receba um diagnÃ³stico com melhorias por prioridade e gere uma versÃ£o revisada com as suas respostas." />
 
-    <ol className="analyze-steps" aria-label="Etapas da análise">
-      {["Enviar o currículo", "Revisar as melhorias", "Versão revisada"].map((label, index) => {
+    <ol className="analyze-steps" aria-label="Etapas da anÃ¡lise">
+      {["Enviar o currÃ­culo", "Revisar as melhorias", "VersÃ£o revisada"].map((label, index) => {
         const n = index + 1;
         return <li key={label} className={n < step ? "is-done" : n === step ? "is-active" : ""} aria-current={n === step ? "step" : undefined}>
           <span>{n < step ? <CircleCheck size={15} /> : n}</span>{label}
@@ -154,43 +157,43 @@ export default function Analyze() {
     {!analysis && <section className="card analyze-setup" aria-busy={busy === "analysis"}>
       <div className="analyze-setup-grid">
         <div className="analyze-setup-col">
-          <span className="analyze-kicker">01 · Seu currículo</span>
+          <span className="analyze-kicker">01 Â· Seu currÃ­culo</span>
           {!file ? <label className={"analyze-drop" + (dragging ? " is-dragging" : "")}
             onDragOver={e => { e.preventDefault(); if (!busy) setDragging(true); }}
             onDragLeave={() => setDragging(false)} onDrop={drop}>
             <input ref={inputRef} type="file" accept="application/pdf,.pdf" className="sr-only" disabled={!!busy}
               onChange={e => pick(e.target.files?.[0])} />
             <span className="analyze-drop-icon" aria-hidden="true"><FileUp size={28} /></span>
-            <strong>{dragging ? "Solte o PDF aqui" : "Arraste o PDF do seu currículo"}</strong>
+            <strong>{dragging ? "Solte o PDF aqui" : "Arraste o PDF do seu currÃ­culo"}</strong>
             <span>ou <u>clique para escolher</u> um arquivo</span>
           </label> : <div className="analyze-file">
             <span className="analyze-file-icon" aria-hidden="true"><FileText size={24} /><i>PDF</i></span>
             <div className="analyze-file-info">
               <strong>{file.name}</strong>
-              <span><FileCheck2 size={14} aria-hidden="true" /> {formatSize(file.size)} · pronto para analisar</span>
+              <span><FileCheck2 size={14} aria-hidden="true" /> {formatSize(file.size)} Â· pronto para analisar</span>
             </div>
             <Button variant="ghost" size="sm" iconOnly onClick={clearFile} disabled={!!busy} aria-label="Remover arquivo"><X size={18} /></Button>
           </div>}
           <ul className="analyze-rules" aria-label="Requisitos do arquivo">
-            <li>Texto selecionável</li><li>Até 20 páginas</li><li>Até 1 MB</li><li>Sem senha</li>
+            <li>Texto selecionÃ¡vel</li><li>AtÃ© 20 pÃ¡ginas</li><li>AtÃ© 1 MB</li><li>Sem senha</li>
           </ul>
         </div>
         <div className="analyze-setup-col">
-          <label className="analyze-kicker" htmlFor="analyze-job">02 · Vaga <span>(opcional)</span></label>
+          <label className="analyze-kicker" htmlFor="analyze-job">02 Â· Vaga <span>(opcional)</span></label>
           <div className="analyze-job">
             <textarea id="analyze-job" className="textarea" rows={7} maxLength={MAX_TEXT} value={job} disabled={!!busy}
-              placeholder="Cole aqui a descrição da vaga para ver quais requisitos o seu currículo comprova."
+              placeholder="Cole aqui a descriÃ§Ã£o da vaga para ver quais requisitos o seu currÃ­culo comprova."
               onChange={e => { reset(); setJob(e.target.value); }} />
             <span className="analyze-counter">{job.length.toLocaleString("pt-BR")} / 16.000</span>
           </div>
           <p className="analyze-job-hint"><BriefcaseBusiness size={15} aria-hidden="true" />
-            {job.trim() ? "Vamos comparar o currículo com os requisitos desta vaga." : "Sem vaga, a análise avalia a redação e a estrutura do currículo."}</p>
+            {job.trim() ? "Vamos comparar o currÃ­culo com os requisitos desta vaga." : "Sem vaga, a anÃ¡lise avalia a redaÃ§Ã£o e a estrutura do currÃ­culo."}</p>
         </div>
       </div>
       <footer className="analyze-setup-foot">
-        <p>A IA cita trechos reais do seu currículo e não inventa métricas. Nenhum arquivo fica salvo.</p>
+        <p>A IA cita trechos reais do seu currÃ­culo e nÃ£o inventa mÃ©tricas. Nenhum arquivo fica salvo.</p>
         <Button size="lg" loading={busy === "analysis"} disabled={!file || !!busy} icon={<ScanSearch size={19} />}
-          onClick={() => submit(false)}>Analisar currículo</Button>
+          onClick={() => submit(false)}>Analisar currÃ­culo</Button>
       </footer>
     </section>}
 
@@ -203,15 +206,15 @@ export default function Analyze() {
         <span className="analyze-file-icon is-small" aria-hidden="true"><FileText size={18} /></span>
         <div>
           <strong>{file?.name}</strong>
-          <span>{job.trim() ? "Analisado com a descrição da vaga" : "Análise da redação, sem vaga"}</span>
+          <span>{job.trim() ? "Analisado com a descriÃ§Ã£o da vaga" : "AnÃ¡lise da redaÃ§Ã£o, sem vaga"}</span>
         </div>
-        <Button variant="secondary" size="sm" icon={<RotateCcw size={15} />} disabled={!!busy} onClick={newAnalysis}>Nova análise</Button>
+        <Button variant="secondary" size="sm" icon={<RotateCcw size={15} />} disabled={!!busy} onClick={newAnalysis}>Nova anÃ¡lise</Button>
       </section>
 
       <section className="analyze-hero">
         <div className="analyze-hero-text">
-          <span className="analyze-hero-kicker"><Sparkles size={14} aria-hidden="true" /> Diagnóstico</span>
-          <h2>O que a IA encontrou no seu currículo</h2>
+          <span className="analyze-hero-kicker"><Sparkles size={14} aria-hidden="true" /> DiagnÃ³stico</span>
+          <h2>O que a IA encontrou no seu currÃ­culo</h2>
           <p>{analysis.summary}</p>
         </div>
         <dl className="analyze-stats">
@@ -224,11 +227,21 @@ export default function Analyze() {
         </dl>
       </section>
 
+      <section className="card" aria-label="Notas da análise">
+        <h2>Avaliações separadas</h2>
+        <p>Estimativas da IA baseadas no texto extraído. Não representam aprovação em ATS nem avaliação visual do PDF.</p>
+        {[{ label: "Estrutura textual", score: analysis.structureScore }, { label: "Conteúdo", score: analysis.contentScore },
+          { label: "Compatibilidade com a vaga", score: analysis.compatibility?.score }].map(({ label, score }) => (
+          <div key={label}><h3>{label}: {score?.value == null ? "Não avaliada" : `${score.value}/100`}</h3>
+            <p>{score?.rationale ?? "Envie uma vaga opcional para avaliar compatibilidade."}</p></div>
+        ))}
+      </section>
+
       {(analysis.strengths.length > 0 || analysis.weaknesses.length > 0) && <div className="analyze-columns">
         {analysis.strengths.length > 0 && <FeedbackCard tone="good" icon={<ThumbsUp size={18} />} title="Pontos fortes" items={analysis.strengths} />}
         {analysis.weaknesses.length > 0 && <FeedbackCard tone="warn" icon={<CircleAlert size={18} />} title="Pontos de melhoria" items={analysis.weaknesses} />}
       </div>}
-      {analysis.suggestions.length > 0 && <FeedbackCard tone="idea" icon={<Lightbulb size={18} />} title="Sugestões gerais" items={analysis.suggestions} />}
+      {analysis.suggestions.length > 0 && <FeedbackCard tone="idea" icon={<Lightbulb size={18} />} title="SugestÃµes gerais" items={analysis.suggestions} />}
 
       {analysis.compatibility && <Compatibility data={analysis.compatibility} />}
 
@@ -236,8 +249,8 @@ export default function Analyze() {
         <header className="analyze-section-head">
           <div>
             <span className="analyze-kicker">Revisar por prioridade</span>
-            <h2 id="analyze-improvements-title">Ajustes no texto do currículo</h2>
-            <p>Cada ajuste cita um trecho real do seu PDF. Responda às perguntas para a IA reescrever com fatos seus.</p>
+            <h2 id="analyze-improvements-title">Ajustes no texto do currÃ­culo</h2>
+            <p>Cada ajuste cita um trecho real do seu PDF. Responda Ã s perguntas para a IA reescrever com fatos seus.</p>
           </div>
           {improvements.length > 1 && <div className="analyze-filter" role="group" aria-label="Filtrar por prioridade">
             {(["ALL", "HIGH", "MEDIUM", "LOW"] as const).map(key => {
@@ -252,7 +265,7 @@ export default function Analyze() {
         </header>
 
         {improvements.length === 0 && <p className="card analyze-empty"><CircleCheck size={20} aria-hidden="true" />
-          Nenhum ajuste específico no texto. Confira as sugestões gerais acima.</p>}
+          Nenhum ajuste especÃ­fico no texto. Confira as sugestÃµes gerais acima.</p>}
 
         <div className="analyze-list">
           {improvements.map((item, i) => (filter === "ALL" || item.priority === filter) &&
@@ -266,11 +279,11 @@ export default function Analyze() {
             <span className="analyze-notes-icon" aria-hidden="true"><PenLine size={18} /></span>
             <div>
               <label htmlFor="analyze-notes"><strong>Quer acrescentar algo?</strong></label>
-              <p>Cursos, resultados, responsabilidades ou qualquer fato que não está no PDF. Entra na versão revisada.</p>
+              <p>Cursos, resultados, responsabilidades ou qualquer fato que nÃ£o estÃ¡ no PDF. Entra na versÃ£o revisada.</p>
             </div>
           </div>
           <textarea id="analyze-notes" className="textarea" rows={3} value={notes} disabled={!!busy} maxLength={MAX_TEXT}
-            placeholder="Ex.: Também liderei a migração do banco para PostgreSQL em 2025."
+            placeholder="Ex.: TambÃ©m liderei a migraÃ§Ã£o do banco para PostgreSQL em 2025."
             onChange={e => { setPdf(""); setNotes(e.target.value); }} />
         </section>
       </section>
@@ -281,28 +294,28 @@ export default function Analyze() {
           <header className="analyze-revised-head">
             <span className="analyze-revised-icon" aria-hidden="true"><FileCheck2 size={22} /></span>
             <div>
-              <span className="analyze-kicker">Versão revisada</span>
-              <h2 id="analyze-revision-title">Seu currículo reescrito com as suas respostas</h2>
-              <p>Leia com atenção antes de usar: confira se tudo o que está escrito é verdadeiro.</p>
+              <span className="analyze-kicker">VersÃ£o revisada</span>
+              <h2 id="analyze-revision-title">Seu currÃ­culo reescrito com as suas respostas</h2>
+              <p>Leia com atenÃ§Ã£o antes de usar: confira se tudo o que estÃ¡ escrito Ã© verdadeiro.</p>
             </div>
             <a className="btn btn-primary" href={pdf} download="curriculo-revisado.pdf"><Download size={17} /> Baixar PDF</a>
           </header>
-          <iframe title="Currículo revisado" className="pdf-frame analyze-frame" src={pdf} />
+          <iframe title="CurrÃ­culo revisado" className="pdf-frame analyze-frame" src={pdf} />
         </div>}
       </section>}
 
-      <div className="analyze-tray" role="region" aria-label="Gerar versão revisada">
+      <div className="analyze-tray" role="region" aria-label="Gerar versÃ£o revisada">
         <div className="analyze-tray-progress">
           {questions.length > 0 && <span className="analyze-ring" aria-hidden="true" style={{ "--p": answered / questions.length } as CSSProperties}>
             <span>{answered}/{questions.length}</span>
           </span>}
           <div>
-            <strong>{questions.length ? `${answered} de ${questions.length} perguntas respondidas` : "Acrescente suas informações"}</strong>
-            <span>{clarifications ? "Pronto para gerar a versão revisada." : "Responda ao menos uma pergunta ou acrescente uma informação."}</span>
+            <strong>{questions.length ? `${answered} de ${questions.length} perguntas respondidas` : "Acrescente suas informaÃ§Ãµes"}</strong>
+            <span>{clarifications ? "Pronto para gerar a versÃ£o revisada." : "Responda ao menos uma pergunta ou acrescente uma informaÃ§Ã£o."}</span>
           </div>
         </div>
         <Button loading={busy === "revision"} disabled={!!busy || !clarifications} icon={<WandSparkles size={18} />}
-          onClick={() => submit(true)}>{pdf ? "Gerar novamente" : "Gerar versão revisada"}</Button>
+          onClick={() => submit(true)}>{pdf ? "Gerar novamente" : "Gerar versÃ£o revisada"}</Button>
       </div>
     </div>}
   </div>;
@@ -323,25 +336,25 @@ function Compatibility({ data }: { data: NonNullable<Analysis["compatibility"]> 
       <span className="analyze-compat-icon" aria-hidden="true"><BriefcaseBusiness size={20} /></span>
       <div>
         <span className="analyze-kicker">Compatibilidade com a vaga</span>
-        <h2 id="analyze-compat-title">{total ? `${data.matchedRequirements.length} de ${total} requisitos com evidência no currículo` : "Requisitos da vaga"}</h2>
+        <h2 id="analyze-compat-title">{total ? `${data.matchedRequirements.length} de ${total} requisitos com evidÃªncia no currÃ­culo` : "Requisitos da vaga"}</h2>
       </div>
     </header>
-    {total > 0 && <div className="analyze-meter" role="img" aria-label={`${percent}% dos requisitos com evidência no currículo`}>
+    {total > 0 && <div className="analyze-meter" role="img" aria-label={`${percent}% dos requisitos com evidÃªncia no currÃ­culo`}>
       <span style={{ width: percent + "%" }} />
     </div>}
     <p className="analyze-compat-summary">{data.summary}</p>
     <div className="analyze-compat-grid">
       {data.matchedRequirements.length > 0 && <div>
-        <h3><CircleCheck size={16} aria-hidden="true" /> Com evidência</h3>
+        <h3><CircleCheck size={16} aria-hidden="true" /> Com evidÃªncia</h3>
         <ul className="analyze-reqs is-matched">{data.matchedRequirements.map((item, i) => <li key={i}>{item}</li>)}</ul>
       </div>}
       {data.requirementsWithoutEvidence.length > 0 && <div>
-        <h3><CircleDashed size={16} aria-hidden="true" /> Sem evidência no texto</h3>
+        <h3><CircleDashed size={16} aria-hidden="true" /> Sem evidÃªncia no texto</h3>
         <ul className="analyze-reqs is-missing">{data.requirementsWithoutEvidence.map((item, i) => <li key={i}>{item}</li>)}</ul>
       </div>}
     </div>
     {data.requirementsWithoutEvidence.length > 0 && <p className="analyze-compat-note">
-      Sem evidência não quer dizer que você não tem a habilidade: talvez ela só não esteja escrita. Se tiver, conte nas respostas abaixo.
+      Sem evidÃªncia nÃ£o quer dizer que vocÃª nÃ£o tem a habilidade: talvez ela sÃ³ nÃ£o esteja escrita. Se tiver, conte nas respostas abaixo.
     </p>}
   </section>;
 }
@@ -361,7 +374,7 @@ function ImprovementCard({ item, index, total, answer, disabled, onAnswer, onCop
     </header>
     <blockquote className="analyze-quote">
       <Quote size={16} aria-hidden="true" />
-      <span className="sr-only">Trecho do seu currículo: </span>{item.originalExcerpt}
+      <span className="sr-only">Trecho do seu currÃ­culo: </span>{item.originalExcerpt}
     </blockquote>
     <div className="analyze-item-body">
       <div className="analyze-item-block is-problem">
@@ -392,8 +405,8 @@ function ImprovementCard({ item, index, total, answer, disabled, onAnswer, onCop
 
 function AnalyzeLoader({ mode, withJob }: { mode: "analysis" | "revision"; withJob: boolean }) {
   const steps = mode === "analysis"
-    ? ["Lendo o texto do PDF", "Avaliando redação e estrutura", ...(withJob ? ["Comparando com a vaga"] : []), "Conferindo os trechos citados"]
-    : ["Reunindo suas respostas", "Reescrevendo o currículo", "Montando o PDF"];
+    ? ["Lendo o texto do PDF", "Avaliando redaÃ§Ã£o e estrutura", ...(withJob ? ["Comparando com a vaga"] : []), "Conferindo os trechos citados"]
+    : ["Reunindo suas respostas", "Reescrevendo o currÃ­culo", "Montando o PDF"];
   const [step, setStep] = useState(0);
   useEffect(() => {
     const timer = setInterval(() => setStep(current => Math.min(current + 1, steps.length - 1)), 2200);
@@ -411,9 +424,9 @@ function AnalyzeLoader({ mode, withJob }: { mode: "analysis" | "revision"; withJ
       <span className="analyze-paper-badge">{mode === "analysis" ? <ScanSearch size={22} /> : <WandSparkles size={22} />}</span>
     </div>
     <div className="analyze-loader-text">
-      <span className="analyze-kicker">{mode === "analysis" ? "Analisando seu currículo" : "Gerando a versão revisada"}</span>
-      <strong key={step}>{steps[step]}…</strong>
-      <p>{mode === "analysis" ? "Costuma levar alguns segundos. Não feche esta página." : "A IA usa só o seu currículo e as suas respostas."}</p>
+      <span className="analyze-kicker">{mode === "analysis" ? "Analisando seu currÃ­culo" : "Gerando a versÃ£o revisada"}</span>
+      <strong key={step}>{steps[step]}â€¦</strong>
+      <p>{mode === "analysis" ? "Costuma levar alguns segundos. NÃ£o feche esta pÃ¡gina." : "A IA usa sÃ³ o seu currÃ­culo e as suas respostas."}</p>
       <ol className="analyze-loader-steps">
         {steps.map((label, i) => <li key={label} className={i < step ? "is-done" : i === step ? "is-active" : ""}>
           <span>{i < step ? <CircleCheck size={13} /> : i + 1}</span>{label}

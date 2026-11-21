@@ -280,7 +280,7 @@ public class CerebrasService {
         data.put("certifications", formatCertifications(profile.certifications()));
         data.put("languages", formatLanguages(profile.languages()));
         data.put("availability", formatAvailability(profile.availability()));
-        data.put("projects", profile.projects());
+        data.put("projects", ProfileContext.projects(profile.projects()));
         data.put("githubEvidence", gitHubEvidenceService == null ? List.of() : gitHubEvidenceService.inspect(profile.projects()));
         data.put("abilities", profile.abilities());
         data.put("socialNetworks", profile.socialNetworks());

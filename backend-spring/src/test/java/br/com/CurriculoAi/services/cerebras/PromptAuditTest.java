@@ -178,15 +178,18 @@ class PromptAuditTest {
 
     @Test
     void extractsLiveSuitePdfsWhenAvailable() throws Exception {
-        var root = Path.of("target", "prompt-audit", "live-suite-baseline");
-        if (!Files.isDirectory(root)) return;
-        try (var folders = Files.list(root)) {
-            for (var folder : folders.filter(Files::isDirectory).toList()) {
-                var file = folder.resolve("resume.pdf");
-                if (!Files.exists(file)) continue;
-                try (var pdf = org.apache.pdfbox.pdmodel.PDDocument.load(file.toFile())) {
-                    Files.writeString(folder.resolve("rendered.txt"),
-                            new org.apache.pdfbox.text.PDFTextStripper().getText(pdf));
+        for (String mode : List.of("live-suite-baseline", "audited-fixture-api")) {
+            var root = Path.of("target", "prompt-audit", mode);
+            if (!Files.isDirectory(root)) continue;
+            try (var folders = Files.list(root)) {
+                for (var folder : folders.filter(Files::isDirectory).toList()) {
+                    var file = folder.resolve("resume.pdf");
+                    if (!Files.exists(file)) continue;
+                    try (var pdf = org.apache.pdfbox.pdmodel.PDDocument.load(file.toFile())) {
+                        String text = new org.apache.pdfbox.text.PDFTextStripper().getText(pdf);
+                        assertFalse(text.isBlank());
+                        Files.writeString(folder.resolve("rendered.txt"), text);
+                    }
                 }
             }
         }

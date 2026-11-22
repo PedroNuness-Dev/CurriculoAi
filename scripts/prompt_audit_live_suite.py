@@ -4,17 +4,22 @@ This API does not expose provider raw responses. The output files are PDF only.
 Run only against the disposable local test server: --live
 """
 import json
+import argparse
 import secrets
-import sys
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 
-if sys.argv[1:] != ["--live"]:
-    raise SystemExit("Usage: python scripts/prompt_audit_live_suite.py --live")
-BASE = "http://127.0.0.1:8080"
-OUT = Path(__file__).resolve().parents[1] / "backend-spring/target/prompt-audit/live-suite-baseline"
+parser = argparse.ArgumentParser()
+parser.add_argument("--live", action="store_true")
+parser.add_argument("--base", default="http://127.0.0.1:8080")
+args = parser.parse_args()
+if not args.live or args.base not in {"http://127.0.0.1:8080", "http://127.0.0.1:8091"}:
+    parser.error("Run only with --live against a localhost test server")
+BASE = args.base
+mode = "live-suite-baseline" if BASE.endswith(":8080") else "audited-fixture-api"
+OUT = Path(__file__).resolve().parents[1] / ("backend-spring/target/prompt-audit/" + mode)
 OUT.mkdir(parents=True, exist_ok=True)
 CASES = [
     ("complete-tech", "Ana Fictícia", "API Java para pedidos com validação de entradas e testes de integração.", "Vaga Java e Kubernetes"),

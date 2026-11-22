@@ -19,7 +19,7 @@ public final class ProfileContext {
                 var p = project.get();
                 result.append("### ").append(p.title()).append("\n\n").append(p.link()).append("\n\n");
                 Arrays.stream(uniqueSentences(p.description()).split("(?<=[.!?])\\s+"))
-                        .filter(sentence -> !sentence.isBlank()).limit(4)
+                        .filter(sentence -> !sentence.isBlank() && !sentence.startsWith("Não ")).limit(3)
                         .forEach(sentence -> result.append("- ").append(sentence).append("\n"));
                 result.append("\n");
                 if (nextHeading >= 0) result.append(section.substring(nextHeading));

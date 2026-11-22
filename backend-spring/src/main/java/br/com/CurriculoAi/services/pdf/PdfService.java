@@ -50,12 +50,12 @@ public class PdfService {
                         <style>
                             @page { size: A4; margin: 17mm 18mm 18mm; }
                             body { margin: 0; font-family: Helvetica, Arial, sans-serif;
-                                   font-size: 10.5pt; line-height: 1.45; color: #202020; }
+                                   font-size: 10.5pt; line-height: 1.35; color: #202020; }
                             h1, h2, h3 { page-break-after: avoid; }
                             h1 { margin: 0 0 4pt; font-size: 27pt; line-height: 1.12; color: #151515; }
                             h1 + p, h1 + p + p { font-size: 9.5pt; color: #515762; }
                             h1 + p strong { font-size: 14pt; color: #202020; }
-                            h2 { margin: 17pt 0 6pt; padding-bottom: 3pt; font-size: 11.5pt;
+                            h2 { margin: 12pt 0 6pt; padding-bottom: 3pt; font-size: 11.5pt;
                                  text-transform: uppercase; color: #142d50; border-bottom: 0.7pt solid #b8bcc3; }
                             h3 { margin: 8pt 0 2pt; font-size: 11pt; }
                             h3 + p { font-size: 9.5pt; color: #515762; page-break-after: avoid; }

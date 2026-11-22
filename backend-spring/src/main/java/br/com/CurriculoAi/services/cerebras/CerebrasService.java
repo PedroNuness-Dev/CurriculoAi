@@ -56,6 +56,13 @@ public class CerebrasService {
             throw new IllegalArgumentException("Dados do usuario nao encontrados. Verifique o mapper.");
         }
 
+        if ((userFullContent.experiences() == null || userFullContent.experiences().isEmpty())
+                && (userFullContent.projects() == null || userFullContent.projects().isEmpty())
+                && (userFullContent.formations() == null || userFullContent.formations().isEmpty())
+                && (userFullContent.certifications() == null || userFullContent.certifications().isEmpty())) {
+            return sparseResume(userFullContent, options == null ? "pt-BR" : options.outputLanguage());
+        }
+
         log.info("Iniciando geração de markdown");
         String source = buildResumeData(userFullContent, false);
 
@@ -95,6 +102,21 @@ public class CerebrasService {
             throw new IllegalStateException("Invalid resume content");
         }
         return markdown;
+    }
+
+    private String sparseResume(UserFullContent profile, String language) {
+        var resume = new StringBuilder("# ").append(profile.user().name().strip());
+        if (profile.user().email() != null && !profile.user().email().isBlank()) {
+            resume.append("\n\n").append(profile.user().email().strip());
+        }
+        var skills = profile.abilities() == null ? java.util.List.<String>of() : profile.abilities().stream()
+                .filter(java.util.Objects::nonNull).map(br.com.CurriculoAi.dto.ability.AbilityResponse::name)
+                .filter(value -> value != null && !value.isBlank()).map(String::strip).distinct().toList();
+        if (!skills.isEmpty()) {
+            resume.append("\n\n## ").append("en-US".equals(language) ? "Skills" : "Habilidades");
+            for (String skill : skills) resume.append("\n- ").append(skill);
+        }
+        return resume.toString();
     }
 
     public java.util.List<br.com.CurriculoAi.dto.cerebras.ProfileInsight> studyProfile() throws Exception {

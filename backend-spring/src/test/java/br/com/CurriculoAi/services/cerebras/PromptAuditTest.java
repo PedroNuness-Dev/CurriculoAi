@@ -78,8 +78,14 @@ class PromptAuditTest {
         String rendered = service.generateMarkdown(input);
         byte[] pdf = new PdfService().generatePdfFromMarkdown(rendered);
         assertTrue(pdf.length > 100 && new String(pdf, 0, 4).equals("%PDF"));
-        assertEquals(markdown, rendered);
-        assertEquals(2, requests.size(), "draft and review must each have one call");
+        if (c.project().isBlank()) {
+            assertEquals(0, requests.size(), "sparse profiles must not ask the model to infer a career");
+            assertTrue(rendered.contains(c.skill()));
+            assertFalse(rendered.contains("Especialista"));
+        } else {
+            assertEquals(markdown, rendered);
+            assertEquals(2, requests.size(), "draft and review must each have one call");
+        }
         for (String request : requests) {
             var node = mapper.readTree(request);
             assertEquals("json_schema", node.at("/response_format/type").asText());
@@ -88,7 +94,8 @@ class PromptAuditTest {
         var folder = Path.of("target", "prompt-audit", "fixture", c.id());
         Files.createDirectories(folder);
         Files.writeString(folder.resolve("input.json"), mapper.writerWithDefaultPrettyPrinter().writeValueAsString(c));
-        Files.writeString(folder.resolve("raw-model-output.json"), raw);
+        Files.writeString(folder.resolve("raw-model-output.json"), requests.isEmpty() ?
+                "{\"modelCalled\":false}" : raw);
         Files.writeString(folder.resolve("rendered.md"), rendered);
         Files.write(folder.resolve("resume.pdf"), pdf);
     }
@@ -96,7 +103,8 @@ class PromptAuditTest {
     @Test
     void rejectsMalformedProviderOutputAndUnsupportedName() throws Exception {
         var user = new UserFullContent(new UserResponse(1L, "Ana", "synthetic@example.invalid", Set.of()),
-                null, null, null, null, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+                null, null, null, null, List.of(), List.of(), List.of(), List.of(),
+                List.of(new ProjectResponse(1L, "Projeto", "Fiz um projeto.", "", Set.of())), List.of(), List.of());
         var users = mock(UserService.class);
         when(users.getUserFullContentData()).thenReturn(user);
         for (String content : List.of("not-json", "{\"markdown\":\"# Someone Else\\n\"}")) {

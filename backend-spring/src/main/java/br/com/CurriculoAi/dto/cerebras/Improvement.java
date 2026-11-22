@@ -7,6 +7,9 @@ public record Improvement(Priority priority, String section, String originalExce
 
         public Improvement validateExample() {
             if (example == null) return this;
+            var urls = java.util.regex.Pattern.compile("https?://[^\\s|]+|[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}");
+            if (urls.matcher(example).results().anyMatch(match -> !originalExcerpt.contains(match.group())))
+                return new Improvement(priority, section, originalExcerpt, problem, suggestion, null, question);
             var sourceNumbers = NUMBER.matcher(originalExcerpt).results()
                     .map(match -> match.group().replace(" ", "")).toList();
             if (NUMBER.matcher(example).results().allMatch(match ->

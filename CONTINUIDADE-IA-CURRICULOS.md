@@ -1,3 +1,40 @@
+# Estado atual — 21/11/2026
+
+Esta seção substitui as pendências históricas abaixo.
+
+## Concluído nesta retomada
+- Prompts antigos contraditórios corrigidos: geração estuda trajetória e análise fornece notas separadas com justificativas.
+- Coleta de amostras públicas de até 3 repositórios vinculados, até 3 arquivos por repositório, 4 mil caracteres por trecho. Guarda caminho e SHA; falhas do GitHub não bloqueiam o perfil. Não comprova autoria ou proficiência.
+- UTF-8 explícito na integração com Cerebras. O erro descartava evidências acentuadas; teste real passou após a correção.
+- Compactação de frases/descritivos repetidos sem eliminar os links dos projetos; saída limitada a 4096 tokens.
+- Estudo do mesmo contexto reutilizado por até 5 minutos, limitado a 100 entradas; não mistura perfis porque a chave cobre o contexto completo.
+- Revisão factual adicional, separando rascunho de fatos confirmados. Código remoto é excluído das fontes que podem comprovar realizações pessoais nessa revisão.
+- Para seções de projetos com links cadastrados, o texto final usa até três frases dos fatos originais, removendo frases iniciadas por “Não ”. Isso impede que a reescrita acrescente ferramentas aos bullets desses projetos.
+- Sugestões com citações não encontradas são descartadas. Exemplos que inventam números ou contatos/URLs são removidos. Resposta inválida recebe no máximo uma tentativa adicional.
+- Limites temporários da Cerebras retornam 429, com orientação para aguardar, em vez de serem confundidos com erro de quota financeira.
+- PDF normaliza hífens/espaços especiais e usa espaçamento mais compacto.
+
+## Validação
+- Backend: 88 testes contabilizados, zero falhas/erros, um teste de provedor ignorado por padrão (opt-in). Portanto 87 executados com sucesso.
+- Frontend: npm.cmd run build passou.
+- Teste real HTTP com autenticação, 33 projetos fictícios e aproximadamente 60.933 caracteres no perfil; descoberta, geração PDF e análise com/sem vaga. Os dois cenários passaram em execuções completas. Houve limites temporários de tokens e retentativas espaçadas.
+- Artefatos e respostas ficam em backend-spring/target/live-validation (ignorado): profile.json, insights.json, without-job.pdf, with-job.pdf e respectivos JSONs de análise. São dados fictícios; não são o currículo real do usuário.
+- PDFs renderizados com pdftoppm e revisados visualmente; várias correções editoriais e de codificação surgiram desse teste.
+- scripts/validate_resume_live.py --live reproduz o teste e cria conta fictícia; chama IA real e consome quota. Não executar sem intenção explícita de teste.
+
+## Limites que permanecem explícitos
+- As notas são estimativas da IA, não resultados de ATS. A pontuação pode variar e não garante aprovação.
+- Resumo e habilidades ainda são texto generativo e exigem revisão humana. A proteção determinística cobre projetos reconhecidos por links, não uma prova semântica universal do currículo.
+- O teste de volume cobre um perfil extenso com repetição; não demonstra suporte a volume ilimitado ou a todos os perfis profissionais.
+- Descobertas continuam hipóteses com evidências/perguntas; confirmação é textual e não persistida individualmente no cadastro.
+- Leitura GitHub é amostral de arquivos públicos, nunca auditoria completa nem atribuição de autoria.
+- Teste funcional final foi via HTTP; não houve validação completa da interação visual de todas as telas web.
+- Não houve push ou PR nesta retomada. Commits pequenos foram feitos ao longo das correções (git log é a fonte atual dos hashes).
+
+---
+
+## Histórico anterior (preservado para contexto)
+
 # Continuidade — criação e análise de currículos
 
 Atualizado em 21/11/2026. Trabalho local na branch develop. Nenhum push realizado.

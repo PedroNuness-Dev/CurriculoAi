@@ -39,6 +39,8 @@ public class CerebrasService {
     private final br.com.CurriculoAi.services.github.GitHubEvidenceService gitHubEvidenceService;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MM/yyyy");
+    private record CachedStudy(long expires, java.util.List<br.com.CurriculoAi.dto.cerebras.ProfileInsight> insights) {}
+    private final java.util.concurrent.ConcurrentHashMap<String, CachedStudy> studies = new java.util.concurrent.ConcurrentHashMap<>();
 
     public String generateMarkdown() throws Exception { return generateMarkdown(null); }
 
@@ -86,6 +88,12 @@ public class CerebrasService {
     }
 
     private java.util.List<br.com.CurriculoAi.dto.cerebras.ProfileInsight> studyProfile(String source) throws Exception {
+        String key = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
+                .digest(source.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        long now = System.currentTimeMillis();
+        studies.entrySet().removeIf(entry -> entry.getValue().expires() < now);
+        var cached = studies.get(key);
+        if (cached != null) return cached.insights();
         var text = java.util.Map.of("type", "string");
         var item = java.util.Map.of("type", "object", "properties", java.util.Map.of(
                 "skill", text, "evidence", text, "interpretation", text, "question", text),
@@ -120,6 +128,7 @@ public class CerebrasService {
             if (containsEvidence(objectMapper.readTree(source), normalizeWhitespace(insight.evidence()))) insights.add(insight);
         }
         log.info("Estudo do perfil: {} propostas, {} com evidência validada", root.size(), insights.size());
+        if (studies.size() < 100 && !insights.isEmpty()) studies.put(key, new CachedStudy(now + 300000, java.util.List.copyOf(insights)));
         return java.util.List.copyOf(insights);
     }
 

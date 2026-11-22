@@ -74,6 +74,23 @@ public class PdfService {
                 """.formatted(htmlContent.replace('\u2011', '-').replace('\u2010', '-')
                         .replace('\u202f', ' ').replace('\u00a0', ' '));
 
+        byte[] pdf = renderHtml(finalHtml);
+        try (var document = org.apache.pdfbox.pdmodel.PDDocument.load(pdf)) {
+            if (document.getNumberOfPages() > 1) {
+                var text = new org.apache.pdfbox.text.PDFTextStripper();
+                text.setStartPage(document.getNumberOfPages());
+                text.setEndPage(document.getNumberOfPages());
+                if (text.getText(document).strip().length() < 350) {
+                    return renderHtml(finalHtml.replace("font-size: 10.5pt", "font-size: 10pt")
+                            .replace("line-height: 1.35", "line-height: 1.25")
+                            .replace("margin: 12pt", "margin: 10pt"));
+                }
+            }
+        }
+        return pdf;
+    }
+
+    private byte[] renderHtml(String finalHtml) throws Exception {
         try (var output = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.useExternalResourceAccessControl((uri, type) -> false,

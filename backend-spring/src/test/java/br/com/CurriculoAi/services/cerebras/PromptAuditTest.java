@@ -119,13 +119,15 @@ class PromptAuditTest {
 
     @Test
     void extractsLocalApiBaselinePdfWhenAvailable() throws Exception {
-        var folder = Path.of("target", "prompt-audit", "live-baseline");
-        var file = folder.resolve("resume.pdf");
-        if (!Files.exists(file)) return;
-        try (var pdf = org.apache.pdfbox.pdmodel.PDDocument.load(file.toFile())) {
-            String text = new org.apache.pdfbox.text.PDFTextStripper().getText(pdf);
-            assertTrue(text.contains("Marina Auditoria Fictícia"));
-            Files.writeString(folder.resolve("rendered.txt"), text);
+        for (String mode : List.of("live-baseline", "live-final-sparse")) {
+            var folder = Path.of("target", "prompt-audit", mode);
+            var file = folder.resolve("resume.pdf");
+            if (!Files.exists(file)) continue;
+            try (var pdf = org.apache.pdfbox.pdmodel.PDDocument.load(file.toFile())) {
+                String text = new org.apache.pdfbox.text.PDFTextStripper().getText(pdf);
+                assertTrue(text.contains("Marina Auditoria Fictícia"));
+                Files.writeString(folder.resolve("rendered.txt"), text);
+            }
         }
     }
 

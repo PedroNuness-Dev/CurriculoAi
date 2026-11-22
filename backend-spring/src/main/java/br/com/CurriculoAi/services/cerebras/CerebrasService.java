@@ -87,6 +87,7 @@ public class CerebrasService {
                         "profile", confirmedProfile, "draft", draft, "confirmedDetails", details,
                         "jobDescription", job, "outputLanguage", language)))), ResumePrompt.responseFormat())),
                 userFullContent.user().name());
+        validateLiteralClaims(reviewed, source, details);
         return reviewed;
     }
 
@@ -105,6 +106,22 @@ public class CerebrasService {
             throw new IllegalStateException("Invalid resume content");
         }
         return markdown;
+    }
+
+    private void validateLiteralClaims(String markdown, String profile, String details) {
+        String authorized = profile + "\n" + details;
+        var urls = java.util.regex.Pattern.compile("https?://[^\\s)<>]+", java.util.regex.Pattern.CASE_INSENSITIVE)
+                .matcher(markdown);
+        while (urls.find()) {
+            String url = urls.group().replaceAll("[.,;]+$", "");
+            if (!authorized.contains(url)) throw new IllegalStateException("Resume contains an unsupported URL");
+        }
+        var percentages = java.util.regex.Pattern.compile("\\b\\d+(?:[.,]\\d+)?\\s*%").matcher(markdown);
+        String sourceNumbers = authorized.replaceAll("\\s+", "");
+        while (percentages.find()) {
+            if (!sourceNumbers.contains(percentages.group().replaceAll("\\s+", "")))
+                throw new IllegalStateException("Resume contains an unsupported percentage");
+        }
     }
 
     private String sparseResume(UserFullContent profile, String language) {

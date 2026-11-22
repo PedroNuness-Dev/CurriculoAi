@@ -135,6 +135,26 @@ class PromptAuditTest {
     }
 
     @Test
+    void rejectsInventedLinksAndPercentages() throws Exception {
+        var user = new UserFullContent(new UserResponse(1L, "Ana", "synthetic@example.invalid", Set.of()),
+                null, null, null, null, List.of(), List.of(), List.of(), List.of(),
+                List.of(new ProjectResponse(1L, "Prototype", "Built a prototype.",
+                        "https://example.com/real", Set.of())), List.of(), List.of());
+        var users = mock(UserService.class);
+        when(users.getUserFullContentData()).thenReturn(user);
+        for (String claim : List.of("https://example.com/invented", "Improved throughput by 40%.")) {
+            var client = mock(CerebrasClient.class);
+            String content = mapper.writeValueAsString(Map.of("markdown", "# Ana\n\n## Projects\n- " + claim));
+            when(client.complete(anyString())).thenReturn(mapper.writeValueAsString(Map.of("choices", List.of(
+                    Map.of("message", Map.of("content", content))))));
+            var service = new CerebrasService(client, users, null, null);
+            ReflectionTestUtils.setField(service, "model", "fixture-model");
+            assertThrows(IllegalStateException.class,
+                    () -> service.generateMarkdown(new GenerationRequest("", "", "en-US")));
+        }
+    }
+
+    @Test
     void extractsLocalApiBaselinePdfWhenAvailable() throws Exception {
         for (String mode : List.of("live-baseline", "live-final-sparse")) {
             var folder = Path.of("target", "prompt-audit", mode);

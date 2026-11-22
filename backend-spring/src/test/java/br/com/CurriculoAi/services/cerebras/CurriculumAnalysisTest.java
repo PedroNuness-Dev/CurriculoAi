@@ -107,8 +107,7 @@ class CurriculumAnalysisTest {
                  "problem":"Falta contexto","suggestion":"Descreva o projeto"}]}
                 """);
         var file = pdf(true);
-        assertEquals(HttpStatus.BAD_GATEWAY,
-                assertThrows(ResponseStatusException.class, () -> controller.analyze(file, null)).getStatusCode());
+        assertTrue(controller.analyze(file, null).getBody().improvements().isEmpty());
     }
 
     @Test

@@ -6,6 +6,7 @@ Run only against the disposable local test server: --live
 import json
 import secrets
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -51,6 +52,9 @@ results = []
 for case_id, name, description, job in CASES:
     folder = OUT / case_id
     folder.mkdir(exist_ok=True)
+    if (folder / "resume.pdf").exists():
+        results.append({"case": case_id, "status": "pdf", "resumed": True})
+        continue
     identity = {"name": name, "email": "prompt-audit-" + secrets.token_hex(6) + "@example.invalid",
                 "password": secrets.token_urlsafe(24)}
     input_data = {"name": name, "description": description, "jobDescription": job}
@@ -65,7 +69,15 @@ for case_id, name, description, job in CASES:
             abilities = request("/api/abilities", token=token)
             if abilities:
                 request("/api/users/abilities", [abilities[0]["abilityId"]], token)
-        pdf = request("/api/cerebras/curriculum", {"jobDescription": job, "answers": ""}, token)
+        for attempt in range(3):
+            try:
+                pdf = request("/api/cerebras/curriculum", {"jobDescription": job, "answers": ""}, token)
+                break
+            except RuntimeError as exc:
+                if "HTTP 429" not in str(exc) or attempt == 2:
+                    raise
+                print({"case": case_id, "status": "rate-limited", "retry": attempt + 1}, flush=True)
+                time.sleep(65)
         if not pdf.startswith(b"%PDF"):
             raise RuntimeError("Provider returned a non-PDF response")
         (folder / "resume.pdf").write_bytes(pdf)

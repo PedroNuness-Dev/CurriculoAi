@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react";
-import { Check, ExternalLink, FolderGit2, Link2, Plus } from "lucide-react";
+import { Check, ExternalLink, FolderGit2, Link2, Plus, Pencil, Trash2 } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { useCatalog } from "../auth/CatalogContext";
 import { resumeApi } from "../api/endpoints";
+import type { ProjectResponse } from "../api/types";
 import { useToast } from "../components/ui/Toast";
 import { Button, CatalogFeedback, Field, ListSkeleton, Modal, PageHeader, Skeleton } from "../components/ui/ui";
 import { ensureProtocol, initials, prettyUrl } from "../lib/format";
@@ -18,6 +19,8 @@ export default function Projects() {
   const [form, setForm] = useState(EMPTY);
   const [touched, setTouched] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const set = <K extends keyof typeof EMPTY>(k: K, v: (typeof EMPTY)[K]) => setForm((f) => ({ ...f, [k]: v }));
   const errors = {
@@ -40,15 +43,15 @@ export default function Projects() {
     if (!valid) return;
     setSaving(true);
     try {
-      await resumeApi.addProjects([
-        {
+      const body = {
           title: form.title.trim(),
           description: form.description.trim(),
           link: ensureProtocol(form.link),
           abilitiesIds: form.abilitiesIds,
-        },
-      ]);
-      toast.success("Projeto adicionado");
+        };
+      if (editingId) await resumeApi.updateProject(editingId, body);
+      else await resumeApi.addProjects([body]);
+      toast.success(editingId ? "Projeto atualizado" : "Projeto adicionado");
       setOpen(false);
       await reload();
     } catch (err) {
@@ -59,9 +62,26 @@ export default function Projects() {
   }
 
   function openModal() {
+    setEditingId(null);
     setForm(EMPTY);
     setTouched(false);
     setOpen(true);
+  }
+
+  function edit(item: ProjectResponse) {
+    setEditingId(item.projectId);
+    setForm({ title: item.title, description: item.description, link: item.link,
+      abilitiesIds: item.abilities.map((ability) => ability.abilityId) });
+    setTouched(false);
+    setOpen(true);
+  }
+
+  async function remove(item: ProjectResponse) {
+    if (!window.confirm(`Excluir o projeto "${item.title}"?`)) return;
+    setDeletingId(item.projectId);
+    try { await resumeApi.deleteProject(item.projectId); await reload(); toast.success("Projeto excluído"); }
+    catch (err) { toast.error(err); }
+    finally { setDeletingId(null); }
   }
 
   const list = profile?.projects ?? [];
@@ -124,6 +144,7 @@ export default function Projects() {
               )}
               </div>
               {p.link.trim() && <div className="project-record-foot"><span className="project-url"><Link2 size={15} aria-hidden="true" /><span>{prettyUrl(p.link)}</span></span><a href={ensureProtocol(p.link)} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm" aria-label={`Abrir projeto ${p.title} em nova aba`}><ExternalLink size={15} aria-hidden="true" /> Abrir projeto</a></div>}
+              <div className="row row-wrap"><Button variant="secondary" size="sm" icon={<Pencil size={15} />} onClick={() => edit(p)}>Editar</Button><Button variant="ghost" size="sm" icon={<Trash2 size={15} />} disabled={deletingId === p.projectId} onClick={() => remove(p)}>Excluir</Button></div>
             </article>
           ))}
           </div>
@@ -134,7 +155,7 @@ export default function Projects() {
         open={open}
         onClose={() => setOpen(false)}
         icon={<FolderGit2 size={20} />}
-        title="Novo projeto"
+        title={editingId ? "Editar projeto" : "Novo projeto"}
         subtitle="O que você construiu e com quais tecnologias."
         width={680}
         footer={
@@ -143,7 +164,7 @@ export default function Projects() {
               Cancelar
             </Button>
             <Button type="submit" form="proj-form" loading={saving}>
-              Salvar projeto
+              {editingId ? "Salvar alterações" : "Salvar projeto"}
             </Button>
           </>
         }

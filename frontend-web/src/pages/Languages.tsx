@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react";
-import { Languages as LanguagesIcon, Plus } from "lucide-react";
+import { Languages as LanguagesIcon, Plus, Pencil, Trash2 } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { useCatalog } from "../auth/CatalogContext";
 import { userApi } from "../api/endpoints";
+import type { UserLanguageResponse } from "../api/types";
 import { useToast } from "../components/ui/Toast";
 import { Button, CatalogFeedback, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
 import { LANGUAGE_LEVELS, languageName, levelLabel, levelRank } from "../lib/labels";
@@ -17,19 +18,38 @@ export default function Languages() {
   const [level, setLevel] = useState("");
   const [saving, setSaving] = useState(false);
   const [touched, setTouched] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const mine = profile?.languages ?? [];
   const usedIds = mine.map((l) => l.language.languageId);
   const available = catalog.items
-    .filter((l) => !usedIds.includes(l.id))
+    .filter((l) => !usedIds.includes(l.id) || l.id === Number(languageId))
     .sort((a, b) => languageName(a.name).localeCompare(languageName(b.name), "pt-BR"));
   const valid = !!level && !!languageId;
 
   function openModal() {
+    setEditingId(null);
     setLanguageId("");
     setLevel("");
     setTouched(false);
     setOpen(true);
+  }
+
+  function edit(item: UserLanguageResponse) {
+    setEditingId(item.userLanguageId);
+    setLanguageId(String(item.language.languageId));
+    setLevel(item.level);
+    setTouched(false);
+    setOpen(true);
+  }
+
+  async function remove(item: UserLanguageResponse) {
+    if (!window.confirm(`Excluir o idioma "${languageName(item.language.name)}"?`)) return;
+    setDeletingId(item.userLanguageId);
+    try { await userApi.deleteLanguage(item.userLanguageId); await reload(); toast.success("Idioma excluído"); }
+    catch (err) { toast.error(err); }
+    finally { setDeletingId(null); }
   }
 
   async function save(e: FormEvent) {
@@ -39,8 +59,10 @@ export default function Languages() {
     setSaving(true);
     try {
       // POST /api/users/languages
-      await userApi.addLanguages([{ languageId: Number(languageId), languageLevel: level }]);
-      toast.success("Idioma adicionado");
+      const body = { languageId: Number(languageId), languageLevel: level };
+      if (editingId) await userApi.updateLanguage(editingId, body);
+      else await userApi.addLanguages([body]);
+      toast.success(editingId ? "Idioma atualizado" : "Idioma adicionado");
       setOpen(false);
       await reload();
     } catch (err) {
@@ -95,6 +117,7 @@ export default function Languages() {
               <article key={l.userLanguageId} className="item language-record">
                 <div className="language-record-heading"><span className="icon-tile"><LanguagesIcon size={24} /></span><div><span className="language-kicker">Idioma</span><h3 className="item-title">{languageName(l.language.name)}</h3></div></div>
                 <div className="language-proficiency"><span className="language-kicker">Proficiência declarada</span><p>{levelLabel(l.level)}</p></div>
+                <div className="row row-wrap"><Button variant="secondary" size="sm" icon={<Pencil size={15} />} onClick={() => edit(l)}>Editar</Button><Button variant="ghost" size="sm" icon={<Trash2 size={15} />} disabled={deletingId === l.userLanguageId} onClick={() => remove(l)}>Excluir</Button></div>
               </article>
           ))}
           </div>
@@ -106,7 +129,7 @@ export default function Languages() {
         open={open}
         onClose={() => setOpen(false)}
         icon={<LanguagesIcon size={20} />}
-        title="Adicionar idioma"
+        title={editingId ? "Editar idioma" : "Adicionar idioma"}
         width={560}
         footer={
           <>
@@ -114,7 +137,7 @@ export default function Languages() {
               Cancelar
             </Button>
             <Button type="submit" form="lang-form" loading={saving}>
-              Salvar idioma
+              {editingId ? "Salvar alterações" : "Salvar idioma"}
             </Button>
           </>
         }

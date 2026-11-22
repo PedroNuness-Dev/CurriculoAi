@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { BookOpen, CalendarDays, CheckCircle2, Clock, ExternalLink, GraduationCap, Plus } from "lucide-react";
+import { BookOpen, CalendarDays, CheckCircle2, Clock, ExternalLink, GraduationCap, Plus, Pencil, Trash2 } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi } from "../api/endpoints";
 import type { FormationResponse } from "../api/types";
@@ -26,6 +26,8 @@ export default function Formations() {
   const [form, setForm] = useState(EMPTY);
   const [touched, setTouched] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [detail, setDetail] = useState<FormationResponse | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
@@ -51,15 +53,15 @@ export default function Formations() {
     if (!valid) return;
     setSaving(true);
     try {
-      await resumeApi.addFormations([
-        {
+      const body = {
           courseId: form.courseId!,
           formationType: form.formationType,
           startDate: form.startDate,
           finishDate: form.inProgress ? null : form.finishDate,
-        },
-      ]);
-      toast.success("Formação adicionada");
+        };
+      if (editingId) await resumeApi.updateFormation(editingId, body);
+      else await resumeApi.addFormations([body]);
+      toast.success(editingId ? "Formação atualizada" : "Formação adicionada");
       setOpen(false);
       await reload();
     } catch (err) {
@@ -85,9 +87,26 @@ export default function Formations() {
   const list = (profile?.formations ?? []).slice().sort((a, b) => b.startDate.localeCompare(a.startDate));
 
   function openModal() {
+    setEditingId(null);
     setForm(EMPTY);
     setTouched(false);
     setOpen(true);
+  }
+
+  function edit(item: FormationResponse) {
+    setEditingId(item.formationId);
+    setForm({ courseId: item.course.courseId, formationType: item.formationType,
+      startDate: item.startDate, finishDate: item.finishDate ?? "", inProgress: item.inProgress });
+    setTouched(false);
+    setOpen(true);
+  }
+
+  async function remove(item: FormationResponse) {
+    if (!window.confirm(`Excluir a formação "${item.course.name}"?`)) return;
+    setDeletingId(item.formationId);
+    try { await resumeApi.deleteFormation(item.formationId); await reload(); toast.success("Formação excluída"); }
+    catch (err) { toast.error(err); }
+    finally { setDeletingId(null); }
   }
 
   return (
@@ -156,6 +175,7 @@ export default function Formations() {
               <Button variant="ghost" size="sm" onClick={() => openDetail(f.formationId)} icon={<ExternalLink size={15} />}>
                 Detalhes
               </Button>
+              <div className="row row-wrap"><Button variant="secondary" size="sm" icon={<Pencil size={15} />} onClick={() => edit(f)}>Editar</Button><Button variant="ghost" size="sm" icon={<Trash2 size={15} />} disabled={deletingId === f.formationId} onClick={() => remove(f)}>Excluir</Button></div>
               </div>
             </article>
           ))}
@@ -168,7 +188,7 @@ export default function Formations() {
         open={open}
         onClose={() => setOpen(false)}
         icon={<GraduationCap size={20} />}
-        title="Nova formação"
+        title={editingId ? "Editar formação" : "Nova formação"}
         subtitle="Escolha o curso e o nível de ensino."
         footer={
           <>
@@ -176,7 +196,7 @@ export default function Formations() {
               Cancelar
             </Button>
             <Button type="submit" form="form-form" loading={saving}>
-              Salvar formação
+              {editingId ? "Salvar alterações" : "Salvar formação"}
             </Button>
           </>
         }

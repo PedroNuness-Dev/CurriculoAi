@@ -1,11 +1,11 @@
 import { useEffect, useId, useState, type FormEvent } from "react";
-import { ArrowDown, Briefcase, CalendarClock, CheckCircle2, Circle, Lock, MapPin, Search, Target } from "lucide-react";
+import { ArrowDown, Briefcase, CalendarClock, CheckCircle2, Circle, MapPin, Search, Target } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi, userApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
 import { Button, CatalogFeedback, CatalogSelect, Field, PageHeader, Skeleton } from "../components/ui/ui";
-import { GOAL_TYPES, WORK_MODELS, goalLabel, workModelLabel } from "../lib/labels";
-import { fullDate, initials, maskCep, onlyDigits } from "../lib/format";
+import { GOAL_TYPES, WORK_MODELS } from "../lib/labels";
+import { initials, maskCep, onlyDigits } from "../lib/format";
 import type { GoalType, WorkModel } from "../api/types";
 import "../styles/profile.css";
 
@@ -116,7 +116,7 @@ function AreaCard() {
     if (!areaId) return;
     setSaving(true);
     try {
-      const res = await userApi.setArea(areaId);
+      const res = await userApi.setArea(areaId, !!profile?.area);
       toast.success(`Área definida: ${res.area.name}`);
       await reload();
     } catch (err) {
@@ -153,12 +153,14 @@ function AddressCard() {
   const addr = profile?.address;
   const valid = onlyDigits(cep).length === 8;
 
+  useEffect(() => setCep(addr ? maskCep(addr.zipCode) : ""), [addr?.zipCode]);
+
   async function save(e: FormEvent) {
     e.preventDefault();
     if (!valid) return;
     setSaving(true);
     try {
-      const res = await userApi.setAddress(onlyDigits(cep));
+      const res = await userApi.setAddress(onlyDigits(cep), !!addr);
       toast.success(`Endereço encontrado: ${res.address.city} — ${res.address.stateAbbreviation}`);
       await reload();
     } catch (err) {
@@ -214,11 +216,17 @@ function GoalCard() {
   const { profile, reload } = useProfile();
   const toast = useToast();
   const goal = profile?.careerGoal;
-  const [goalType, setGoalType] = useState<GoalType | "">("");
-  const [areaId, setAreaId] = useState<number | null>(profile?.area?.areaId ?? null);
-  const [description, setDescription] = useState("");
+  const [goalType, setGoalType] = useState<GoalType | "">(goal?.goalType ?? "");
+  const [areaId, setAreaId] = useState<number | null>(goal?.area?.areaId ?? profile?.area?.areaId ?? null);
+  const [description, setDescription] = useState(goal?.description ?? "");
   const [saving, setSaving] = useState(false);
   const [touched, setTouched] = useState(false);
+
+  useEffect(() => {
+    setGoalType(goal?.goalType ?? "");
+    setAreaId(goal?.area?.areaId ?? profile?.area?.areaId ?? null);
+    setDescription(goal?.description ?? "");
+  }, [goal?.goalType, goal?.area?.areaId, goal?.description, profile?.area?.areaId]);
 
   const valid = !!goalType && !!areaId && description.trim().length > 0;
 
@@ -228,7 +236,7 @@ function GoalCard() {
     if (!valid) return;
     setSaving(true);
     try {
-      await resumeApi.setCareerGoal({ goalType: goalType as GoalType, areaId: areaId!, description: description.trim() });
+      await resumeApi.setCareerGoal({ goalType: goalType as GoalType, areaId: areaId!, description: description.trim() }, !!goal);
       toast.success("Objetivo de carreira salvo");
       await reload();
     } catch (err) {
@@ -238,25 +246,8 @@ function GoalCard() {
     }
   }
 
-  if (goal) {
-    return (
-      <SectionCard icon={<Target size={20} />} title="Objetivo de carreira" sub="O que você busca agora." done>
-        <div className="stack" style={{ gap: 12 }}>
-          <div className="row row-wrap" style={{ gap: 8 }}>
-            <span className="badge">{goalLabel(goal.goalType)}</span>
-            {goal.area && <span className="badge neutral">{goal.area.name}</span>}
-          </div>
-          <p style={{ color: "var(--ink-2)", whiteSpace: "pre-line" }}>{goal.description}</p>
-          <p className="profile-readonly-note">
-            <Lock size={14} /> Definido em {fullDate(goal.createdAt)} · edição indisponível no momento.
-          </p>
-        </div>
-      </SectionCard>
-    );
-  }
-
   return (
-    <SectionCard icon={<Target size={20} />} title="Objetivo de carreira" sub="O que você busca agora.">
+    <SectionCard icon={<Target size={20} />} title="Objetivo de carreira" sub="O que você busca agora." done={!!goal}>
       <form className="stack" onSubmit={save}>
         <div className="option-cards" role="radiogroup" aria-label="Tipo de objetivo">
           {GOAL_TYPES.map((g) => (
@@ -294,7 +285,7 @@ function GoalCard() {
         </Field>
         <div className="row">
           <Button type="submit" loading={saving}>
-            Salvar objetivo
+            {goal ? "Atualizar objetivo" : "Salvar objetivo"}
           </Button>
         </div>
       </form>
@@ -309,16 +300,21 @@ function AvailabilityCard() {
   const { profile, reload } = useProfile();
   const toast = useToast();
   const av = profile?.availability;
-  const [workModel, setWorkModel] = useState<WorkModel | "">("");
-  const [start, setStart] = useState("");
+  const [workModel, setWorkModel] = useState<WorkModel | "">(av?.workModel ?? "");
+  const [start, setStart] = useState(av?.startAvailability ?? "");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setWorkModel(av?.workModel ?? "");
+    setStart(av?.startAvailability ?? "");
+  }, [av?.workModel, av?.startAvailability]);
 
   async function save(e: FormEvent) {
     e.preventDefault();
     if (!workModel) return;
     setSaving(true);
     try {
-      await resumeApi.setAvailability({ workModel, startAvailability: start || null });
+      await resumeApi.setAvailability({ workModel, startAvailability: start || null }, !!av);
       toast.success("Disponibilidade salva");
       await reload();
     } catch (err) {
@@ -328,26 +324,8 @@ function AvailabilityCard() {
     }
   }
 
-  if (av) {
-    return (
-      <SectionCard icon={<CalendarClock size={20} />} title="Disponibilidade" sub="Modelo de trabalho e início." done>
-        <div className="stack" style={{ gap: 12 }}>
-          <div className="row row-wrap" style={{ gap: 8 }}>
-            <span className="badge">{workModelLabel(av.workModel)}</span>
-            <span className="badge neutral">
-              {av.startAvailability ? `A partir de ${fullDate(av.startAvailability)}` : "Início imediato"}
-            </span>
-          </div>
-          <p className="profile-readonly-note">
-            <Lock size={14} /> Disponibilidade cadastrada · edição indisponível no momento.
-          </p>
-        </div>
-      </SectionCard>
-    );
-  }
-
   return (
-    <SectionCard icon={<CalendarClock size={20} />} title="Disponibilidade" sub="Modelo de trabalho e início.">
+    <SectionCard icon={<CalendarClock size={20} />} title="Disponibilidade" sub="Modelo de trabalho e início." done={!!av}>
       <form className="stack" onSubmit={save}>
         <div className="option-cards" role="radiogroup" aria-label="Modelo de trabalho">
           {WORK_MODELS.map((w) => (
@@ -363,7 +341,7 @@ function AvailabilityCard() {
         </Field>
         <div className="row">
           <Button type="submit" loading={saving} disabled={!workModel}>
-            Salvar disponibilidade
+            {av ? "Atualizar disponibilidade" : "Salvar disponibilidade"}
           </Button>
         </div>
       </form>

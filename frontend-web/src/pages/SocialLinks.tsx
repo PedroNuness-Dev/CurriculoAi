@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { ExternalLink, Globe, Link2, Plus } from "lucide-react";
+import { ExternalLink, Globe, Link2, Plus, Pencil, Trash2 } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { userApi } from "../api/endpoints";
+import type { UserSocialNetworkResponse } from "../api/types";
 import { useToast } from "../components/ui/Toast";
 import { Button, CatalogFeedback, CatalogSelect, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
 import { ensureProtocol, prettyUrl } from "../lib/format";
@@ -15,16 +16,35 @@ export default function SocialLinks() {
   const [link, setLink] = useState("");
   const [touched, setTouched] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const mine = profile?.socialNetworks ?? [];
   const used = mine.map((s) => s.socialNetwork.socialNetworkId);
   const valid = !!networkId && link.trim().length > 3;
 
   function openModal() {
+    setEditingId(null);
     setNetworkId(null);
     setLink("");
     setTouched(false);
     setOpen(true);
+  }
+
+  function edit(item: UserSocialNetworkResponse) {
+    setEditingId(item.userSocialNetworkId);
+    setNetworkId(item.socialNetwork.socialNetworkId);
+    setLink(item.link);
+    setTouched(false);
+    setOpen(true);
+  }
+
+  async function remove(item: UserSocialNetworkResponse) {
+    if (!window.confirm(`Excluir o link de ${item.socialNetwork.name}?`)) return;
+    setDeletingId(item.userSocialNetworkId);
+    try { await userApi.deleteSocialNetwork(item.userSocialNetworkId); await reload(); toast.success("Link excluído"); }
+    catch (err) { toast.error(err); }
+    finally { setDeletingId(null); }
   }
 
   async function save(e: FormEvent) {
@@ -33,8 +53,10 @@ export default function SocialLinks() {
     if (!valid) return;
     setSaving(true);
     try {
-      await userApi.addSocialNetworks([{ socialNetworkId: networkId!, link: ensureProtocol(link) }]);
-      toast.success("Link adicionado");
+      const body = { socialNetworkId: networkId!, link: ensureProtocol(link) };
+      if (editingId) await userApi.updateSocialNetwork(editingId, body);
+      else await userApi.addSocialNetworks([body]);
+      toast.success(editingId ? "Link atualizado" : "Link adicionado");
       setOpen(false);
       await reload();
     } catch (err) {
@@ -94,6 +116,7 @@ export default function SocialLinks() {
                 {s.link.trim() && <a href={ensureProtocol(s.link)} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm" aria-label={`Abrir perfil em ${s.socialNetwork.name} em nova aba`}>
                   <ExternalLink size={15} aria-hidden="true" /> Abrir perfil
                 </a>}
+                <div className="row row-wrap"><Button variant="secondary" size="sm" icon={<Pencil size={15} />} onClick={() => edit(s)}>Editar</Button><Button variant="ghost" size="sm" icon={<Trash2 size={15} />} disabled={deletingId === s.userSocialNetworkId} onClick={() => remove(s)}>Excluir</Button></div>
               </article>
           ))}
           </div>
@@ -104,7 +127,7 @@ export default function SocialLinks() {
         open={open}
         onClose={() => setOpen(false)}
         icon={<Link2 size={20} />}
-        title="Adicionar link"
+        title={editingId ? "Editar link" : "Adicionar link"}
         width={540}
         footer={
           <>
@@ -112,7 +135,7 @@ export default function SocialLinks() {
               Cancelar
             </Button>
             <Button type="submit" form="soc-form" loading={saving}>
-              Salvar link
+              {editingId ? "Salvar alterações" : "Salvar link"}
             </Button>
           </>
         }
@@ -125,7 +148,7 @@ export default function SocialLinks() {
               catalog="socialNetworks"
               value={networkId}
               onChange={setNetworkId}
-              exclude={used}
+              exclude={used.filter((id) => id !== networkId)}
               newLabel="Cadastrar outra rede…"
               invalid={touched && !networkId}
             />

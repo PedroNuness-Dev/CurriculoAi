@@ -71,16 +71,12 @@ export default function Skills() {
     }
   }
 
-  // POST /api/users/abilities (substitui o conjunto)
+  // PUT substitui o conjunto; DELETE remove todos os vínculos.
   async function save() {
-    if (selected.length === 0) {
-      toast.info("Selecione ao menos uma habilidade.");
-      return;
-    }
     setSaving(true);
     try {
       const res = await userApi.setAbilities(selected);
-      const ids = res.abilities.map((a) => a.abilityId);
+      const ids = res?.abilities.map((a) => a.abilityId) ?? [];
       setSaved(ids);
       setSelected(ids);
       toast.success(`${ids.length} habilidade(s) salvas`);

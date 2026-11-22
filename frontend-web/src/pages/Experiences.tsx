@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { ArrowUpRight, Briefcase, Building2, CalendarDays, CheckCircle2, Clock, Layers, Plus } from "lucide-react";
+import { ArrowUpRight, Briefcase, Building2, CalendarDays, CheckCircle2, Clock, Layers, Plus, Pencil, Trash2 } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi } from "../api/endpoints";
+import type { ExperienceResponse } from "../api/types";
 import { useToast } from "../components/ui/Toast";
 import { Button, CatalogFeedback, CatalogSelect, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
 import { duration, period, todayIso } from "../lib/format";
@@ -25,6 +26,8 @@ export default function Experiences() {
   const [form, setForm] = useState(EMPTY);
   const [touched, setTouched] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const set = <K extends keyof typeof EMPTY>(k: K, v: (typeof EMPTY)[K]) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -45,9 +48,30 @@ export default function Experiences() {
   const valid = !Object.values(errors).some(Boolean);
 
   function openModal() {
+    setEditingId(null);
     setForm({ ...EMPTY, areaId: profile?.area?.areaId ?? null });
     setTouched(false);
     setOpen(true);
+  }
+
+  function edit(item: ExperienceResponse) {
+    setEditingId(item.experienceId);
+    setForm({ title: item.title, position: item.position, enterpriseId: item.enterprise.enterpriseId,
+      areaId: item.area.areaId, startDate: item.startDate, finishDate: item.finishDate ?? "",
+      current: item.workCurrent, description: item.description });
+    setTouched(false);
+    setOpen(true);
+  }
+
+  async function remove(item: ExperienceResponse) {
+    if (!window.confirm(`Excluir a experiência "${item.position}"?`)) return;
+    setDeletingId(item.experienceId);
+    try {
+      await resumeApi.deleteExperience(item.experienceId);
+      await reload();
+      toast.success("Experiência excluída");
+    } catch (err) { toast.error(err); }
+    finally { setDeletingId(null); }
   }
 
   async function save(e: FormEvent) {
@@ -56,8 +80,7 @@ export default function Experiences() {
     if (!valid) return;
     setSaving(true);
     try {
-      await resumeApi.addExperiences([
-        {
+      const body = {
           title: form.title.trim(),
           position: form.position.trim(),
           enterpriseId: form.enterpriseId!,
@@ -66,9 +89,10 @@ export default function Experiences() {
           finishDate: form.current ? null : form.finishDate,
           workCurrent: form.current,
           description: form.description.trim(),
-        },
-      ]);
-      toast.success("Experiência adicionada");
+        };
+      if (editingId) await resumeApi.updateExperience(editingId, body);
+      else await resumeApi.addExperiences([body]);
+      toast.success(editingId ? "Experiência atualizada" : "Experiência adicionada");
       setOpen(false);
       await reload();
     } catch (err) {
@@ -139,6 +163,7 @@ export default function Experiences() {
                   <span className="badge neutral">{x.area.name}</span>
                 </div>
                 <div className="experience-description"><span className="experience-kicker">Atividades e conquistas</span><p className="item-desc">{x.description}</p></div>
+                <div className="row row-wrap"><Button variant="secondary" size="sm" icon={<Pencil size={15} />} onClick={() => edit(x)}>Editar</Button><Button variant="ghost" size="sm" icon={<Trash2 size={15} />} disabled={deletingId === x.experienceId} onClick={() => remove(x)}>Excluir</Button></div>
               </div>
             </article>
           ))}
@@ -151,7 +176,7 @@ export default function Experiences() {
         open={open}
         onClose={() => setOpen(false)}
         icon={<Briefcase size={20} />}
-        title="Nova experiência"
+        title={editingId ? "Editar experiência" : "Nova experiência"}
         subtitle="Conte o que você fez — a IA cuida da redação."
         width={720}
         footer={
@@ -160,7 +185,7 @@ export default function Experiences() {
               Cancelar
             </Button>
             <Button type="submit" form="exp-form" loading={saving}>
-              Salvar experiência
+              {editingId ? "Salvar alterações" : "Salvar experiência"}
             </Button>
           </>
         }

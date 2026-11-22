@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Award, CalendarDays, Clock, Plus, School } from "lucide-react";
+import { Award, CalendarDays, Clock, Plus, School, Pencil, Trash2 } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi } from "../api/endpoints";
+import type { CertificationResponse } from "../api/types";
 import { useToast } from "../components/ui/Toast";
 import { Button, CatalogFeedback, CatalogSelect, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
 import { isFuture, monthYear } from "../lib/format";
@@ -16,6 +17,8 @@ export default function Certifications() {
   const [form, setForm] = useState(EMPTY);
   const [touched, setTouched] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const set = <K extends keyof typeof EMPTY>(k: K, v: (typeof EMPTY)[K]) => setForm((f) => ({ ...f, [k]: v }));
   const errors = {
@@ -32,10 +35,10 @@ export default function Certifications() {
     if (!valid) return;
     setSaving(true);
     try {
-      await resumeApi.addCertifications([
-        { name: form.name.trim(), institutionId: form.institutionId!, finishDate: form.inProgress ? null : form.finishDate },
-      ]);
-      toast.success("Certificação adicionada");
+      const body = { name: form.name.trim(), institutionId: form.institutionId!, finishDate: form.inProgress ? null : form.finishDate };
+      if (editingId) await resumeApi.updateCertification(editingId, body);
+      else await resumeApi.addCertifications([body]);
+      toast.success(editingId ? "Certificação atualizada" : "Certificação adicionada");
       setOpen(false);
       await reload();
     } catch (err) {
@@ -46,9 +49,26 @@ export default function Certifications() {
   }
 
   function openModal() {
+    setEditingId(null);
     setForm(EMPTY);
     setTouched(false);
     setOpen(true);
+  }
+
+  function edit(item: CertificationResponse) {
+    setEditingId(item.certificationId);
+    setForm({ name: item.name, institutionId: item.institution.institutionId,
+      finishDate: item.finishDate ?? "", inProgress: item.inProgress });
+    setTouched(false);
+    setOpen(true);
+  }
+
+  async function remove(item: CertificationResponse) {
+    if (!window.confirm(`Excluir a certificação "${item.name}"?`)) return;
+    setDeletingId(item.certificationId);
+    try { await resumeApi.deleteCertification(item.certificationId); await reload(); toast.success("Certificação excluída"); }
+    catch (err) { toast.error(err); }
+    finally { setDeletingId(null); }
   }
 
   const list = (profile?.certifications ?? []).slice().sort((a, b) => (b.finishDate ?? "9999").localeCompare(a.finishDate ?? "9999"));
@@ -109,6 +129,7 @@ export default function Certifications() {
               <div className="certification-record-foot">
                 {c.finishDate ? <><CalendarDays size={17} aria-hidden="true" /><div><span className="certification-kicker">{isFuture(c.finishDate) ? "Conclusão prevista" : "Conclusão"}</span><p>{monthYear(c.finishDate)}</p></div></> : <><Clock size={17} aria-hidden="true" /><div><span className="certification-kicker">Conclusão</span><p>Data não informada</p></div></>}
               </div>
+              <div className="row row-wrap"><Button variant="secondary" size="sm" icon={<Pencil size={15} />} onClick={() => edit(c)}>Editar</Button><Button variant="ghost" size="sm" icon={<Trash2 size={15} />} disabled={deletingId === c.certificationId} onClick={() => remove(c)}>Excluir</Button></div>
             </article>
           ))}
           </div>
@@ -119,7 +140,7 @@ export default function Certifications() {
         open={open}
         onClose={() => setOpen(false)}
         icon={<Award size={20} />}
-        title="Nova certificação"
+        title={editingId ? "Editar certificação" : "Nova certificação"}
         subtitle="Curso, certificado ou bootcamp."
         footer={
           <>
@@ -127,7 +148,7 @@ export default function Certifications() {
               Cancelar
             </Button>
             <Button type="submit" form="cert-form" loading={saving}>
-              Salvar certificação
+              {editingId ? "Salvar alterações" : "Salvar certificação"}
             </Button>
           </>
         }

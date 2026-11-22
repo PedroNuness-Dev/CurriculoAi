@@ -44,14 +44,22 @@ export const authApi = {
 
 export const userApi = {
   profile: () => request<UserFullContent>("/api/users/me/profile"),
-  setArea: (areaId: number) => request<UserAreaResponse>(`/api/users/area/${areaId}`, { method: "POST" }),
-  setAddress: (zipCode: string) => request<UserAddressResponse>(`/api/users/address/${zipCode}`, { method: "POST" }),
+  setArea: (areaId: number, existing = false) => request<UserAreaResponse>(`/api/users/area/${areaId}`, { method: existing ? "PUT" : "POST" }),
+  setAddress: (zipCode: string, existing = false) => request<UserAddressResponse>(`/api/users/address/${zipCode}`, { method: existing ? "PUT" : "POST" }),
   abilities: () => request<UserAbilityResponse>("/api/users/abilities"),
-  setAbilities: (ids: number[]) => request<UserAbilityResponse>("/api/users/abilities", { method: "POST", body: ids }),
+  setAbilities: async (ids: number[]): Promise<UserAbilityResponse | null> => {
+    if (ids.length) return request<UserAbilityResponse>("/api/users/abilities", { method: "PUT", body: ids });
+    await request<void>("/api/users/abilities", { method: "DELETE" });
+    return null;
+  },
   addLanguages: (body: UserLanguageRequest[]) =>
     request<UserLanguageResponse[]>("/api/users/languages", { method: "POST", body }),
+  updateLanguage: (id: number, body: UserLanguageRequest) => request<UserLanguageResponse>(`/api/users/languages/${id}`, { method: "PUT", body }),
+  deleteLanguage: (id: number) => request<void>(`/api/users/languages/${id}`, { method: "DELETE" }),
   addSocialNetworks: (body: UserSocialNetworkRequest[]) =>
     request<UserSocialNetworkResponse[]>("/api/users/social-networks", { method: "POST", body }),
+  updateSocialNetwork: (id: number, body: UserSocialNetworkRequest) => request<UserSocialNetworkResponse>(`/api/users/social-networks/${id}`, { method: "PUT", body }),
+  deleteSocialNetwork: (id: number) => request<void>(`/api/users/social-networks/${id}`, { method: "DELETE" }),
 };
 
 // ---------------------------------------------------------------------------
@@ -60,17 +68,25 @@ export const userApi = {
 export const resumeApi = {
   addExperiences: (body: ExperienceRequest[]) =>
     request<ExperienceResponse[]>("/api/experiences", { method: "POST", body }),
+  updateExperience: (id: number, body: ExperienceRequest) => request<ExperienceResponse>(`/api/experiences/${id}`, { method: "PUT", body }),
+  deleteExperience: (id: number) => request<void>(`/api/experiences/${id}`, { method: "DELETE" }),
   addFormations: (body: FormationRequest[]) =>
     request<FormationResponse[]>("/api/formations", { method: "POST", body }),
+  updateFormation: (id: number, body: FormationRequest) => request<FormationResponse>(`/api/formations/${id}`, { method: "PUT", body }),
+  deleteFormation: (id: number) => request<void>(`/api/formations/${id}`, { method: "DELETE" }),
   listFormations: () => request<FormationResponse[]>("/api/formations"),
   getFormation: (id: number) => request<FormationResponse>(`/api/formations/${id}`),
   addCertifications: (body: CertificationRequest[]) =>
     request<CertificationResponse[]>("/api/certifications", { method: "POST", body }),
+  updateCertification: (id: number, body: CertificationRequest) => request<CertificationResponse>(`/api/certifications/${id}`, { method: "PUT", body }),
+  deleteCertification: (id: number) => request<void>(`/api/certifications/${id}`, { method: "DELETE" }),
   addProjects: (body: ProjectRequest[]) => request<ProjectResponse[]>("/api/projects", { method: "POST", body }),
-  setAvailability: (body: AvailabilityRequest) =>
-    request<AvailabilityResponse>("/api/availabilities", { method: "POST", body }),
-  setCareerGoal: (body: CareerGoalRequest) =>
-    request<CareerGoalResponse>("/api/career-goal", { method: "POST", body }),
+  updateProject: (id: number, body: ProjectRequest) => request<ProjectResponse>(`/api/projects/${id}`, { method: "PUT", body }),
+  deleteProject: (id: number) => request<void>(`/api/projects/${id}`, { method: "DELETE" }),
+  setAvailability: (body: AvailabilityRequest, existing = false) =>
+    request<AvailabilityResponse>("/api/availabilities", { method: existing ? "PUT" : "POST", body }),
+  setCareerGoal: (body: CareerGoalRequest, existing = false) =>
+    request<CareerGoalResponse>("/api/career-goal", { method: existing ? "PUT" : "POST", body }),
   studyProfile: (signal?: AbortSignal) => request<Array<{ skill: string; evidence: string; interpretation: string; question: string }>>("/api/cerebras/profile/study", { method: "POST", signal }),
   generatePdf: (signal?: AbortSignal, jobDescription?: string, answers?: string) =>
     request<Blob>("/api/cerebras/curriculum", { method: "POST", responseType: "blob", signal, body: { jobDescription, answers } }),

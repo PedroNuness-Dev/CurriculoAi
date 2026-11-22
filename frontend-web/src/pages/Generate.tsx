@@ -54,6 +54,11 @@ export default function Generate() {
   }, [phase]);
 
   async function generate() {
+    if (!profile || profileError) {
+      setError({ title: "Não foi possível confirmar os dados do perfil. Atualize a página ou tente carregar o perfil novamente.", details: [] });
+      setPhase("error");
+      return;
+    }
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
@@ -156,7 +161,7 @@ export default function Generate() {
                 </div>
                 <div className="generation-actions">
                   {phase === "running" ? <><p>Você pode cancelar a solicitação enquanto aguarda.</p><Button variant="secondary" icon={<X size={16} />} onClick={() => abortRef.current?.abort()}>Cancelar</Button></> : <>
-                    <Button variant={phase === "done" ? "secondary" : "primary"} size="lg" icon={phase === "done" ? <RefreshCw size={19} /> : <Sparkles size={19} />} onClick={generate} disabled={studying}>{phase === "done" ? "Gerar nova versão" : phase === "error" ? "Tentar novamente" : "Gerar meu currículo"}</Button>
+                    <Button variant={phase === "done" ? "secondary" : "primary"} size="lg" icon={phase === "done" ? <RefreshCw size={19} /> : <Sparkles size={19} />} disabled={studying || !profile || !!profileError} onClick={generate}>{phase === "done" ? "Gerar nova versão" : phase === "error" ? "Tentar novamente" : "Gerar meu currículo"}</Button>
                     {pdfUrl && <a href={pdfUrl} download={fileName} className="btn btn-primary btn-lg"><Download size={19} /> Baixar PDF</a>}
                     {phase === "done" && <a className="generation-preview-link" href="#generation-preview-title">Ver pré-visualização <ArrowUpRight size={15} aria-hidden="true" /></a>}<p>Usa as informações atuais do seu perfil.</p>
                   </>}

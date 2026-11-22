@@ -5,6 +5,7 @@ Artifacts go to the ignored backend target directory. Does not touch existing us
 import argparse
 import json
 import secrets
+import time
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -19,7 +20,7 @@ out = Path(__file__).resolve().parents[1] / 'backend-spring/target/live-validati
 out.mkdir(parents=True, exist_ok=True)
 token = None
 
-def call(path, payload=None, content_type='application/json'):
+def call(path, payload=None, content_type='application/json', attempt=0):
     headers = {'Content-Type': content_type}
     if token:
         headers['Authorization'] = 'Bearer ' + token
@@ -30,6 +31,10 @@ def call(path, payload=None, content_type='application/json'):
             body = response.read()
             return body if 'application/pdf' in response.headers.get('Content-Type', '') else json.loads(body)
     except urllib.error.HTTPError as exc:
+        if exc.code in (429, 503) and attempt < 3:
+            print(f'{path}: HTTP {exc.code}; retry after 60s', flush=True)
+            time.sleep(60)
+            return call(path, payload, content_type, attempt + 1)
         raise RuntimeError(f'{path}: HTTP {exc.code}: {exc.read().decode()}') from None
 
 identity = {'name': 'Marina Teste de Qualidade', 'email': 'validation-' + secrets.token_hex(5) + '@example.com', 'password': secrets.token_urlsafe(24)}

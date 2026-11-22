@@ -71,7 +71,8 @@ public class PdfService {
                         %s
                     </body>
                 </html>
-                """.formatted(htmlContent);
+                """.formatted(htmlContent.replace('\u2011', '-').replace('\u2010', '-')
+                        .replace('\u202f', ' ').replace('\u00a0', ' '));
 
         try (var output = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();

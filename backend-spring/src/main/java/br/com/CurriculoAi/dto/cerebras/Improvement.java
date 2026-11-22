@@ -7,6 +7,10 @@ public record Improvement(Priority priority, String section, String originalExce
 
         public Improvement validateExample() {
             if (example == null) return this;
+            var inventedLevel = java.util.regex.Pattern.compile("(?iu)\\b(?:iniciante|intermedi[aá]ri[oa]|avan[cç]ad[oa]|b[aá]sic[oa]|fluente)\\b");
+            if (inventedLevel.matcher(example).results().anyMatch(match ->
+                    !originalExcerpt.toLowerCase(java.util.Locale.ROOT).contains(match.group().toLowerCase(java.util.Locale.ROOT))))
+                return new Improvement(priority, section, originalExcerpt, problem, suggestion, null, question);
             var urls = java.util.regex.Pattern.compile("https?://[^\\s|]+|[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}");
             if (urls.matcher(example).results().anyMatch(match -> !originalExcerpt.contains(match.group())))
                 return new Improvement(priority, section, originalExcerpt, problem, suggestion, null, question);

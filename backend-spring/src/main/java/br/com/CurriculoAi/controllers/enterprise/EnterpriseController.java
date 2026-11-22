@@ -20,7 +20,7 @@ import java.util.List;
 import static br.com.CurriculoAi.config.OpenApiResponseRefs.*;
 
 @RestController
-@Tag(name = "Catálogo - Empresas", description = "Empresas disponíveis para vincular às experiências profissionais. Leitura liberada para usuários autenticados; escrita restrita ao perfil ADMIN.")
+@Tag(name = "Catálogo - Empresas", description = "Empresas disponíveis para vincular às experiências profissionais. Leitura liberada para usuários autenticados; cadastro permitido a candidatos e administradores; edição restrita ao perfil ADMIN.")
 @RequestMapping("/api/enterprises")
 @RequiredArgsConstructor
 public class EnterpriseController {
@@ -29,7 +29,7 @@ public class EnterpriseController {
 
     @Operation(
             summary = "Cadastrar uma empresa",
-            description = "Cadastra uma nova empresa no catálogo da aplicação. Requer o perfil ADMIN. Retorna 400 se já existir uma empresa com o mesmo nome."
+            description = "Cadastra uma nova empresa no catálogo da aplicação. Requer autenticação como ADMIN ou CANDIDATO. Retorna 400 se já existir uma empresa com o mesmo nome."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Empresa cadastrada com sucesso"),
@@ -37,7 +37,7 @@ public class EnterpriseController {
             @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
             @ApiResponse(responseCode = "403", ref = FORBIDDEN)
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATO')")
     @PostMapping
     public ResponseEntity<EnterpriseResponse> createEnterprise(
             @Valid @RequestBody EnterpriseRequest enterpriseRequest) {

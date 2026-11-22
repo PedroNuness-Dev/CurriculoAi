@@ -38,6 +38,12 @@ export default function Overview() {
 
   const latestExp = profile?.experiences.slice().sort((a, b) => (b.startDate ?? "").localeCompare(a.startDate ?? ""))[0];
   const ready = c.percent >= 45 && (profile?.experiences.length || profile?.formations.length);
+  const steps = [
+    { title: "Dados básicos", detail: "Área, objetivo, endereço e disponibilidade", to: "/app/perfil", keys: ["area", "goal", "address", "availability"] },
+    { title: "Sua trajetória", detail: "Experiências e formação", to: "/app/experiencias", keys: ["experiences", "formations"] },
+    { title: "Seus diferenciais", detail: "Habilidades, projetos, idiomas e certificados", to: "/app/habilidades", keys: ["abilities", "projects", "languages", "certifications", "social"] },
+    { title: "Gerar currículo", detail: "Revise seus dados e gere uma versão", to: "/app/gerar", keys: [] },
+  ];
 
   return (
     <div className="stack-lg overview-page">
@@ -81,6 +87,16 @@ export default function Overview() {
             )}
           </div>
         </div>
+      </section>
+
+      <section className="overview-guide" aria-labelledby="overview-guide-title">
+        <div className="overview-guide-heading"><div><span className="skills-kicker">Por onde começar</span><h2 id="overview-guide-title">Preencha seu perfil em 4 passos</h2><p>Você pode salvar cada parte e voltar quando quiser. Comece pelos dados básicos e avance pelas etapas.</p></div></div>
+        <ol className="overview-guide-steps">{steps.map((step, index) => {
+          const complete = step.keys.length > 0 && step.keys.every((key) => c.checks.find((check) => check.key === key)?.done);
+          const current = !complete && steps.slice(0, index).every((previous) => previous.keys.length === 0 || previous.keys.every((key) => c.checks.find((check) => check.key === key)?.done));
+          const destination = step.keys.map((key) => c.checks.find((check) => check.key === key)).find((check) => check && !check.done)?.to ?? step.to;
+          return <li key={step.title}><Link to={destination} className={`overview-guide-step ${current ? "current" : ""}`}><span className="overview-guide-number">{complete ? <Check size={16} /> : String(index + 1).padStart(2, "0")}</span><span><b>{step.title}</b><small>{step.detail}</small></span><ArrowRight size={17} /></Link></li>;
+        })}</ol>
       </section>
 
       <section className="stats-grid">

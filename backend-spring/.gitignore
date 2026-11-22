@@ -33,3 +33,5 @@ build/
 .vscode/
 
 .env
+.local-data/
+*.log

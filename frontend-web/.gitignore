@@ -5,3 +5,4 @@ dist
 
 # Cache incremental do TypeScript (gerado pelo build)
 *.tsbuildinfo
+*.log

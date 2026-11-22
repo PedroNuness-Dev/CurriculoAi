@@ -78,3 +78,7 @@
   .app-workspace .profile-shortcuts a, .app-workspace .profile-shortcuts a > svg, .app-workspace .profile-section-content .option-card::after { transition: none; }
   .app-workspace .profile-shortcuts a:hover > svg { transform: none; }
 }
+.app-workspace .profile-next-step { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px; border: 1px solid var(--brand-100); border-radius: 16px; background: var(--brand-50); }
+.app-workspace .profile-next-step b { font-size: 14px; }
+.app-workspace .profile-next-step p { margin-top: 5px; color: var(--ink-2); font-size: 12px; }
+@media (max-width: 600px) { .app-workspace .profile-next-step { align-items: stretch; flex-direction: column; } }

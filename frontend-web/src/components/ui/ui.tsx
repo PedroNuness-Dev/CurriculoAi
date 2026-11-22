@@ -2,7 +2,6 @@ import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type Rea
 import { Check, Plus, X } from "lucide-react";
 import { catalogApi, type CatalogKey } from "../../api/endpoints";
 import { useCatalog } from "../../auth/CatalogContext";
-import { useIsAdmin } from "../../auth/ProfileContext";
 import { useToast } from "./Toast";
 
 // ---------------------------------------------------------------------------
@@ -262,8 +261,6 @@ export function CatalogSelect({
 }) {
   const { items, loading, error, refresh, upsert } = useCatalog(catalog);
   const toast = useToast();
-  // Só ADMIN pode cadastrar item de catálogo (o backend devolve 403 para os demais).
-  const canCreate = useIsAdmin();
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
@@ -302,7 +299,7 @@ export function CatalogSelect({
     }
   }
 
-  if (creating && canCreate) {
+  if (creating) {
     return (
       <div className="row" style={{ gap: 8 }}>
         <input
@@ -310,6 +307,7 @@ export function CatalogSelect({
           className="input"
           id={id}
           value={name}
+          maxLength={100}
           placeholder="Digite o nome"
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => {
@@ -343,7 +341,7 @@ export function CatalogSelect({
   }
 
   return (
-    <select
+    <div className="catalog-select-row"><select
       id={id}
       className="select"
       aria-invalid={invalid || undefined}
@@ -360,8 +358,8 @@ export function CatalogSelect({
           {format(i.name)}
         </option>
       ))}
-      {canCreate && <option value={NEW}>＋ {newLabel}</option>}
-    </select>
+      <option value={NEW}>＋ {newLabel}</option>
+    </select><button type="button" className="catalog-type-button" onClick={() => setCreating(true)}>Prefiro escrever</button></div>
   );
 }
 

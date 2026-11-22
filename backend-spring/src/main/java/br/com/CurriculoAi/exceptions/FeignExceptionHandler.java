@@ -86,6 +86,8 @@ public class FeignExceptionHandler {
             FeignException ex,
             HttpServletRequest request) {
 
+        if (ex.status() == 402) return buildResponse(HttpStatus.SERVICE_UNAVAILABLE,
+                "A análise por IA está indisponível por limite da conta do serviço. Tente novamente após a regularização.", request);
         if (ex.status() == 429) return buildResponse(HttpStatus.TOO_MANY_REQUESTS,
                 "Limite temporário de solicitações ou tokens da IA. Aguarde um minuto e tente novamente.", request);
 

@@ -20,7 +20,7 @@ import java.util.List;
 import static br.com.CurriculoAi.config.OpenApiResponseRefs.*;
 
 @RestController
-@Tag(name = "Catálogo - Cursos", description = "Cursos disponíveis para vincular às formações acadêmicas. Leitura liberada para usuários autenticados; escrita restrita ao perfil ADMIN.")
+@Tag(name = "Catálogo - Cursos", description = "Cursos disponíveis para vincular às formações acadêmicas. Leitura liberada para usuários autenticados; cadastro permitido a candidatos e administradores; edição restrita ao perfil ADMIN.")
 @RequestMapping("/api/courses")
 @RequiredArgsConstructor
 public class CourseController {
@@ -29,7 +29,7 @@ public class CourseController {
 
     @Operation(
             summary = "Cadastrar um curso",
-            description = "Cadastra um novo curso no catálogo da aplicação. Requer o perfil ADMIN. Retorna 400 se já existir um curso com o mesmo nome."
+            description = "Cadastra um novo curso no catálogo da aplicação. Requer autenticação como ADMIN ou CANDIDATO. Retorna 400 se já existir um curso com o mesmo nome."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Curso cadastrado com sucesso"),
@@ -37,7 +37,7 @@ public class CourseController {
             @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
             @ApiResponse(responseCode = "403", ref = FORBIDDEN)
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATO')")
     @PostMapping
     public ResponseEntity<CourseResponse> createCourse(@Valid @RequestBody CourseRequest courseRequest) {
 

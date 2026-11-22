@@ -20,7 +20,7 @@ import java.util.List;
 import static br.com.CurriculoAi.config.OpenApiResponseRefs.*;
 
 @RestController
-@Tag(name = "Catálogo - Redes Sociais", description = "Redes sociais (ex.: LinkedIn, GitHub) disponíveis para o candidato vincular ao perfil. Leitura liberada para usuários autenticados; escrita restrita ao perfil ADMIN.")
+@Tag(name = "Catálogo - Redes Sociais", description = "Redes sociais (ex.: LinkedIn, GitHub) disponíveis para o candidato vincular ao perfil. Leitura liberada para usuários autenticados; cadastro permitido a candidatos e administradores; edição restrita ao perfil ADMIN.")
 @RequestMapping("/api/social-networks")
 @RequiredArgsConstructor
 public class SocialNetworkController {
@@ -29,7 +29,7 @@ public class SocialNetworkController {
 
     @Operation(
             summary = "Cadastrar uma rede social",
-            description = "Cadastra uma nova rede social no catálogo da aplicação. Requer o perfil ADMIN. Retorna 400 se já existir uma rede social com o mesmo nome."
+            description = "Cadastra uma nova rede social no catálogo da aplicação. Requer autenticação como ADMIN ou CANDIDATO. Retorna 400 se já existir uma rede social com o mesmo nome."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Rede social cadastrada com sucesso"),
@@ -37,7 +37,7 @@ public class SocialNetworkController {
             @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
             @ApiResponse(responseCode = "403", ref = FORBIDDEN)
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATO')")
     @PostMapping
     public ResponseEntity<SocialNetworkResponse> createSocialNetwork(
             @Valid @RequestBody SocialNetworkRequest socialNetworkRequest) {

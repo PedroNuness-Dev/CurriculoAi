@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, Plus, Save, Search, Sparkles, X } from "lucide-react";
-import { useIsAdmin, useProfile } from "../auth/ProfileContext";
+import { useProfile } from "../auth/ProfileContext";
 import { useCatalog } from "../auth/CatalogContext";
 import { catalogApi, userApi } from "../api/endpoints";
 import { useToast } from "../components/ui/Toast";
 import { Button, CatalogFeedback, PageHeader, Skeleton } from "../components/ui/ui";
 import "../styles/skills.css";
 
+const featured = ["Java", "Python", "JavaScript", "TypeScript", "React", "Spring Boot", "SQL", "Git", "Docker", "AWS", "Comunicação verbal", "Comunicação escrita", "Trabalho em equipe", "Liderança", "Organização", "Resolução de problemas", "Pensamento crítico", "Adaptabilidade"];
+
 export default function Skills() {
   const { reload } = useProfile();
   const catalog = useCatalog("abilities");
   const toast = useToast();
-  // Só ADMIN cadastra habilidade nova no catálogo (o backend devolve 403 para os demais).
-  const canCreate = useIsAdmin();
+  const canCreate = true;
   const searchLabel = canCreate ? "Buscar ou criar habilidade" : "Buscar habilidade";
 
   const [saved, setSaved] = useState<number[] | null>(null);
@@ -20,6 +21,8 @@ export default function Skills() {
   const [query, setQuery] = useState("");
   const [saving, setSaving] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(40);
+  const [category, setCategory] = useState<"ALL" | "HARD" | "SOFT">("ALL");
 
   // GET /api/users/abilities
   useEffect(() => {
@@ -44,9 +47,16 @@ export default function Skills() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return [...catalog.items]
-      .filter((a) => !q || a.name.toLowerCase().includes(q))
-      .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
-  }, [catalog.items, query]);
+      .filter((a) => (category === "ALL" || a.category === category) && (!q || a.name.toLowerCase().includes(q)))
+      .sort((a, b) => {
+        if (!q) {
+          const aIndex = featured.indexOf(a.name);
+          const bIndex = featured.indexOf(b.name);
+          if (aIndex !== -1 || bIndex !== -1) return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex);
+        }
+        return a.name.localeCompare(b.name, "pt-BR");
+      });
+  }, [catalog.items, query, category]);
 
   const dirty = saved !== null && (saved.length !== selected.length || saved.some((id) => !selected.includes(id)));
   const exact = catalog.items.some((a) => a.name.toLowerCase() === query.trim().toLowerCase());
@@ -59,7 +69,7 @@ export default function Skills() {
     if (!name || !canCreate) return;
     setCreating(true);
     try {
-      const item = await catalogApi.create("abilities", name);
+      const item = await catalogApi.create("abilities", name, category === "SOFT" ? "SOFT" : "HARD");
       catalog.upsert(item);
       setSelected((s) => [...s, item.id]);
       setQuery("");
@@ -161,7 +171,8 @@ export default function Skills() {
                 aria-label={searchLabel}
                 placeholder={`${searchLabel}…`}
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => { setQuery(e.target.value); setVisibleCount(40); }}
+                maxLength={100}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && canCreate && query.trim() && !exact) void createAbility();
                 }}
@@ -173,6 +184,9 @@ export default function Skills() {
               </Button>
             )}
           </div>
+          <div className="skills-filters" role="group" aria-label="Tipo de habilidade">
+            {([ ["ALL", "Todas"], ["HARD", "Técnicas"], ["SOFT", "Comportamentais"] ] as const).map(([value, label]) => <button key={value} type="button" className={`skills-filter ${category === value ? "active" : ""}`} aria-pressed={category === value} onClick={() => { setCategory(value); setVisibleCount(40); }}>{label}</button>)}
+          </div>
           <div className="skills-results-head"><h3>Catálogo de habilidades</h3>{!catalog.loading && !catalog.error && <span role="status">{filtered.length} {filtered.length === 1 ? "opção" : "opções"}</span>}</div>
           {catalog.error && catalog.items.length === 0 ? <CatalogFeedback onRetry={catalog.refresh}>Não foi possível carregar as habilidades.</CatalogFeedback> : catalog.loading ? (
             <div className="row row-wrap" role="status" aria-label="Carregando catálogo de habilidades">
@@ -182,7 +196,7 @@ export default function Skills() {
             </div>
           ) : (
             <div className="skills-options" role="group" aria-label="Catálogo de habilidades">
-              {filtered.map((a) => {
+              {filtered.slice(0, visibleCount).map((a) => {
                 const on = selected.includes(a.id);
                 return (
                   <button key={a.id} className="chip" aria-pressed={on} onClick={() => toggle(a.id)}>
@@ -193,6 +207,8 @@ export default function Skills() {
               {filtered.length === 0 && <div className="skills-no-results"><Search size={23} aria-hidden="true" /><h3>{query.trim() ? "Nenhuma habilidade encontrada." : "O catálogo ainda está vazio."}</h3><p>{query.trim() ? `Nada encontrado para “${query}”.${canCreate ? " Você pode cadastrar essa habilidade pelo botão acima." : " Tente outro termo."}` : canCreate ? "Digite o nome de uma habilidade para cadastrá-la." : "Ainda não há habilidades cadastradas."}</p></div>}
             </div>
           )}
+          {filtered.length > visibleCount && <Button variant="secondary" onClick={() => setVisibleCount((n) => n + 40)}>Mostrar mais 40 habilidades</Button>}
+          <p className="skills-source">This service uses the <a href="https://esco.ec.europa.eu/en" target="_blank" rel="noopener noreferrer">ESCO classification</a> of the European Commission. O catálogo apresenta uma seleção adaptada, com competências adicionais.</p>
           </div>
         </section>
       </div>

@@ -56,7 +56,7 @@ public class CerebrasController {
             @RequestPart("answers") String answers) throws Exception {
         String revised = cerebrasService.revise(textExtractor.extract(file), jobDescription, answers);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=curriculo-revisado.pdf")
-                .contentType(MediaType.APPLICATION_PDF).body(pdfService.generatePdfFromText(revised));
+                .contentType(MediaType.APPLICATION_PDF).body(pdfService.generatePdfFromMarkdown(revised));
     }
 
     @Operation(

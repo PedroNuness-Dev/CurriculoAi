@@ -7,6 +7,8 @@ import java.util.Map;
 
 public record CerebrasRequestDTO(String model, List<MessageDTO> messages,
         @JsonProperty("response_format") @JsonInclude(JsonInclude.Include.NON_NULL) Map<String, Object> responseFormat) {
+    @JsonProperty("max_completion_tokens")
+    public int maxCompletionTokens() { return 4096; }
     public CerebrasRequestDTO(String model, List<MessageDTO> messages) {
         this(model, messages, null);
     }

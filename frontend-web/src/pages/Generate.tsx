@@ -19,6 +19,18 @@ export default function Generate() {
   const toast = useToast();
   const c = completeness(profile);
 
+  const [jobDescription, setJobDescription] = useState("");
+  const [answers, setAnswers] = useState("");
+  const [studying, setStudying] = useState(false);
+  const [insights, setInsights] = useState<Awaited<ReturnType<typeof resumeApi.studyProfile>> | null>(null);
+  const [insightAnswers, setInsightAnswers] = useState<Record<string, string>>({});
+  async function study() {
+    setStudying(true);
+    setError(null);
+    try { setInsights(await resumeApi.studyProfile()); }
+    catch (err) { setError(errorMessage(err)); }
+    finally { setStudying(false); }
+  }
   const [phase, setPhase] = useState<Phase>("idle");
   const [elapsed, setElapsed] = useState(0);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -49,7 +61,11 @@ export default function Generate() {
     setElapsed(0);
     setError(null);
     try {
-      const blob = await resumeApi.generatePdf(ctrl.signal);
+      const confirmedAnswers = [
+        ...Object.entries(insightAnswers).filter(([, value]) => value.trim()).map(([question, value]) => `${question}\nResposta: ${value.trim()}`),
+        answers.trim(),
+      ].filter(Boolean).join("\n\n");
+      const blob = await resumeApi.generatePdf(ctrl.signal, jobDescription.trim(), confirmedAnswers);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
       const url = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
       setPdfUrl(url);
@@ -99,6 +115,30 @@ export default function Generate() {
               ))}
             </div>
           </section>
+          <section className="generation-investigation" aria-label="Investigar seu perfil">
+            <header className="investigation-header"><div><span>INVESTIGAÇÃO DE PERFIL</span><h2>Descubra o que sua trajetória revela</h2>
+              <p>A IA cruza experiências, estudos e projetos para encontrar competências que talvez ainda não estejam claras no seu currículo.</p></div>
+              <Button onClick={study} disabled={studying || phase === "running"}>{studying ? "Estudando seu perfil…" : insights ? "Investigar novamente" : "Investigar meu perfil"}</Button>
+            </header>
+            {insights && <div className="investigation-results" aria-live="polite">
+              {insights.map((item, index) => <article className="investigation-insight" key={index}>
+                <span className="insight-number">{String(index + 1).padStart(2, "0")}</span><div><h3>{item.skill}</h3>
+                  <p>{item.interpretation}</p><blockquote>“{item.evidence}”</blockquote>
+                  <label htmlFor={`insight-answer-${index}`}>{item.question}</label><textarea id={`insight-answer-${index}`} rows={2} maxLength={3000} disabled={phase === "running"} value={insightAnswers[item.question] ?? ""} onChange={event => setInsightAnswers(current => ({ ...current, [item.question]: event.target.value }))} placeholder="Sua resposta (opcional)" /></div>
+              </article>)}
+              {insights.length === 0 && <p>Ainda faltam evidências para novas descobertas. Complete a descrição dos projetos e experiências para dar mais contexto.</p>}
+              <p className="investigation-note">As descobertas são hipóteses baseadas nos dados cadastrados. Confirme o que corresponde à sua experiência; a IA não adiciona fatos sem sua confirmação.</p>
+            </div>}
+            <div className="investigation-fields">
+              <div><label htmlFor="generation-job">Descrição da vaga <span>OPCIONAL</span></label>
+                <textarea id="generation-job" rows={4} maxLength={16000} value={jobDescription} disabled={phase === "running"}
+                  onChange={event => setJobDescription(event.target.value)} placeholder="Cole a vaga para priorizar os requisitos relevantes. Sem vaga, o currículo segue seu objetivo profissional." /></div>
+              <div><label htmlFor="generation-answers">Complementos confirmados <span>OPCIONAL</span></label>
+                <textarea id="generation-answers" rows={4} maxLength={16000} value={answers} disabled={phase === "running"}
+                  onChange={event => setAnswers(event.target.value)} placeholder="Inclua resultados, decisões e contribuições que quer considerar nesta versão." /></div>
+            </div>
+            {error && phase !== "error" && <p className="investigation-error" role="alert">{error.title}</p>}
+          </section>
           <div className="generation-workspace">
             <div className="stack-lg generation-main">
               <section className="gen-stage generation-stage" aria-label="Geração do currículo" aria-busy={phase === "running"}>
@@ -116,7 +156,7 @@ export default function Generate() {
                 </div>
                 <div className="generation-actions">
                   {phase === "running" ? <><p>Você pode cancelar a solicitação enquanto aguarda.</p><Button variant="secondary" icon={<X size={16} />} onClick={() => abortRef.current?.abort()}>Cancelar</Button></> : <>
-                    <Button variant={phase === "done" ? "secondary" : "primary"} size="lg" icon={phase === "done" ? <RefreshCw size={19} /> : <Sparkles size={19} />} onClick={generate}>{phase === "done" ? "Gerar nova versão" : phase === "error" ? "Tentar novamente" : "Gerar meu currículo"}</Button>
+                    <Button variant={phase === "done" ? "secondary" : "primary"} size="lg" icon={phase === "done" ? <RefreshCw size={19} /> : <Sparkles size={19} />} onClick={generate} disabled={studying}>{phase === "done" ? "Gerar nova versão" : phase === "error" ? "Tentar novamente" : "Gerar meu currículo"}</Button>
                     {pdfUrl && <a href={pdfUrl} download={fileName} className="btn btn-primary btn-lg"><Download size={19} /> Baixar PDF</a>}
                     {phase === "done" && <a className="generation-preview-link" href="#generation-preview-title">Ver pré-visualização <ArrowUpRight size={15} aria-hidden="true" /></a>}<p>Usa as informações atuais do seu perfil.</p>
                   </>}

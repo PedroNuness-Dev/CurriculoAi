@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CurriculumAnalysisTest {
     private final br.com.CurriculoAi.client.cerebras.CerebrasClient client = org.mockito.Mockito.mock(br.com.CurriculoAi.client.cerebras.CerebrasClient.class);
-    private final CerebrasService cerebras = new CerebrasService(client, null, null);
+    private final CerebrasService cerebras = new CerebrasService(client, null, null, null);
     private final CerebrasController controller = new CerebrasController(cerebras, null, new CurriculumTextExtractor());
 
     private Runnable provider(String feedback) throws Exception {
@@ -38,10 +38,14 @@ class CurriculumAnalysisTest {
                 .thenAnswer(invocation -> {
                     var payload = new ObjectMapper().readTree((String) invocation.getArgument(0));
                     assertEquals("test-model", payload.path("model").asText());
+                    String instructions = payload.at("/messages/0/content").asText();
+                    assertFalse(instructions.contains("Não atribua nota"));
+                    assertTrue(instructions.contains("structureScore"));
+                    assertTrue(instructions.contains("contentScore"));
                     assertEquals(input, payload.at("/messages/1/content").asText());
                     return new ObjectMapper().writeValueAsString(response);
                 });
-        return () -> org.mockito.Mockito.verify(client).complete(org.mockito.ArgumentMatchers.anyString());
+        return () -> org.mockito.Mockito.verify(client, org.mockito.Mockito.atLeastOnce()).complete(org.mockito.ArgumentMatchers.anyString());
     }
 
     private MockMultipartFile pdf(boolean withText) throws Exception {
@@ -65,7 +69,7 @@ class CurriculumAnalysisTest {
     void returnsFeedbackForUploadedPdf() throws Exception {
         var server = provider("""
                 {"summary":"Experiência em Java","strengths":["Tecnologia explícita"],
-                 "weaknesses":[],"suggestions":["Descreva um projeto."],"improvements":[]}
+                 "weaknesses":[],"suggestions":["Descreva um projeto."],"structureScore":{"value":60,"rationale":"Seções pouco claras"}, "contentScore":{"value":50,"rationale":"Faltam contribuições"}, "improvements":[]}
                 """);
         assertEquals(List.of("Descreva um projeto."), controller.analyze(pdf(true), "  ").getBody().suggestions());
         server.run();
@@ -76,7 +80,7 @@ class CurriculumAnalysisTest {
         String jobDescription = "Java obrigatório. Kubernetes desejável.";
         var server = provider("""
                 {"summary":"Experiência em Java","strengths":[],"weaknesses":[],"suggestions":[],
-                 "improvements":[],"compatibility":{"summary":"Há evidência do requisito obrigatório.",
+                 "structureScore":{"value":60,"rationale":"Seções pouco claras"}, "contentScore":{"value":50,"rationale":"Faltam contribuições"}, "improvements":[],"compatibility":{"score":{"value":67,"rationale":"Java obrigatório comprovado, Kubernetes desejável sem evidência"},"summary":"Há evidência do requisito obrigatório.",
                  "matchedRequirements":["Java"],"requirementsWithoutEvidence":["Kubernetes"]}}
                 """, jobDescription);
         var result = controller.analyze(pdf(true), jobDescription).getBody().compatibility();
@@ -99,12 +103,11 @@ class CurriculumAnalysisTest {
     void rejectsInventedQuotation() throws Exception {
         provider("""
                 {"summary":"Resumo","strengths":[],"weaknesses":[],"suggestions":[],
-                 "improvements":[{"priority":"HIGH","section":"Experiência","originalExcerpt":"Fiz deploy",
+                 "structureScore":{"value":60,"rationale":"Seções pouco claras"}, "contentScore":{"value":50,"rationale":"Faltam contribuições"}, "improvements":[{"priority":"HIGH","section":"Experiência","originalExcerpt":"Fiz deploy",
                  "problem":"Falta contexto","suggestion":"Descreva o projeto"}]}
                 """);
         var file = pdf(true);
-        assertEquals(HttpStatus.BAD_GATEWAY,
-                assertThrows(ResponseStatusException.class, () -> controller.analyze(file, null)).getStatusCode());
+        assertTrue(controller.analyze(file, null).getBody().improvements().isEmpty());
     }
 
     @Test
@@ -113,6 +116,13 @@ class CurriculumAnalysisTest {
         assertThrows(IllegalArgumentException.class, () -> controller.analyze(blank, null));
         assertThrows(IllegalArgumentException.class,
                 () -> controller.analyze(new MockMultipartFile("file", new byte[]{1, 2}), null));
+    }
+
+    @Test
+    void validatesScoresWithoutTurningMissingEvidenceIntoZero() {
+        assertNull(new br.com.CurriculoAi.dto.cerebras.AssessmentScore(null, "Vaga sem requisitos").value());
+        assertThrows(IllegalArgumentException.class, () -> new br.com.CurriculoAi.dto.cerebras.AssessmentScore(101, "Inválido"));
+        assertThrows(IllegalArgumentException.class, () -> new br.com.CurriculoAi.dto.cerebras.AssessmentScore(-1, "Inválido"));
     }
 
     @Test

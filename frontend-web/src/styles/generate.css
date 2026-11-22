@@ -50,6 +50,25 @@
 .app-workspace .generation-document-label { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; color: var(--ink-2); font-size: 11px; }
 .app-workspace .generation-page .pdf-frame { display: block; width: 100%; height: min(85dvh, 1100px); min-height: 500px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface); box-shadow: var(--shadow-card); }
 .app-workspace .generation-preview-status { min-height: 34px; }
+.app-workspace .generation-investigation { overflow: hidden; margin: 0 0 24px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: var(--shadow-card); }
+.app-workspace .investigation-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 26px 30px; background: var(--grad-soft); border-bottom: 1px solid var(--line); }
+.app-workspace .investigation-header > div { max-width: 650px; }
+.app-workspace .investigation-header > div > span { color: var(--brand-900); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.app-workspace .investigation-header h2 { margin-top: 7px; font-size: 23px; line-height: 1.25; letter-spacing: -.035em; }
+.app-workspace .investigation-header p { margin-top: 8px; color: var(--ink-2); font-size: 13px; line-height: 1.65; }
+.app-workspace .investigation-results { padding: 8px 30px 22px; }
+.app-workspace .investigation-insight { display: grid; grid-template-columns: 38px minmax(0,1fr); gap: 14px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+.app-workspace .insight-number { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; background: var(--brand-50); color: var(--brand-900); font-size: 12px; font-weight: 800; }
+.app-workspace .investigation-insight h3 { font-size: 16px; }
+.app-workspace .investigation-insight p { margin-top: 6px; color: var(--ink-2); font-size: 13px; line-height: 1.65; }
+.app-workspace .investigation-insight blockquote { margin: 12px 0; padding: 10px 14px; border-left: 3px solid var(--lime); border-radius: 0 9px 9px 0; background: var(--surface-2); color: var(--ink); font-size: 13px; line-height: 1.6; }
+.app-workspace .investigation-insight label, .app-workspace .investigation-fields label { display: block; margin-bottom: 7px; color: var(--ink); font-size: 12px; font-weight: 750; line-height: 1.5; }
+.app-workspace .investigation-insight textarea, .app-workspace .investigation-fields textarea { width: 100%; min-height: 72px; padding: 11px 13px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; line-height: 1.55; resize: vertical; }
+.app-workspace .investigation-insight textarea:focus, .app-workspace .investigation-fields textarea:focus { border-color: var(--brand-600); outline: 3px solid color-mix(in srgb, var(--brand-600) 15%, transparent); }
+.app-workspace .investigation-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; padding: 22px 30px 26px; }
+.app-workspace .investigation-fields label span { margin-left: 6px; color: var(--muted); font-size: 9px; letter-spacing: .06em; }
+.app-workspace .investigation-note, .app-workspace .investigation-results > p { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.app-workspace .investigation-error { padding: 0 30px 20px; color: var(--danger); font-size: 13px; }
 .app-workspace .generation-preview-loading { display: flex; align-items: center; gap: 9px; margin: 0; color: var(--brand-900); font-size: 12px; }
 @keyframes generation-state-in { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes generation-activity { to { transform: rotate(360deg); } }
@@ -57,6 +76,12 @@
   .app-workspace .generation-profile-sections > a:hover { border-color: var(--brand-900); color: var(--brand-900); background: var(--brand-50); }
 }
 @media (max-width: 600px) {
+  .app-workspace .investigation-header { align-items: stretch; flex-direction: column; padding: 22px 18px; }
+  .app-workspace .investigation-header .btn { width: 100%; }
+  .app-workspace .investigation-results { padding: 4px 18px 18px; }
+  .app-workspace .investigation-insight { grid-template-columns: 30px minmax(0,1fr); gap: 10px; }
+  .app-workspace .insight-number { width: 28px; height: 28px; }
+  .app-workspace .investigation-fields { grid-template-columns: minmax(0,1fr); padding: 18px; }
   .app-workspace .generation-stage-body { padding: 26px 22px; }
   .app-workspace .generation-stage-top { margin-bottom: 28px; }
   .app-workspace .generation-stage .generation-state h2 { font-size: 29px; }

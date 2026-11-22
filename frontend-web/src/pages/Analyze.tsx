@@ -19,13 +19,16 @@ interface Improvement {
   example?: string | null;
   question?: string | null;
 }
+interface Score { value: number | null; rationale: string }
 interface Analysis {
+  structureScore: Score;
+  contentScore: Score;
   summary: string;
   strengths: string[];
   weaknesses: string[];
   suggestions: string[];
   improvements: Improvement[];
-  compatibility?: { summary: string; matchedRequirements: string[]; requirementsWithoutEvidence: string[] };
+  compatibility?: { score: Score; summary: string; matchedRequirements: string[]; requirementsWithoutEvidence: string[] };
 }
 
 /** Limites conferidos também pelo backend (CurriculumTextExtractor e CerebrasService). */
@@ -222,6 +225,16 @@ export default function Analyze() {
             <dd>{analysis.compatibility.matchedRequirements.length}
               <small>/{analysis.compatibility.matchedRequirements.length + analysis.compatibility.requirementsWithoutEvidence.length}</small></dd></div>}
         </dl>
+      </section>
+
+      <section className="card" aria-label="Notas da análise">
+        <h2>Avaliações separadas</h2>
+        <p>Estimativas da IA baseadas no texto extraído. Não representam aprovação em ATS nem avaliação visual do PDF.</p>
+        {[{ label: "Estrutura textual", score: analysis.structureScore }, { label: "Conteúdo", score: analysis.contentScore },
+          { label: "Compatibilidade com a vaga", score: analysis.compatibility?.score }].map(({ label, score }) => (
+          <div key={label}><h3>{label}: {score?.value == null ? "Não avaliada" : `${score.value}/100`}</h3>
+            <p>{score?.rationale ?? "Envie uma vaga opcional para avaliar compatibilidade."}</p></div>
+        ))}
       </section>
 
       {(analysis.strengths.length > 0 || analysis.weaknesses.length > 0) && <div className="analyze-columns">

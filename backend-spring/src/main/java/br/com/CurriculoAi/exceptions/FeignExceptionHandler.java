@@ -55,6 +55,9 @@ public class FeignExceptionHandler {
             RetryableException ex,
             HttpServletRequest request) {
 
+        if (ex.status() == 429) return buildResponse(HttpStatus.TOO_MANY_REQUESTS,
+                "Limite temporário de solicitações ou tokens da IA. Aguarde um minuto e tente novamente.", request);
+
         log.error("Serviço externo indisponível ou com timeout: {}", ex.getMessage());
 
         return buildResponse(HttpStatus.SERVICE_UNAVAILABLE,
@@ -82,6 +85,9 @@ public class FeignExceptionHandler {
     public ResponseEntity<ErrorResponse> handleFeignException(
             FeignException ex,
             HttpServletRequest request) {
+
+        if (ex.status() == 429) return buildResponse(HttpStatus.TOO_MANY_REQUESTS,
+                "Limite temporário de solicitações ou tokens da IA. Aguarde um minuto e tente novamente.", request);
 
         log.error("Erro ao consumir API externa (status {}): {}", ex.status(), ex.getMessage());
 

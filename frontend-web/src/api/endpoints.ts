@@ -71,8 +71,9 @@ export const resumeApi = {
     request<AvailabilityResponse>("/api/availabilities", { method: "POST", body }),
   setCareerGoal: (body: CareerGoalRequest) =>
     request<CareerGoalResponse>("/api/career-goal", { method: "POST", body }),
-  generatePdf: (signal?: AbortSignal) =>
-    request<Blob>("/api/cerebras/curriculum", { method: "POST", responseType: "blob", signal }),
+  studyProfile: (signal?: AbortSignal) => request<Array<{ skill: string; evidence: string; interpretation: string; question: string }>>("/api/cerebras/profile/study", { method: "POST", signal }),
+  generatePdf: (signal?: AbortSignal, jobDescription?: string, answers?: string) =>
+    request<Blob>("/api/cerebras/curriculum", { method: "POST", responseType: "blob", signal, body: { jobDescription, answers } }),
 };
 
 // ---------------------------------------------------------------------------

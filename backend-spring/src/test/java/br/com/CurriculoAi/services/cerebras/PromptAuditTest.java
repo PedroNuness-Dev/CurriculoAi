@@ -118,6 +118,23 @@ class PromptAuditTest {
     }
 
     @Test
+    void confirmedDetailsBypassSparseFallback() throws Exception {
+        var user = new UserFullContent(new UserResponse(1L, "Ana", "synthetic@example.invalid", Set.of()),
+                null, null, null, null, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(new AbilityResponse(1L, "Python")));
+        var users = mock(UserService.class);
+        when(users.getUserFullContentData()).thenReturn(user);
+        var client = mock(CerebrasClient.class);
+        String content = mapper.writeValueAsString(Map.of("markdown", "# Ana\n\n## Habilidades\n- Python"));
+        when(client.complete(anyString())).thenReturn(mapper.writeValueAsString(Map.of("choices", List.of(
+                Map.of("message", Map.of("content", content))))));
+        var service = new CerebrasService(client, users, null, null);
+        ReflectionTestUtils.setField(service, "model", "fixture-model");
+        service.generateMarkdown(new GenerationRequest("", "Criei um script em Python."));
+        verify(client, times(2)).complete(anyString());
+    }
+
+    @Test
     void extractsLocalApiBaselinePdfWhenAvailable() throws Exception {
         for (String mode : List.of("live-baseline", "live-final-sparse")) {
             var folder = Path.of("target", "prompt-audit", mode);

@@ -59,7 +59,10 @@ public class CerebrasService {
         if ((userFullContent.experiences() == null || userFullContent.experiences().isEmpty())
                 && (userFullContent.projects() == null || userFullContent.projects().isEmpty())
                 && (userFullContent.formations() == null || userFullContent.formations().isEmpty())
-                && (userFullContent.certifications() == null || userFullContent.certifications().isEmpty())) {
+                && (userFullContent.certifications() == null || userFullContent.certifications().isEmpty())
+                && userFullContent.careerGoal() == null && userFullContent.area() == null
+                && userFullContent.availability() == null
+                && (options == null || options.answers() == null || options.answers().isBlank())) {
             return sparseResume(userFullContent, options == null ? "pt-BR" : options.outputLanguage());
         }
 

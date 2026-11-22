@@ -14,11 +14,13 @@ from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument("--live", action="store_true")
 parser.add_argument("--base", default="http://127.0.0.1:8080")
+parser.add_argument("--real", action="store_true", help="audited backend using local capture proxy")
 args = parser.parse_args()
 if not args.live or args.base not in {"http://127.0.0.1:8080", "http://127.0.0.1:8091"}:
     parser.error("Run only with --live against a localhost test server")
 BASE = args.base
-mode = "live-suite-baseline" if BASE.endswith(":8080") else "audited-fixture-api"
+mode = "live-suite-baseline" if BASE.endswith(":8080") else (
+    "audited-real-api" if args.real else "audited-fixture-api")
 OUT = Path(__file__).resolve().parents[1] / ("backend-spring/target/prompt-audit/" + mode)
 OUT.mkdir(parents=True, exist_ok=True)
 CASES = [

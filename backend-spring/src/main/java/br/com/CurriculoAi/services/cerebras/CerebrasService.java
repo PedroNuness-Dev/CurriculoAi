@@ -103,10 +103,16 @@ public class CerebrasService {
         var insights = new java.util.ArrayList<br.com.CurriculoAi.dto.cerebras.ProfileInsight>();
         for (var node : root) {
             var insight = objectMapper.treeToValue(node, br.com.CurriculoAi.dto.cerebras.ProfileInsight.class);
-            String quoted = objectMapper.writeValueAsString(insight.evidence());
-            if (source.contains(quoted.substring(1, quoted.length() - 1))) insights.add(insight);
+            if (containsEvidence(objectMapper.readTree(source), normalizeWhitespace(insight.evidence()))) insights.add(insight);
         }
+        log.info("Estudo do perfil: {} propostas, {} com evidência validada", root.size(), insights.size());
         return java.util.List.copyOf(insights);
+    }
+
+    private boolean containsEvidence(com.fasterxml.jackson.databind.JsonNode node, String excerpt) {
+        if (node.isTextual()) return normalizeWhitespace(node.asText()).contains(excerpt);
+        for (var child : node) if (containsEvidence(child, excerpt)) return true;
+        return false;
     }
 
     private static final String RESUME_INSTRUCTIONS = """
@@ -164,6 +170,10 @@ public class CerebrasService {
                 Conteúdo: contribuições claras 30, evidências/contexto 30, especificidade técnica 25,
                 concisão e consistência 15. Some esses critérios; adapte a avaliação à trajetória.
                 Projetos e estudos são evidências válidas para iniciantes; não exija emprego ou métricas.
+                Não desconte pontos por ausência de emprego, endereço residencial, telefone ou seção vazia.
+                Um e-mail é contato válido. Não recomende endereço residencial. Se só houver projetos,
+                avalie sua organização em vez de exigir datas de cargos inexistentes. Avalie entregas técnicas
+                concretas como evidência de resultado, mesmo sem percentuais ou impacto financeiro.
                 Se não for currículo, use notas null. As notas são estimativas editoriais, não notas ATS.
                 Identifique competências transferíveis ancoradas no texto; hipóteses devem virar perguntas.
                 Não garanta aprovação em ATS.

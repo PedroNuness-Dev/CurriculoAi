@@ -74,3 +74,10 @@ Melhorar criação e análise; vaga opcional; notas separadas de estrutura, cont
 2. Usar perfil test para validações Maven e manter segredos fora dos logs.
 3. Validar geração real com/sem vaga, descobertas e notas na interface, preservando dados locais.
 4. Comparar PDF gerado com fatos do perfil; procurar omissões, repetições e inferências sem confirmação.
+
+## Fechamento da validação final
+
+- Última execução real completa passou com/sem vaga. Ambos os PDFs finais têm uma página A4 e foram renderizados e inspecionados.
+- Exemplo fictício sem vaga: estrutura 70, conteúdo 75, sem compatibilidade. Com vaga: estrutura 68, conteúdo 83, compatibilidade 92. São avaliações variáveis da IA, não prova de aprovação em ATS.
+- Regra de paginação re-renderiza em 10pt/entrelinha 1,25 se a última página tiver menos de 350 caracteres; não reduz indefinidamente.
+- Perfil original restaurado do backup após verificar que o banco continha somente contas fictícias de validação. O banco continua em memória: próximos reinícios exigem cuidado com preservação.

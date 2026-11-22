@@ -110,23 +110,29 @@ export default function Generate() {
               ))}
             </div>
           </section>
-          <section className="card stack-lg" aria-label="Descobertas sobre seu perfil">
-            <h2>O que sua trajetória revela</h2>
-            <p>A IA cruza experiências, estudos, projetos cadastrados e amostras públicas de até três repositórios GitHub vinculados. A leitura é parcial e não comprova autoria. As interpretações abaixo são hipóteses: confirme sua contribuição antes de incluí-la no currículo.</p>
-            <Button onClick={study} disabled={studying || phase === "running"}>{studying ? "Estudando seu perfil…" : "Investigar meu perfil"}</Button>
-            {insights?.map((item, index) => <article key={index}>
-              <h3>{item.skill}</h3><blockquote>{item.evidence}</blockquote>
-              <p>{item.interpretation}</p><p><strong>Para aprofundar:</strong> {item.question}</p>
-            </article>)}
-            {insights?.length === 0 && <p>Ainda faltam evidências para novas descobertas. Descreva sua contribuição nos projetos e experiências.</p>}
-            <label htmlFor="generation-answers">Contribuições e respostas confirmadas (opcional)</label>
-            <textarea id="generation-answers" rows={6} maxLength={16000} value={answers} disabled={phase === "running"}
-              onChange={event => setAnswers(event.target.value)} placeholder="Conte o que você fez, quais decisões tomou, dificuldades resolvidas e resultados que consegue comprovar." />
-            <label htmlFor="generation-job">Descrição da vaga (opcional)</label>
-            <textarea id="generation-job" rows={5} maxLength={16000} value={jobDescription} disabled={phase === "running"}
-              onChange={event => setJobDescription(event.target.value)} placeholder="Sem vaga, o currículo seguirá seu objetivo profissional." />
-            <p>As respostas complementam apenas esta geração. Para reutilizá-las depois, atualize também seu perfil.</p>
-            {error && phase !== "error" && <p role="alert">{error.title}</p>}
+          <section className="generation-investigation" aria-label="Investigar seu perfil">
+            <header className="investigation-header"><div><span>INVESTIGAÇÃO DE PERFIL</span><h2>Descubra o que sua trajetória revela</h2>
+              <p>A IA cruza experiências, estudos e projetos para encontrar competências que talvez ainda não estejam claras no seu currículo.</p></div>
+              <Button onClick={study} disabled={studying || phase === "running"}>{studying ? "Estudando seu perfil…" : insights ? "Investigar novamente" : "Investigar meu perfil"}</Button>
+            </header>
+            {insights && <div className="investigation-results" aria-live="polite">
+              {insights.map((item, index) => <article className="investigation-insight" key={index}>
+                <span className="insight-number">{String(index + 1).padStart(2, "0")}</span><div><h3>{item.skill}</h3>
+                  <p>{item.interpretation}</p><blockquote>“{item.evidence}”</blockquote>
+                  <label htmlFor={`insight-answer-${index}`}>{item.question}</label><textarea id={`insight-answer-${index}`} rows={2} maxLength={3000} placeholder="Sua resposta (opcional)" /></div>
+              </article>)}
+              {insights.length === 0 && <p>Ainda faltam evidências para novas descobertas. Complete a descrição dos projetos e experiências para dar mais contexto.</p>}
+              <p className="investigation-note">As descobertas são hipóteses baseadas nos dados cadastrados. Confirme o que corresponde à sua experiência; a IA não adiciona fatos sem sua confirmação.</p>
+            </div>}
+            <div className="investigation-fields">
+              <div><label htmlFor="generation-job">Descrição da vaga <span>OPCIONAL</span></label>
+                <textarea id="generation-job" rows={4} maxLength={16000} value={jobDescription} disabled={phase === "running"}
+                  onChange={event => setJobDescription(event.target.value)} placeholder="Cole a vaga para priorizar os requisitos relevantes. Sem vaga, o currículo segue seu objetivo profissional." /></div>
+              <div><label htmlFor="generation-answers">Complementos confirmados <span>OPCIONAL</span></label>
+                <textarea id="generation-answers" rows={4} maxLength={16000} value={answers} disabled={phase === "running"}
+                  onChange={event => setAnswers(event.target.value)} placeholder="Inclua resultados, decisões e contribuições que quer considerar nesta versão." /></div>
+            </div>
+            {error && phase !== "error" && <p className="investigation-error" role="alert">{error.title}</p>}
           </section>
           <div className="generation-workspace">
             <div className="stack-lg generation-main">

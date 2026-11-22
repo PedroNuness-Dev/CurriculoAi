@@ -316,7 +316,11 @@ public class CerebrasService {
         String bodyJson = objectMapper.writeValueAsString(requestDTO);
 
         String body = cerebrasClient.complete(bodyJson);
-        var content = body == null ? null : objectMapper.readTree(body).at("/choices/0/message/content");
+        var response = body == null ? null : objectMapper.readTree(body);
+        if (response != null && "length".equals(response.at("/choices/0/finish_reason").asText())) {
+            throw new IllegalStateException("AI response was truncated");
+        }
+        var content = response == null ? null : response.at("/choices/0/message/content");
         if (content == null || !content.isTextual() || content.textValue().isBlank()) {
             throw new IllegalStateException("Resposta inválida da API Cerebras");
         }

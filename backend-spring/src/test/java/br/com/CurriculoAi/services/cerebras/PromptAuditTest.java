@@ -89,6 +89,7 @@ class PromptAuditTest {
         for (String request : requests) {
             var node = mapper.readTree(request);
             assertEquals("json_schema", node.at("/response_format/type").asText());
+            assertEquals(8192, node.path("max_completion_tokens").asInt());
             assertFalse(node.at("/messages/0/content").asText().contains("Não invente"));
         }
         var folder = Path.of("target", "prompt-audit", "fixture", c.id());
@@ -115,6 +116,13 @@ class PromptAuditTest {
             ReflectionTestUtils.setField(service, "model", "fixture-model");
             assertThrows(Exception.class, () -> service.generateMarkdown(new GenerationRequest("", "")));
         }
+        var truncatedClient = mock(CerebrasClient.class);
+        when(truncatedClient.complete(anyString())).thenReturn(mapper.writeValueAsString(Map.of("choices", List.of(
+                Map.of("finish_reason", "length", "message", Map.of("content", "{\"markdown\":\"# Ana\\n\"}"))))));
+        var truncatedService = new CerebrasService(truncatedClient, users, null, null);
+        ReflectionTestUtils.setField(truncatedService, "model", "fixture-model");
+        assertThrows(IllegalStateException.class,
+                () -> truncatedService.generateMarkdown(new GenerationRequest("", "")));
     }
 
     @Test

@@ -31,7 +31,7 @@ def call(path, payload=None, content_type='application/json', attempt=0):
             body = response.read()
             return body if 'application/pdf' in response.headers.get('Content-Type', '') else json.loads(body)
     except urllib.error.HTTPError as exc:
-        if exc.code in (429, 503) and attempt < 3:
+        if exc.code in (429, 502, 503) and attempt < 3:
             print(f'{path}: HTTP {exc.code}; retry after 60s', flush=True)
             time.sleep(60)
             return call(path, payload, content_type, attempt + 1)

@@ -176,6 +176,15 @@ public class CerebrasService {
             """;
 
     public CurriculumAnalysis analyze(String text, String jobDescription) {
+        try {
+            return analyzeOnce(text, jobDescription);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            if (e.getStatusCode().value() != 502) throw e;
+            return analyzeOnce(text, jobDescription);
+        }
+    }
+
+    private CurriculumAnalysis analyzeOnce(String text, String jobDescription) {
         boolean compare = jobDescription != null && !jobDescription.isBlank();
         if (compare && jobDescription.length() > 16000) {
             throw new IllegalArgumentException("A descrição da vaga deve ter até 16 mil caracteres.");

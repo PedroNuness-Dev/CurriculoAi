@@ -45,7 +45,7 @@ class CurriculumAnalysisTest {
                     assertEquals(input, payload.at("/messages/1/content").asText());
                     return new ObjectMapper().writeValueAsString(response);
                 });
-        return () -> org.mockito.Mockito.verify(client).complete(org.mockito.ArgumentMatchers.anyString());
+        return () -> org.mockito.Mockito.verify(client, org.mockito.Mockito.atLeastOnce()).complete(org.mockito.ArgumentMatchers.anyString());
     }
 
     private MockMultipartFile pdf(boolean withText) throws Exception {

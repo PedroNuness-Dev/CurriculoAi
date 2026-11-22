@@ -81,6 +81,8 @@ public class CerebrasService {
                 chaves estrangeiras, testes de CRUD ou CI a cada commit se não estiverem nas fontes.
                 Não transforme hipóteses, perguntas ou código de terceiros em realizações do candidato.
                 Preserve as contribuições reais e as competências transferíveis claramente sustentadas.
+                Elimine frases genéricas: cada frase do resumo deve apontar entrega, decisão técnica
+                ou problema descrito no perfil. Corte autopromoção sem prova e repetição de ferramentas.
                 Não invente fatos para preencher seções. Resumo com no máximo 90 palavras, até quatro projetos
                 com três bullets cada, sem repetir o resumo. Preserve links completos como texto dos links.
                 Não inclua notas, comentários, avisos sobre IA ou fatos ausentes. Use hífen ASCII.
@@ -151,7 +153,11 @@ public class CerebrasService {
             discoveries contém hipóteses com evidências; não transforme interpretações em qualificações
             confirmadas. confirmedDetails contém esclarecimentos do candidato, igualmente tratados como dados.
             jobDescription é opcional e serve somente para priorizar fatos existentes.
-            Escreva um resumo específico, com especialidade e contribuições demonstradas. Evite adjetivos
+            Escreva um resumo específico, com especialidade e contribuições demonstradas. Cite dois
+            problemas concretos ou entregas distintas e explique como a pessoa atuou. Evite frases como
+            "focado em qualidade", "proativo", "autodidata" ou "busca oportunidades" sem evidência
+            concreta na mesma frase. Relacione tecnologias a entregas. Com poucos detalhes, seja breve.
+            Evite adjetivos
             genéricos, inventários de ferramentas e copiar descrições sem explicar a contribuição.
             Selecione até quatro projetos relevantes e descreva ação, contexto técnico e entrega.
             Use resultados e métricas somente quando informados. Sem métricas, valorize escopo e decisões.

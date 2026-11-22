@@ -68,7 +68,7 @@ public class CerebrasService {
                         "confirmedDetails", options == null || options.answers() == null ? "" : options.answers())) ))));
         var confirmedProfile = (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(source);
         confirmedProfile.remove("githubEvidence");
-        return complete(new CerebrasRequestDTO(model, List.of(new MessageDTO("system", """
+        String reviewed = complete(new CerebrasRequestDTO(model, List.of(new MessageDTO("system", """
                 Revise factualmente o rascunho de currículo e retorne somente o Markdown final.
                 ATENÇÃO: draft NÃO é fonte de fatos. Ele pode conter invenções. A única fonte autorizada
                 é profile e confirmedDetails. Compare cada afirmação com essas duas fontes.
@@ -87,6 +87,7 @@ public class CerebrasService {
                 """), new MessageDTO("user", objectMapper.writeValueAsString(java.util.Map.of(
                 "profile", confirmedProfile, "draft", draft,
                 "confirmedDetails", options == null || options.answers() == null ? "" : options.answers()))))));
+        return ProfileContext.groundProjectSections(reviewed, userFullContent.projects());
     }
 
     public java.util.List<br.com.CurriculoAi.dto.cerebras.ProfileInsight> studyProfile() throws Exception {

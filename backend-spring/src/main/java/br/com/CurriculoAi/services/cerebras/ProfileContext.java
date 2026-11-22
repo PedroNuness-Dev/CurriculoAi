@@ -6,6 +6,27 @@ import java.util.*;
 /** Removes exact repeated sentences and groups identical descriptions without inventing summaries. */
 public final class ProfileContext {
     private ProfileContext() {}
+    public static String groundProjectSections(String markdown, List<ProjectResponse> projects) {
+        if (projects == null) return markdown;
+        var sections = markdown.split("(?m)(?=^### )");
+        var result = new StringBuilder();
+        for (String section : sections) {
+            int nextHeading = section.indexOf("\n## ");
+            String block = nextHeading < 0 ? section : section.substring(0, nextHeading);
+            var project = projects.stream().filter(p -> p.link() != null && !p.link().isBlank()
+                    && block.startsWith("### ") && block.contains(p.link())).findFirst();
+            if (project.isPresent()) {
+                var p = project.get();
+                result.append("### ").append(p.title()).append("\n\n").append(p.link()).append("\n\n");
+                Arrays.stream(uniqueSentences(p.description()).split("(?<=[.!?])\\s+"))
+                        .filter(sentence -> !sentence.isBlank()).limit(4)
+                        .forEach(sentence -> result.append("- ").append(sentence).append("\n"));
+                result.append("\n");
+                if (nextHeading >= 0) result.append(section.substring(nextHeading));
+            } else result.append(section);
+        }
+        return result.toString();
+    }
     public static String uniqueSentences(String text) {
         if (text == null) return "";
         return String.join(" ", new LinkedHashSet<>(Arrays.asList(text.strip().split("(?<=[.!?])\\s+"))));

@@ -270,6 +270,11 @@ public class CerebrasService {
             return new CurriculumAnalysis(analysis.summary(), analysis.strengths(), analysis.weaknesses(),
                     analysis.suggestions(), analysis.compatibility(), verified, analysis.structureScore(), analysis.contentScore());
         } catch (JsonProcessingException | FeignException | IllegalStateException e) {
+            if (e instanceof FeignException provider && provider.status() == 429) {
+                throw new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.TOO_MANY_REQUESTS,
+                        "Limite temporário de tokens da IA. Aguarde um minuto e tente novamente.");
+            }
             log.warn("Falha ao validar ou obter diagnóstico: {}", e.getClass().getSimpleName());
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.BAD_GATEWAY, "Não foi possível obter a análise da Cerebras.");

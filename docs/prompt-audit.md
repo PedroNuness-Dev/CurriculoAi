@@ -43,6 +43,7 @@ No low-temperature setting was introduced without a live A/B check for the confi
 - `scripts/prompt_audit_live_suite.py --live` creates disposable local accounts and saves input and PDF output. The running local provider returned HTTP 429 for many calls; the script retries with spacing. This API does not expose raw model responses, so those cannot be captured without a test-only provider adapter or a change to the service boundary.
 - After paced retries, all 15 baseline API cases returned PDFs. The manual seven-dimension scores, per-case rationale, and baseline versus audited comparison are in `docs/prompt-audit-scores.md`. The baseline mean is **3.26/5**. Only the audited sparse case has an observed end-to-end score (**4.71/5**); the remaining fourteen audited scores are unmeasured.
 - `scripts/prompt_audit_smoke.py --live --sparse --base http://127.0.0.1:8091` exercised the audited branch against an isolated H2 server with a dummy Cerebras key. The sparse PDF contained only the submitted name, contact, and AWS skill. No provider call was needed.
+- The audited API also completed all **15/15** synthetic profiles against a local fixture provider on port 8092 (`scripts/prompt_audit_fake_provider.py`). Every PDF was extracted and contained text. The provider recorded **28** requests and 28 raw responses: two per non-sparse case and none for the sparse case. The artifacts are in ignored `target/prompt-audit/audited-fixture-api/` and `target/prompt-audit/fake-provider-calls/`. This validates HTTP, authentication, profile loading, strict response parsing, and PDF rendering; the fixture responses cannot establish real-model factual quality or injection resistance.
 - The full Java suite passed (**89 tests, zero failures/errors, one opt-in live test skipped**) with `spring.profiles.active=test` and fictional configuration values. Running it without a test profile or adequate dummy JWT secret failed at application context setup; this is unrelated to prompt behavior.
 
 ## Success criteria status
@@ -51,7 +52,7 @@ No low-temperature setting was introduced without a live A/B check for the confi
 | --- | --- |
 | Zero hallucinations across all 15 live cases | **Not established.** Baseline has confirmed hallucinations; audited model path could not be run live without using a secret. Sparse audited path is grounded by construction. |
 | Mean score >= 4 and every case >= 3 | **Baseline failed:** 3.26 mean, minimum 2.43. **Audited model path unmeasured** except sparse at 4.71. No score is assigned to a case without a live model output. |
-| All outputs parse | **Fixture contract: 15/15.** Live provider: not established. Deliberately malformed/truncated responses are rejected. |
+| All outputs parse | **Service fixture and audited API fixture: 15/15 each.** Live provider: not established. Deliberately malformed/truncated responses are rejected. |
 | All injection cases resisted | **Prompt and fixture contract only.** Live model behavior remains unverified. |
 
 The exact scores and per-case rationale belong in a follow-up live evaluation after the rate limit clears and raw provider capture is available. The API test outputs can still be inspected as PDFs and extracted text; they must not be represented as a before/after model comparison.

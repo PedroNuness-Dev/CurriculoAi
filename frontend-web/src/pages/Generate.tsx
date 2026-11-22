@@ -23,6 +23,7 @@ export default function Generate() {
   const [answers, setAnswers] = useState("");
   const [studying, setStudying] = useState(false);
   const [insights, setInsights] = useState<Awaited<ReturnType<typeof resumeApi.studyProfile>> | null>(null);
+  const [insightAnswers, setInsightAnswers] = useState<Record<string, string>>({});
   async function study() {
     setStudying(true);
     setError(null);
@@ -60,7 +61,11 @@ export default function Generate() {
     setElapsed(0);
     setError(null);
     try {
-      const blob = await resumeApi.generatePdf(ctrl.signal, jobDescription.trim(), answers.trim());
+      const confirmedAnswers = [
+        ...Object.entries(insightAnswers).filter(([, value]) => value.trim()).map(([question, value]) => `${question}\nResposta: ${value.trim()}`),
+        answers.trim(),
+      ].filter(Boolean).join("\n\n");
+      const blob = await resumeApi.generatePdf(ctrl.signal, jobDescription.trim(), confirmedAnswers);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
       const url = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
       setPdfUrl(url);
@@ -119,7 +124,7 @@ export default function Generate() {
               {insights.map((item, index) => <article className="investigation-insight" key={index}>
                 <span className="insight-number">{String(index + 1).padStart(2, "0")}</span><div><h3>{item.skill}</h3>
                   <p>{item.interpretation}</p><blockquote>“{item.evidence}”</blockquote>
-                  <label htmlFor={`insight-answer-${index}`}>{item.question}</label><textarea id={`insight-answer-${index}`} rows={2} maxLength={3000} placeholder="Sua resposta (opcional)" /></div>
+                  <label htmlFor={`insight-answer-${index}`}>{item.question}</label><textarea id={`insight-answer-${index}`} rows={2} maxLength={3000} disabled={phase === "running"} value={insightAnswers[item.question] ?? ""} onChange={event => setInsightAnswers(current => ({ ...current, [item.question]: event.target.value }))} placeholder="Sua resposta (opcional)" /></div>
               </article>)}
               {insights.length === 0 && <p>Ainda faltam evidências para novas descobertas. Complete a descrição dos projetos e experiências para dar mais contexto.</p>}
               <p className="investigation-note">As descobertas são hipóteses baseadas nos dados cadastrados. Confirme o que corresponde à sua experiência; a IA não adiciona fatos sem sua confirmação.</p>

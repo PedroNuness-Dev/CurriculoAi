@@ -1,4 +1,5 @@
 import { useEffect, useId, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { ArrowDown, Briefcase, CalendarClock, CheckCircle2, Circle, MapPin, Search, Target } from "lucide-react";
 import { useProfile } from "../auth/ProfileContext";
 import { resumeApi, userApi } from "../api/endpoints";
@@ -60,6 +61,7 @@ export default function AboutYou() {
             <div className="card profile-group"><div className="profile-group-label"><span>02</span> Localização e rotina</div><AddressCard /><AvailabilityCard /></div>
           </div>
           <p className="profile-footnote">Cada seção é salva separadamente. Você pode completar seu perfil aos poucos.</p>
+          <div className="profile-next-step"><div><b>Próximo passo: sua trajetória</b><p>Adicione suas experiências e formação para contar o que você já fez.</p></div><Link to="/app/experiencias" className="btn btn-primary">Ir para experiências</Link></div>
         </>
       )}
     </div>

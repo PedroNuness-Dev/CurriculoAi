@@ -5,7 +5,7 @@ import { useCatalog } from "../auth/CatalogContext";
 import { userApi } from "../api/endpoints";
 import type { UserLanguageResponse } from "../api/types";
 import { useToast } from "../components/ui/Toast";
-import { Button, CatalogFeedback, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
+import { Button, CatalogFeedback, CatalogSelect, Field, ListSkeleton, Modal, PageHeader } from "../components/ui/ui";
 import { LANGUAGE_LEVELS, languageName, levelLabel, levelRank } from "../lib/labels";
 import "../styles/languages.css";
 
@@ -23,9 +23,6 @@ export default function Languages() {
 
   const mine = profile?.languages ?? [];
   const usedIds = mine.map((l) => l.language.languageId);
-  const available = catalog.items
-    .filter((l) => !usedIds.includes(l.id) || l.id === Number(languageId))
-    .sort((a, b) => languageName(a.name).localeCompare(languageName(b.name), "pt-BR"));
   const valid = !!level && !!languageId;
 
   function openModal() {
@@ -145,20 +142,7 @@ export default function Languages() {
         <form id="lang-form" className="language-form" onSubmit={save} noValidate>
           <fieldset className="language-form-section"><legend><span>01</span> Idioma</legend><p>Escolha o idioma que deseja incluir no seu perfil.</p>
           <Field label="Idioma" htmlFor="lg-id" error={touched && !languageId ? "Escolha o idioma" : null}>
-            <select
-              id="lg-id"
-              className="select"
-              value={languageId}
-              disabled={catalog.loading || (!!catalog.error && catalog.items.length === 0)}
-              onChange={(e) => setLanguageId(e.target.value)}
-            >
-              <option value="">{catalog.error && catalog.items.length === 0 ? "Idiomas indisponíveis no momento" : catalog.loading ? "Carregando…" : available.length ? "Selecione…" : "Você já adicionou todos os idiomas"}</option>
-              {available.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {languageName(l.name)}
-                </option>
-              ))}
-            </select>
+            <CatalogSelect id="lg-id" catalog="languages" value={languageId ? Number(languageId) : null} onChange={(id) => setLanguageId(id ? String(id) : "")} exclude={usedIds} format={languageName} newLabel="Cadastrar outro idioma…" />
             {catalog.error && <CatalogFeedback onRetry={catalog.refresh}>Não foi possível carregar os idiomas.</CatalogFeedback>}
           </Field>
           </fieldset>

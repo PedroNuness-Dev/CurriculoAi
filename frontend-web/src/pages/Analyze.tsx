@@ -87,6 +87,8 @@ export default function Analyze() {
   function pick(candidate: File | null | undefined) {
     if (!candidate) return;
     reset();
+    setFile(null);
+    if (inputRef.current) inputRef.current.value = "";
     if (candidate.type !== "application/pdf" && !candidate.name.toLowerCase().endsWith(".pdf")) {
       setError("Envie o currículo em formato PDF."); return;
     }
@@ -227,14 +229,29 @@ export default function Analyze() {
         </dl>
       </section>
 
-      <section className="card" aria-label="Notas da análise">
-        <h2>Avaliações separadas</h2>
-        <p>Estimativas da IA baseadas no texto extraído. Não representam aprovação em ATS nem avaliação visual do PDF.</p>
-        {[{ label: "Estrutura textual", score: analysis.structureScore }, { label: "Conteúdo", score: analysis.contentScore },
-          { label: "Compatibilidade com a vaga", score: analysis.compatibility?.score }].map(({ label, score }) => (
-          <div key={label}><h3>{label}: {score?.value == null ? "Não avaliada" : `${score.value}/100`}</h3>
-            <p>{score?.rationale ?? "Envie uma vaga opcional para avaliar compatibilidade."}</p></div>
-        ))}
+      <section className="card analyze-assessments" aria-labelledby="analyze-assessments-title">
+        <header className="analyze-assessments-head">
+          <span className="analyze-kicker">Leitura do documento</span>
+          <h2 id="analyze-assessments-title">Avaliações separadas</h2>
+          <p>Notas editoriais sobre o texto extraído. Elas não avaliam o visual do PDF nem garantem aprovação em ATS.</p>
+        </header>
+        <div className="analyze-assessments-grid">
+          {[{ label: "Estrutura textual", score: analysis.structureScore }, { label: "Conteúdo", score: analysis.contentScore },
+            ...(analysis.compatibility ? [{ label: "Compatibilidade com a vaga", score: analysis.compatibility.score }] : [])]
+            .map(({ label, score }) => (
+              <article className="analyze-assessment" key={label}>
+                <div className="analyze-assessment-top">
+                  <h3>{label}</h3>
+                  <strong>{score?.value == null ? "—" : score.value}<small>{score?.value == null ? "" : "/100"}</small></strong>
+                </div>
+                {score?.value != null && <div className="analyze-assessment-meter" role="img" aria-label={`${label}: ${score.value} de 100`}>
+                  <span style={{ width: `${Math.max(0, Math.min(100, score.value))}%` }} />
+                </div>}
+                <p>{score?.rationale || "Não foi possível avaliar com os dados enviados."}</p>
+              </article>
+            ))}
+        </div>
+        {!analysis.compatibility && <p className="analyze-assessments-foot">A comparação com uma vaga aparece quando você informa a descrição da vaga antes da análise.</p>}
       </section>
 
       {(analysis.strengths.length > 0 || analysis.weaknesses.length > 0) && <div className="analyze-columns">

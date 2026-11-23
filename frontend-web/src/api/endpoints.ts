@@ -98,6 +98,7 @@ export const resumeApi = {
 export interface CatalogItem {
   id: number;
   name: string;
+  category?: "HARD" | "SOFT";
 }
 
 interface CatalogDef<T> {
@@ -152,7 +153,7 @@ const defs: { [K in CatalogKey]: CatalogDef<any> } = {
 };
 
 function normalize(key: CatalogKey, raw: any): CatalogItem {
-  return { id: defs[key].idOf(raw), name: raw.name };
+  return { id: defs[key].idOf(raw), name: raw.name, category: raw.category };
 }
 
 export const catalogApi = {
@@ -162,8 +163,8 @@ export const catalogApi = {
   },
   get: async (key: CatalogKey, id: number): Promise<CatalogItem> =>
     normalize(key, await request<any>(`${defs[key].base}/${id}`)),
-  create: async (key: CatalogKey, name: string): Promise<CatalogItem> =>
-    normalize(key, await request<any>(defs[key].createPath, { method: "POST", body: { name } })),
+  create: async (key: CatalogKey, name: string, category?: "HARD" | "SOFT"): Promise<CatalogItem> =>
+    normalize(key, await request<any>(defs[key].createPath, { method: "POST", body: { name, ...(category ? { category } : {}) } })),
   update: async (key: CatalogKey, id: number, name: string): Promise<CatalogItem> =>
     normalize(key, await request<any>(`${defs[key].base}/${id}`, { method: "PUT", body: { name } })),
 };

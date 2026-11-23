@@ -20,7 +20,7 @@ import java.util.List;
 import static br.com.CurriculoAi.config.OpenApiResponseRefs.*;
 
 @RestController
-@Tag(name = "Catálogo - Idiomas", description = "Idiomas disponíveis para o candidato informar no perfil. Leitura liberada para usuários autenticados; escrita restrita ao perfil ADMIN.")
+@Tag(name = "Catálogo - Idiomas", description = "Idiomas disponíveis para o candidato informar no perfil. Leitura liberada para usuários autenticados; cadastro permitido a candidatos e administradores; edição restrita ao perfil ADMIN.")
 @RequestMapping("/api/languages")
 @RequiredArgsConstructor
 public class LanguageController {
@@ -29,7 +29,7 @@ public class LanguageController {
 
     @Operation(
             summary = "Cadastrar um idioma",
-            description = "Cadastra um novo idioma no catálogo da aplicação. Requer o perfil ADMIN. Retorna 400 se já existir um idioma com o mesmo nome."
+            description = "Cadastra um novo idioma no catálogo da aplicação. Requer autenticação como ADMIN ou CANDIDATO. Retorna 400 se já existir um idioma com o mesmo nome."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Idioma cadastrado com sucesso"),
@@ -37,7 +37,7 @@ public class LanguageController {
             @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
             @ApiResponse(responseCode = "403", ref = FORBIDDEN)
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATO')")
     @PostMapping("/create")
     public ResponseEntity<LanguageResponse> createLanguage(@Valid @RequestBody LanguageRequest languageRequest) {
 

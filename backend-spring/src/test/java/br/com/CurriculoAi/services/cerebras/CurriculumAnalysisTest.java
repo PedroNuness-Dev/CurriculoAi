@@ -100,6 +100,15 @@ class CurriculumAnalysisTest {
     }
 
     @Test
+    void removesInventedSkillLevelFromExample() {
+        var item = new br.com.CurriculoAi.dto.cerebras.Improvement(
+                br.com.CurriculoAi.dto.cerebras.Priority.LOW,
+                "Habilidades", "Java, Spring Boot", "Texto longo", "Reorganize habilidades",
+                "Java (avançado), Spring Boot (intermediário)", null);
+        assertNull(item.validateExample().example());
+    }
+
+    @Test
     void rejectsInventedQuotation() throws Exception {
         provider("""
                 {"summary":"Resumo","strengths":[],"weaknesses":[],"suggestions":[],
@@ -123,6 +132,21 @@ class CurriculumAnalysisTest {
         assertNull(new br.com.CurriculoAi.dto.cerebras.AssessmentScore(null, "Vaga sem requisitos").value());
         assertThrows(IllegalArgumentException.class, () -> new br.com.CurriculoAi.dto.cerebras.AssessmentScore(101, "Inválido"));
         assertThrows(IllegalArgumentException.class, () -> new br.com.CurriculoAi.dto.cerebras.AssessmentScore(-1, "Inválido"));
+    }
+
+    @Test
+    void omitsScoresAndAdviceBasedOnOptionalMetrics() {
+        var score = new br.com.CurriculoAi.dto.cerebras.AssessmentScore(72,
+                "Contribuições claras, mas faltam métricas de impacto.");
+        var analysis = new br.com.CurriculoAi.dto.cerebras.CurriculumAnalysis("Resumo",
+                List.of("API documentada"), List.of("Faltam métricas"),
+                List.of("Adicionar percentuais", "Especificar a contribuição na API"), null,
+                List.of(), new br.com.CurriculoAi.dto.cerebras.AssessmentScore(97, "Ordem clara"), score);
+        var cleaned = CerebrasService.removeUnsupportedRequirements(analysis);
+        assertEquals(97, cleaned.structureScore().value());
+        assertNull(cleaned.contentScore().value());
+        assertTrue(cleaned.weaknesses().isEmpty());
+        assertEquals(List.of("Especificar a contribuição na API"), cleaned.suggestions());
     }
 
     @Test

@@ -20,7 +20,7 @@ import java.util.List;
 import static br.com.CurriculoAi.config.OpenApiResponseRefs.*;
 
 @RestController
-@Tag(name = "Catálogo - Habilidades", description = "Habilidades técnicas e comportamentais disponíveis para candidatos e projetos. Leitura liberada para usuários autenticados; escrita restrita ao perfil ADMIN.")
+@Tag(name = "Catálogo - Habilidades", description = "Habilidades técnicas e comportamentais disponíveis para candidatos e projetos. Leitura liberada para usuários autenticados; cadastro permitido a candidatos e administradores; edição restrita ao perfil ADMIN.")
 @RequestMapping("/api/abilities")
 @RequiredArgsConstructor
 public class AbilityController {
@@ -29,7 +29,7 @@ public class AbilityController {
 
     @Operation(
             summary = "Cadastrar uma habilidade",
-            description = "Cadastra uma nova habilidade no catálogo da aplicação. Requer o perfil ADMIN. Retorna 400 se já existir uma habilidade com o mesmo nome."
+            description = "Cadastra uma nova habilidade no catálogo da aplicação. Requer autenticação como ADMIN ou CANDIDATO. Retorna 400 se já existir uma habilidade com o mesmo nome."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Habilidade cadastrada com sucesso"),
@@ -37,7 +37,7 @@ public class AbilityController {
             @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
             @ApiResponse(responseCode = "403", ref = FORBIDDEN)
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATO')")
     @PostMapping
     public ResponseEntity<AbilityResponse> createAbility(@Valid @RequestBody AbilityRequest abilityRequest) {
 

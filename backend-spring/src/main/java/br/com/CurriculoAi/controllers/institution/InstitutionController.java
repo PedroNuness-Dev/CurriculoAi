@@ -20,7 +20,7 @@ import java.util.List;
 import static br.com.CurriculoAi.config.OpenApiResponseRefs.*;
 
 @RestController
-@Tag(name = "Catálogo - Instituições", description = "Instituições de ensino e certificadoras disponíveis para vincular às certificações. Leitura liberada para usuários autenticados; escrita restrita ao perfil ADMIN.")
+@Tag(name = "Catálogo - Instituições", description = "Instituições de ensino e certificadoras disponíveis para vincular às certificações. Leitura liberada para usuários autenticados; cadastro permitido a candidatos e administradores; edição restrita ao perfil ADMIN.")
 @RequestMapping("/api/institutions")
 @RequiredArgsConstructor
 public class InstitutionController {
@@ -29,7 +29,7 @@ public class InstitutionController {
 
     @Operation(
             summary = "Cadastrar uma instituição",
-            description = "Cadastra uma nova instituição no catálogo da aplicação. Requer o perfil ADMIN. Retorna 400 se já existir uma instituição com o mesmo nome."
+            description = "Cadastra uma nova instituição no catálogo da aplicação. Requer autenticação como ADMIN ou CANDIDATO. Retorna 400 se já existir uma instituição com o mesmo nome."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Instituição cadastrada com sucesso"),
@@ -37,7 +37,7 @@ public class InstitutionController {
             @ApiResponse(responseCode = "401", ref = UNAUTHORIZED),
             @ApiResponse(responseCode = "403", ref = FORBIDDEN)
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CANDIDATO')")
     @PostMapping
     public ResponseEntity<InstitutionResponse> createInstitution(
             @Valid @RequestBody InstitutionRequest institutionRequest) {

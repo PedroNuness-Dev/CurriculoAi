@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { useAuth } from "./auth/AuthContext";
 import { ProfileProvider } from "./auth/ProfileContext";
 import AppShell from "./components/layout/AppShell";
@@ -16,9 +16,10 @@ import Skills from "./pages/Skills";
 import Languages from "./pages/Languages";
 import SocialLinks from "./pages/SocialLinks";
 import Analyze from "./pages/Analyze";
-import Generate from "./pages/Generate";
 import ImportGitHub from "./pages/ImportGitHub";
 import Catalogs from "./pages/Catalogs";
+
+const Generate = lazy(() => import("./pages/Generate"));
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { session } = useAuth();
@@ -73,7 +74,7 @@ export default function App() {
         <Route path="idiomas" element={<Languages />} />
         <Route path="redes" element={<SocialLinks />} />
         <Route path="analisar" element={<Analyze />} />
-        <Route path="gerar" element={<Generate />} />
+        <Route path="gerar" element={<Suspense fallback={<div role="status">Carregando geração…</div>}><Generate /></Suspense>} />
         <Route path="github" element={<ImportGitHub />} />
         <Route path="catalogos" element={<Catalogs />} />
       </Route>

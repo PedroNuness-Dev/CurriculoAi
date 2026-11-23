@@ -21,6 +21,7 @@ export default function Projects() {
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [abilityQuery, setAbilityQuery] = useState("");
 
   const set = <K extends keyof typeof EMPTY>(k: K, v: (typeof EMPTY)[K]) => setForm((f) => ({ ...f, [k]: v }));
   const errors = {
@@ -85,7 +86,10 @@ export default function Projects() {
   }
 
   const list = profile?.projects ?? [];
-  const sortedAbilities = [...abilities.items].sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  const sortedAbilities = [...abilities.items]
+    .filter((a) => form.abilitiesIds.includes(a.id) || (abilityQuery.trim() && a.name.toLowerCase().includes(abilityQuery.trim().toLowerCase())))
+    .sort((a, b) => Number(form.abilitiesIds.includes(b.id)) - Number(form.abilitiesIds.includes(a.id)) || a.name.localeCompare(b.name, "pt-BR"))
+    .slice(0, 40);
 
   return (
     <div className="projects-page">
@@ -204,6 +208,7 @@ export default function Projects() {
           <fieldset className="project-form-section">
             <legend><span>03</span> Habilidades aplicadas</legend><p>Associe as tecnologias que você utilizou, se desejar.</p>
           <Field label="Tecnologias usadas" optional hint={<span role="status">{form.abilitiesIds.length} selecionada(s)</span>}>
+            <input className="input" type="search" aria-label="Buscar tecnologias" placeholder="Digite uma tecnologia para buscar" value={abilityQuery} onChange={(e) => setAbilityQuery(e.target.value)} />
             {abilities.error && <CatalogFeedback onRetry={abilities.refresh}>Não foi possível carregar as tecnologias.</CatalogFeedback>}
             {abilities.loading && <div className="project-technologies-loading" role="status" aria-label="Carregando tecnologias"><Skeleton h={44} w="30%" /><Skeleton h={44} w="30%" /><Skeleton h={44} w="30%" /></div>}
             {!abilities.loading && !abilities.error && sortedAbilities.length === 0 && <p className="project-technologies-empty">Nenhuma tecnologia disponível no momento.</p>}

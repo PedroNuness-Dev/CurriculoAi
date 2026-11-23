@@ -188,6 +188,23 @@ html:has(.app-workspace) { scrollbar-gutter: stable; }
 .app-workspace .overview-ring-value { font-size: 37px; line-height: 1; font-weight: 800; letter-spacing: -.055em; color: var(--brand-900); }
 .app-workspace .overview-progress-label { margin-top: 12px; font-size: 13px; font-weight: 700; }
 .app-workspace .overview-progress-note { margin-top: 10px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.app-workspace .overview-guide { padding: 26px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); }
+.app-workspace .overview-guide-heading h2 { margin-top: 6px; font-size: 22px; }
+.app-workspace .overview-guide-heading p { margin-top: 6px; color: var(--ink-2); font-size: 13px; }
+.app-workspace .overview-guide-steps { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; list-style: none; padding: 0; margin: 20px 0 0; }
+.app-workspace .overview-guide-step { display: flex; align-items: center; gap: 10px; min-height: 88px; padding: 13px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); text-decoration: none; }
+.app-workspace .overview-guide-step.current { border-color: var(--brand-900); background: var(--brand-50); }
+.app-workspace .overview-guide-number { display: grid; place-items: center; width: 29px; height: 29px; flex: none; border-radius: 8px; background: var(--brand-50); color: var(--brand-900); font-size: 11px; font-weight: 800; }
+.app-workspace .overview-guide-step span:nth-child(2) { flex: 1; min-width: 0; }
+.app-workspace .overview-guide-step b, .app-workspace .overview-guide-step small { display: block; }
+.app-workspace .overview-guide-step b { font-size: 12px; }
+.app-workspace .overview-guide-step small { margin-top: 4px; color: var(--ink-2); font-size: 11px; line-height: 1.4; }
+.app-workspace .overview-guide-step > svg { flex: none; color: var(--brand-900); }
+.app-workspace .catalog-select-row { display: flex; align-items: center; gap: 8px; }
+.app-workspace .catalog-select-row .select { min-width: 0; flex: 1; }
+.app-workspace .catalog-type-button { flex: none; border: 0; background: none; color: var(--brand-900); font-size: 12px; font-weight: 700; cursor: pointer; }
+@media (max-width: 900px) { .app-workspace .overview-guide-steps { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 560px) { .app-workspace .overview-guide-steps { grid-template-columns: 1fr; } .app-workspace .catalog-select-row { align-items: stretch; flex-direction: column; } .app-workspace .catalog-type-button { text-align: left; } }
 .app-workspace .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .app-workspace .stat-tile { padding: 21px; gap: 20px; transform: none; }
 .app-workspace .stat-tile .num { font-size: 32px; color: var(--ink); }

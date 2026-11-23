@@ -1,0 +1,106 @@
+/* Abertura do app: símbolo no selo branco, ondas azuis e brancas saindo de trás e nome revelado. */
+.app-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+  animation: intro-exit 450ms cubic-bezier(.4, 0, .2, 1) 2500ms forwards;
+}
+.app-intro.is-leaving { animation: intro-exit-fast 280ms cubic-bezier(.4, 0, .2, 1) forwards; }
+
+.app-intro-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 160vmax;
+  height: 160vmax;
+  margin: -80vmax 0 0 -80vmax;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: intro-ring 850ms cubic-bezier(.65, 0, .35, 1) forwards;
+  animation-delay: calc(260ms + var(--i) * 140ms);
+  will-change: transform;
+}
+
+.app-intro-mark {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+  padding: 24px;
+}
+
+.app-intro-badge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 132px;
+  height: 132px;
+  border-radius: 38px;
+  background: #fff;
+  box-shadow: 0 26px 60px -22px rgba(6, 71, 200, .6), 0 0 0 1px rgba(6, 71, 200, .08);
+  animation: intro-badge 700ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+/* Pulso que sai do selo quando o azul termina de cobrir a tela */
+.app-intro-badge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid #fff;
+  opacity: 0;
+  animation: intro-pulse 900ms cubic-bezier(.22, 1, .36, 1) 1550ms;
+}
+
+.app-intro-word {
+  display: block;
+  line-height: 0;
+  clip-path: inset(0 100% 0 0);
+  animation: intro-word 650ms cubic-bezier(.22, 1, .36, 1) 1500ms forwards;
+}
+
+.app-intro-tagline {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: intro-fade-up 500ms cubic-bezier(.22, 1, .36, 1) 1800ms forwards;
+}
+
+@keyframes intro-ring { to { transform: scale(1); } }
+@keyframes intro-badge {
+  from { opacity: 0; transform: scale(.4) rotate(-14deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes intro-pulse {
+  from { opacity: .9; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.7); }
+}
+@keyframes intro-word {
+  from { clip-path: inset(0 100% 0 0); transform: translateY(6px); }
+  to { clip-path: inset(0 0 0 0); transform: none; }
+}
+@keyframes intro-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: .85; transform: none; }
+}
+@keyframes intro-exit { to { opacity: 0; transform: scale(1.05); visibility: hidden; } }
+@keyframes intro-exit-fast { to { opacity: 0; visibility: hidden; } }
+
+@media (max-width: 480px) {
+  .app-intro-badge { width: 104px; height: 104px; border-radius: 30px; }
+  .app-intro-badge svg { width: 62px; height: auto; }
+  .app-intro-word svg { height: 28px; width: auto; }
+  .app-intro-tagline { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-intro { display: none; }
+}

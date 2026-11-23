@@ -1,0 +1,67 @@
+/* Certification presentation stays local to this route and uses workspace controls. */
+.app-workspace .certifications-page { min-width: 0; }
+.app-workspace .certifications-page > .alert { margin-bottom: 22px; }
+.app-workspace .certification-kicker { display: block; color: var(--brand-900); font-size: 10px; font-weight: 800; letter-spacing: .07em; }
+.app-workspace .certification-empty { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .8fr); gap: 48px; padding: 40px; text-align: left; align-items: center; background: var(--surface); border-color: var(--line); }
+.app-workspace .certification-empty-main { min-width: 0; }
+.app-workspace .certification-emblem { position: relative; display: grid; place-items: center; width: 74px; height: 74px; margin-bottom: 28px; border-radius: 22px; color: var(--surface); background: var(--grad); background-size: 220% 100%; }
+.app-workspace .certification-emblem > span { position: absolute; right: -7px; bottom: -4px; display: grid; place-items: center; width: 27px; height: 27px; border: 3px solid var(--surface); border-radius: 9px; color: var(--lime-ink); background: var(--lime); }
+.app-workspace .certification-empty h2 { margin-top: 12px; color: var(--ink); font-size: clamp(27px, 3vw, 38px); font-weight: 750; line-height: 1.16; letter-spacing: -.045em; }
+.app-workspace .certification-empty-main > p { max-width: 430px; margin: 18px 0 26px; color: var(--ink-2); font-size: 14px; line-height: 1.8; }
+.app-workspace .certification-guide { min-width: 0; padding: 28px; border: 1px solid var(--brand-100); border-radius: 18px; background: var(--grad-soft); }
+.app-workspace .certification-guide ol { display: flex; flex-direction: column; gap: 26px; list-style: none; padding: 0; margin: 27px 0; }
+.app-workspace .certification-guide li { display: flex; gap: 14px; align-items: flex-start; }
+.app-workspace .certification-guide li > span { flex: none; display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid var(--brand-100); border-radius: 9px; background: var(--surface); color: var(--brand-900); font-size: 10px; font-weight: 750; }
+.app-workspace .certification-guide h3 { color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .certification-guide li p { margin-top: 6px; color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+.app-workspace .certification-guide-note { padding-top: 22px; border-top: 1px solid var(--brand-100); color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+.app-workspace .certification-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 34px 0 24px; }
+.app-workspace .certification-list-header h2 { margin-top: 8px; font-size: 23px; font-weight: 750; letter-spacing: -.035em; }
+.app-workspace .certification-count { padding: 9px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink-2); font-size: 12px; font-weight: 650; }
+.app-workspace .certification-grid.cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 20px; }
+.app-workspace .certification-record { position: relative; display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 0; min-width: 0; background: var(--surface); transition: border-color 220ms; }
+.app-workspace .certification-record::before { content: ""; position: absolute; left: 24px; right: 24px; top: 0; height: 3px; border-radius: 0 0 4px 4px; background: var(--grad); }
+.app-workspace .certification-record-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 28px 28px 22px; }
+.app-workspace .certification-record-top .icon-tile { width: 46px; height: 46px; border-radius: 14px; flex: none; }
+.app-workspace .certification-record-content { padding: 0 28px 28px; }
+.app-workspace .certification-record .item-title { margin: 10px 0 18px; font-size: 23px; line-height: 1.4; font-weight: 750; letter-spacing: -.035em; }
+.app-workspace .certification-institution { display: flex; align-items: flex-start; gap: 9px; color: var(--ink-2); font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
+.app-workspace .certification-institution svg { flex: none; margin-top: 4px; color: var(--brand-900); }
+.app-workspace .certification-institution > span { min-width: 0; }
+.app-workspace .certification-record-foot { display: flex; align-items: center; gap: 12px; padding: 20px 28px; margin-top: auto; border-top: 1px solid var(--line); border-radius: 0 0 18px 18px; background: var(--surface-2); }
+.app-workspace .certification-record-foot > svg { flex: none; color: var(--brand-900); }
+.app-workspace .certification-record-foot p { margin-top: 5px; color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+.app-workspace .certification-form { display: flex; flex-direction: column; gap: 28px; }
+.app-workspace .certification-form-section { padding: 0; margin: 0; min-width: 0; border: 0; }
+.app-workspace .certification-form-section + .certification-form-section { padding-top: 24px; border-top: 1px solid var(--line); }
+.app-workspace .certification-form-section legend { display: flex; align-items: center; gap: 10px; padding: 0; color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .certification-form-section legend > span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--brand-50); color: var(--brand-900); font-size: 10px; }
+.app-workspace .certification-form-section > p { margin: 10px 0 22px; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .certification-form .check { gap: 11px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); cursor: pointer; transition: background-color 200ms, border-color 200ms; }
+.app-workspace .certification-form .check:has(input:checked) { background: var(--brand-50); border-color: var(--brand-900); }
+@media (hover: hover) {
+  .app-workspace .certification-record:hover { border-color: var(--brand-900); }
+}
+@media (min-width: 981px) and (max-width: 1200px), (max-width: 720px) {
+  .app-workspace .certification-empty { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
+}
+@media (max-width: 600px) {
+  .app-workspace .certification-empty { padding: 24px 20px; }
+  .app-workspace .certification-empty-main > .btn { width: 100%; }
+  .app-workspace .certification-guide { padding: 22px 18px; }
+  .app-workspace .certification-empty-main > p { font-size: 15px; }
+  .app-workspace .certification-guide li p { font-size: 14px; }
+  .app-workspace .certification-grid.cat-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .app-workspace .certification-record-top { padding: 24px 20px 20px; }
+  .app-workspace .certification-record-content { padding: 0 20px 24px; }
+  .app-workspace .certification-record .item-title { font-size: 21px; }
+  .app-workspace .certification-record-foot { padding: 18px 20px; }
+  .app-workspace .certification-list-header h2 { font-size: 22px; }
+  .app-workspace .certifications-page .modal-foot .btn { flex: 1 1 130px; }
+  .app-workspace .certification-form .form-grid { grid-template-columns: 1fr; }
+  .app-workspace .certification-form .span-2 { grid-column: auto; }
+  .app-workspace .certification-form-section > p { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace .certification-record, .app-workspace .certification-form .check { transition: none; }
+}

@@ -1,0 +1,80 @@
+/* Project portfolio, scoped to this route. Shared buttons and dialog motion stay intact. */
+.app-workspace .projects-page { min-width: 0; }
+.app-workspace .projects-page > .alert { margin-bottom: 22px; }
+.app-workspace .project-kicker { display: block; color: var(--brand-900); font-size: 10px; font-weight: 800; letter-spacing: .07em; }
+.app-workspace .project-empty { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .8fr); gap: 48px; padding: 40px; text-align: left; align-items: center; background: var(--surface); border-color: var(--line); }
+.app-workspace .project-empty-main { min-width: 0; }
+.app-workspace .project-emblem { position: relative; display: grid; place-items: center; width: 74px; height: 74px; margin-bottom: 28px; border-radius: 22px; color: var(--surface); background: var(--grad); background-size: 220% 100%; }
+.app-workspace .project-emblem > span { position: absolute; right: -7px; bottom: -4px; display: grid; place-items: center; width: 27px; height: 27px; border: 3px solid var(--surface); border-radius: 9px; color: var(--lime-ink); background: var(--lime); }
+.app-workspace .project-empty h2 { margin-top: 12px; color: var(--ink); font-size: clamp(27px, 3vw, 38px); font-weight: 750; line-height: 1.16; letter-spacing: -.045em; }
+.app-workspace .project-empty-main > p { max-width: 430px; margin: 18px 0 26px; color: var(--ink-2); font-size: 14px; line-height: 1.8; }
+.app-workspace .project-guide { min-width: 0; padding: 28px; border: 1px solid var(--brand-100); border-radius: 18px; background: var(--grad-soft); }
+.app-workspace .project-guide ol { display: flex; flex-direction: column; gap: 26px; list-style: none; padding: 0; margin: 27px 0; }
+.app-workspace .project-guide li { display: flex; gap: 14px; align-items: flex-start; }
+.app-workspace .project-guide li > span { flex: none; display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid var(--brand-100); border-radius: 9px; background: var(--surface); color: var(--brand-900); font-size: 10px; font-weight: 750; }
+.app-workspace .project-guide h3 { color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .project-guide li p { margin-top: 6px; color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+.app-workspace .project-guide-note { padding-top: 22px; border-top: 1px solid var(--brand-100); color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+.app-workspace .project-list-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 34px 0 24px; }
+.app-workspace .project-list-header h2 { margin-top: 8px; font-size: 23px; font-weight: 750; letter-spacing: -.035em; }
+.app-workspace .project-count { padding: 9px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink-2); font-size: 12px; font-weight: 650; }
+.app-workspace .project-grid.cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 22px; }
+.app-workspace .project-record { display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 0; min-width: 0; background: var(--surface); transition: border-color 220ms, box-shadow 220ms; }
+.app-workspace .project-stage { position: relative; isolation: isolate; display: flex; justify-content: space-between; align-items: center; padding: 24px 28px; min-height: 104px; border-bottom: 1px solid var(--brand-100); border-radius: 18px 18px 0 0; color: var(--brand-900); background: var(--grad-soft); }
+.app-workspace .project-stage::before { content: ""; position: absolute; z-index: -1; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(110deg, transparent 33%, color-mix(in srgb, var(--surface) 80%, transparent) 49%, transparent 65%); background-size: 240% 100%; background-position: 120% 0; opacity: 0; transition: background-position 650ms var(--workspace-ease), opacity 220ms; }
+.app-workspace .project-mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px; background: var(--grad); background-size: 250% 100%; color: var(--surface); font-size: 22px; font-weight: 750; letter-spacing: -.04em; transition: transform 240ms var(--workspace-ease); }
+.app-workspace .project-record-body { padding: 28px; }
+.app-workspace .project-record .item-title { margin: 9px 0 15px; font-size: 24px; line-height: 1.35; font-weight: 750; letter-spacing: -.035em; }
+.app-workspace .project-record .item-desc { margin: 0; color: var(--ink-2); line-height: 1.8; white-space: pre-line; }
+.app-workspace .project-stack { margin-top: 24px; }
+.app-workspace .project-stack .chip-group { margin-top: 12px; gap: 7px; }
+.app-workspace .project-stack .badge { max-width: 100%; overflow-wrap: anywhere; }
+.app-workspace .project-record-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: auto; padding: 20px 28px; border-top: 1px solid var(--line); }
+.app-workspace .project-url { display: flex; align-items: flex-start; gap: 7px; flex: 1 1 170px; min-width: 0; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .project-url svg { flex: none; margin-top: 3px; }
+.app-workspace .project-url > span { min-width: 0; overflow-wrap: anywhere; }
+.app-workspace .project-record-foot .btn { flex: none; }
+.app-workspace .project-form { display: flex; flex-direction: column; gap: 28px; }
+.app-workspace .project-form-section { padding: 0; margin: 0; min-width: 0; border: 0; }
+.app-workspace .project-form-section + .project-form-section { padding-top: 24px; border-top: 1px solid var(--line); }
+.app-workspace .project-form-section legend { display: flex; align-items: center; gap: 10px; padding: 0; color: var(--ink); font-size: 15px; font-weight: 750; }
+.app-workspace .project-form-section legend > span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--brand-50); color: var(--brand-900); font-size: 10px; }
+.app-workspace .project-form-section > p { margin: 10px 0 22px; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .project-form .textarea { min-height: 170px; }
+.app-workspace .project-technology-options { gap: 9px; }
+.app-workspace .project-technology-options .chip { display: inline-flex; align-items: center; gap: 7px; max-width: 100%; overflow-wrap: anywhere; white-space: normal; text-align: left; }
+.app-workspace .project-technology-options .chip svg { flex: none; }
+.app-workspace .project-technologies-loading { display: flex; gap: 10px; }
+.app-workspace .project-technologies-empty { padding: 16px; border-radius: 12px; background: var(--surface-2); color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+.app-workspace .project-record:focus-within { border-color: var(--brand-900); }
+.app-workspace .project-record:focus-within .project-stage::before { opacity: 1; background-position: -20% 0; }
+@media (hover: hover) {
+  .app-workspace .project-record:hover { border-color: var(--brand-900); box-shadow: var(--shadow-card); }
+  .app-workspace .project-record:hover .project-mark { transform: translateY(-3px); }
+  .app-workspace .project-record:hover .project-stage::before { opacity: 1; background-position: -20% 0; }
+}
+@media (min-width: 981px) and (max-width: 1200px), (max-width: 720px) {
+  .app-workspace .project-empty { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
+}
+@media (max-width: 600px) {
+  .app-workspace .project-empty { padding: 24px 20px; }
+  .app-workspace .project-empty-main > .btn { width: 100%; }
+  .app-workspace .project-guide { padding: 22px 18px; }
+  .app-workspace .project-empty-main > p { font-size: 15px; }
+  .app-workspace .project-guide li p { font-size: 14px; }
+  .app-workspace .project-grid.cat-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .app-workspace .project-stage { padding: 22px 20px; }
+  .app-workspace .project-record-body { padding: 24px 20px; }
+  .app-workspace .project-record .item-title { font-size: 22px; }
+  .app-workspace .project-record-foot { padding: 20px; }
+  .app-workspace .project-record-foot .btn { width: 100%; }
+  .app-workspace .project-list-header h2 { font-size: 22px; }
+  .app-workspace .projects-page .modal-foot .btn { flex: 1 1 130px; }
+  .app-workspace .project-form .form-grid { grid-template-columns: 1fr; }
+  .app-workspace .project-form .span-2 { grid-column: auto; }
+  .app-workspace .project-form-section > p { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace .project-record, .app-workspace .project-mark, .app-workspace .project-stage::before { transition: none; }
+  .app-workspace .project-record:hover .project-mark { transform: none; }
+}

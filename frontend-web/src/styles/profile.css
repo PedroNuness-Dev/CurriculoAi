@@ -1,0 +1,84 @@
+/* Profile presentation only. Shared controls retain the workspace behavior. */
+.app-workspace .profile-page { min-width: 0; }
+.app-workspace .profile-page .profile-identity { display: grid; grid-template-columns: minmax(0, 1fr) minmax(230px, .6fr); gap: 32px; padding: 32px; background: var(--grad); color: var(--surface); border-color: transparent; }
+.app-workspace .profile-person { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.app-workspace .profile-page .profile-identity { background-size: 280% 100%; }
+.app-workspace .profile-person > div { min-width: 0; }
+.app-workspace .profile-avatar { display: grid; place-items: center; flex: none; width: 76px; height: 76px; border: 1px solid #ffffff60; border-radius: 23px; background: #ffffff18; color: white; font-size: 26px; font-weight: 700; letter-spacing: -.04em; }
+.app-workspace .profile-kicker { display: block; margin-bottom: 7px; font-size: 11px; font-weight: 650; letter-spacing: .07em; }
+.app-workspace .profile-identity h2 { color: white; font-size: clamp(23px, 2.2vw, 30px); font-weight: 700; overflow-wrap: anywhere; }
+.app-workspace .profile-person p { margin-top: 9px; font-size: 13px; line-height: 1.6; }
+.app-workspace .profile-completion { min-width: 0; padding-left: 30px; border-left: 1px solid #ffffff45; align-self: center; }
+.app-workspace .profile-completion > div:first-child { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; }
+.app-workspace .profile-completion strong { font-size: 28px; line-height: 1.2; font-weight: 700; white-space: nowrap; }
+.app-workspace .profile-completion small { font-size: 15px; font-weight: 500; }
+.app-workspace .profile-track { display: flex; gap: 5px; margin-top: 13px; }
+.app-workspace .profile-track > span { height: 5px; flex: 1; border-radius: 3px; background: #ffffff40; }
+.app-workspace .profile-track > .is-complete { background: var(--lime); }
+.app-workspace .profile-completion p { margin-top: 11px; font-size: 12px; line-height: 1.6; }
+.app-workspace .profile-shortcuts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 18px 0 30px; }
+.app-workspace .profile-shortcuts a { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px; min-height: 46px; border: 1px solid var(--line); border-radius: 11px; color: var(--brand-900); background: var(--surface); font-size: 12px; font-weight: 700; text-decoration: none; transition: border-color 200ms, background-color 200ms; }
+.app-workspace .profile-shortcuts a > span { display: flex; align-items: center; gap: 8px; }
+.app-workspace .profile-shortcuts svg { flex: none; }
+.app-workspace .profile-shortcuts a > svg { transition: transform 220ms var(--workspace-ease); }
+.app-workspace .profile-groups { margin-top: 22px; }
+.app-workspace .profile-group { overflow: visible; }
+.app-workspace .profile-group-label { display: flex; align-items: center; gap: 12px; padding: 18px 28px; border-bottom: 1px solid var(--line); color: var(--ink-2); font-size: 12px; font-weight: 750; letter-spacing: .025em; }
+.app-workspace .profile-group-label > span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; color: var(--brand-900); background: var(--brand-50); font-size: 10px; }
+.app-workspace .profile-section { display: grid; grid-template-columns: minmax(175px, .48fr) minmax(0, 1fr); gap: 32px; padding: 30px 28px; scroll-margin-top: 100px; }
+.app-workspace .profile-section + .profile-section { border-top: 1px solid var(--line); }
+.app-workspace .profile-section-heading { display: flex; align-items: flex-start; flex-direction: column; gap: 12px; min-width: 0; }
+.app-workspace .profile-section-heading .icon-tile { width: 38px; height: 38px; border-radius: 11px; }
+.app-workspace .profile-section-heading .card-title { margin: 0; font-size: 18px; letter-spacing: -.025em; }
+.app-workspace .profile-section-heading .card-sub { margin-top: 7px; max-width: 210px; }
+.app-workspace .profile-section-content { min-width: 0; padding-top: 2px; }
+.app-workspace .profile-section-content .stack { gap: 20px; }
+.app-workspace .profile-section-content .option-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.app-workspace .profile-section-content .option-card { padding-right: 32px; }
+.app-workspace .profile-section-content .option-card::after { content: ""; position: absolute; right: 12px; top: 17px; width: 11px; height: 11px; border: 1px solid var(--line-strong); border-radius: 50%; transition: border-color 200ms, background-color 200ms; }
+.app-workspace .profile-section-content .option-card:has(input:checked)::after { background: var(--brand-900); border-color: var(--brand-900); box-shadow: inset 0 0 0 2px white; }
+.app-workspace .profile-section-content .textarea { min-height: 142px; }
+.app-workspace .profile-cep-row { display: flex; gap: 10px; }
+.app-workspace .profile-cep-row .input { min-width: 0; }
+.app-workspace .profile-address-result { padding: 18px; border-left: 3px solid var(--brand-900); border-radius: 0 12px 12px 0; background: var(--surface-2); overflow-wrap: anywhere; }
+.app-workspace .profile-readonly-note { display: flex; align-items: flex-start; gap: 8px; padding: 13px 15px; border-radius: 11px; background: var(--surface-2); color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .profile-readonly-note svg { flex: none; margin-top: 3px; }
+.app-workspace .profile-footnote { margin-top: 22px; color: var(--muted); text-align: center; font-size: 12px; line-height: 1.7; }
+.app-workspace .profile-loading { display: flex; flex-direction: column; }
+@media (hover: hover) {
+  .app-workspace .profile-shortcuts a:hover { border-color: var(--brand-900); background: var(--brand-50); }
+  .app-workspace .profile-shortcuts a:hover > svg { transform: translateY(2px); }
+}
+@media (min-width: 981px) and (max-width: 1200px), (max-width: 700px) {
+  .app-workspace .profile-page .profile-identity { grid-template-columns: 1fr; gap: 24px; }
+  .app-workspace .profile-completion { border-left: 0; border-top: 1px solid #ffffff45; padding: 20px 0 0; }
+  .app-workspace .profile-section { grid-template-columns: 1fr; gap: 24px; }
+  .app-workspace .profile-section-heading { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 12px; align-items: start; }
+  .app-workspace .profile-section-heading .card-sub { max-width: none; }
+}
+@media (max-width: 700px) {
+  .app-workspace .profile-page .profile-identity { padding: 24px; }
+  .app-workspace .profile-person { gap: 14px; }
+  .app-workspace .profile-avatar { width: 58px; height: 58px; border-radius: 18px; font-size: 21px; }
+  .app-workspace .profile-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 24px; }
+  .app-workspace .profile-group-label { padding: 16px 20px; }
+  .app-workspace .profile-section { padding: 24px 20px; }
+  .app-workspace .profile-section-heading { grid-template-columns: 38px minmax(0, 1fr); }
+  .app-workspace .profile-section-heading > .badge { grid-column: 2; justify-self: start; }
+  .app-workspace .profile-section-content > form > .row .btn { width: 100%; }
+}
+@media (max-width: 420px) {
+  .app-workspace .profile-page .profile-identity { padding: 20px; }
+  .app-workspace .profile-section-content .option-cards { grid-template-columns: 1fr; }
+  .app-workspace .profile-shortcuts a { padding: 10px; font-size: 11px; }
+  .app-workspace .profile-shortcuts a > span { gap: 6px; }
+  .app-workspace .profile-cep-row { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace .profile-shortcuts a, .app-workspace .profile-shortcuts a > svg, .app-workspace .profile-section-content .option-card::after { transition: none; }
+  .app-workspace .profile-shortcuts a:hover > svg { transform: none; }
+}
+.app-workspace .profile-next-step { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px; border: 1px solid var(--brand-100); border-radius: 16px; background: var(--brand-50); }
+.app-workspace .profile-next-step b { font-size: 14px; }
+.app-workspace .profile-next-step p { margin-top: 5px; color: var(--ink-2); font-size: 12px; }
+@media (max-width: 600px) { .app-workspace .profile-next-step { align-items: stretch; flex-direction: column; } }

@@ -31,12 +31,14 @@ public class AbilityService {
 
         log.info("Iniciando o processo de criação de habilidade");
 
-        if (abilityRepository.existsByNameIgnoreCase(abilityRequest.name())) {
+        String name = abilityRequest.name().trim();
+        if (abilityRepository.existsByNameIgnoreCase(name)) {
             throw new IllegalArgumentException("Já existe uma habilidade com esse nome");
         }
 
         Ability newAbility = Ability.builder()
-                .name(abilityRequest.name())
+                .name(name)
+                .category("SOFT".equals(abilityRequest.category()) ? "SOFT" : "HARD")
                 .build();
 
         Ability savedAbility = abilityRepository.save(newAbility);

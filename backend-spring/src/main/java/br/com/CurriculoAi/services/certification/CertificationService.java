@@ -80,4 +80,64 @@ public class CertificationService {
                 .collect(Collectors.toSet());
         return institutionService.findAllByIds(institutionsIds);
     }
+
+
+    public List<CertificationResponse> findAllCertificationsOfUser(){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return certificationRepository.findAllByUser_UserIdOrderByCertificationIdAsc(userId)
+                .stream()
+                .map(certificationMapper::toDto)
+                .toList();
+    }
+
+    public CertificationResponse getCertificationById(Long certificationId){
+
+        Certification certification = findCertificationOfAuthenticatedUser(certificationId);
+
+        return certificationMapper.toDto(certification);
+    }
+
+    @Transactional
+    public CertificationResponse updateCertification(Long certificationId, CertificationRequest certificationRequest){
+
+        log.info("Iniciando atualização da certificação com id [{}]", certificationId);
+
+        Certification certification = findCertificationOfAuthenticatedUser(certificationId);
+
+        Institution institution = institutionService.findInstitutionById(certificationRequest.institutionId());
+
+        certification.setName(certificationRequest.name());
+        certification.setInstitution(institution);
+        certification.setFinishDate(certificationRequest.finishDate());
+        certification.setInProgress(certificationRequest.finishDate() == null);
+
+        Certification updatedCertification = certificationRepository.save(certification);
+
+        log.info("Certificação com id [{}] atualizada com sucesso", certificationId);
+
+        return certificationMapper.toDto(updatedCertification);
+    }
+
+    @Transactional
+    public void deleteCertification(Long certificationId){
+
+        log.info("Iniciando remoção da certificação com id [{}]", certificationId);
+
+        Certification certification = findCertificationOfAuthenticatedUser(certificationId);
+
+        certificationRepository.delete(certification);
+
+        log.info("Certificação com id [{}] removida com sucesso", certificationId);
+    }
+
+    // Busca já filtrando pelo usuário autenticado: se a certificação for de outro usuário, retorna 404
+    private Certification findCertificationOfAuthenticatedUser(Long certificationId){
+
+        Long userId = authService.getUserIdByTokenAuthenticate();
+
+        return certificationRepository.findByCertificationIdAndUser_UserId(certificationId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Certificação com id: "+certificationId+" não encontrada"));
+    }
 }

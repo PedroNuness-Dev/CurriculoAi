@@ -1,0 +1,77 @@
+/* Skills keep their original search, selection and replacement-save flow. */
+.app-workspace .skills-page { min-width: 0; }
+.app-workspace .skills-kicker { display: block; color: var(--brand-900); font-size: 10px; font-weight: 800; letter-spacing: .07em; }
+.app-workspace .skills-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
+.app-workspace .skills-selection { grid-column: 2; grid-row: 1; position: sticky; top: 100px; min-width: 0; padding: 0; }
+.app-workspace .skills-selection-head { padding: 24px; border-radius: 18px 18px 0 0; border-bottom: 1px solid var(--brand-100); background: var(--grad-soft); }
+.app-workspace .skills-selection-head > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.app-workspace .skills-selection-head h2 { font-size: 19px; font-weight: 750; line-height: 1.4; letter-spacing: -.025em; }
+.app-workspace .skills-count { display: grid; place-items: center; flex: none; min-width: 36px; min-height: 36px; padding: 4px 9px; border: 1px solid var(--brand-100); border-radius: 11px; background: var(--surface); color: var(--brand-900); font-size: 18px; font-weight: 750; }
+.app-workspace .skills-selection-head p { margin-top: 12px; color: var(--ink-2); font-size: 12px; line-height: 1.7; }
+.app-workspace .skills-selection-body { padding: 24px; }
+.app-workspace .skills-selection-empty .icon-tile { width: 46px; height: 46px; margin-bottom: 18px; background: var(--grad); background-size: 250% 100%; color: var(--surface); }
+.app-workspace .skills-selection-empty h3 { font-size: 19px; font-weight: 750; line-height: 1.4; letter-spacing: -.025em; }
+.app-workspace .skills-selection-empty p { margin: 12px 0 20px; color: var(--ink-2); font-size: 13px; line-height: 1.8; }
+.app-workspace .skills-selection-empty .btn { width: 100%; }
+.app-workspace .skills-selected { display: flex; flex-direction: column; align-items: stretch; gap: 9px; }
+.app-workspace .skills-selected .chip { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; max-width: 100%; white-space: normal; text-align: left; }
+.app-workspace .skills-selected .chip > span { min-width: 0; overflow-wrap: anywhere; }
+.app-workspace .skills-selected .chip > svg { flex: none; transition: transform 200ms var(--workspace-ease); }
+.app-workspace .skills-unavailable-names { margin-top: 14px; color: var(--ink-2); font-size: 13px; line-height: 1.8; }
+.app-workspace .skills-unsaved { display: flex; align-items: flex-start; gap: 9px; margin-top: 20px; padding: 14px; border-radius: 12px; background: var(--brand-50); }
+.app-workspace .skills-unsaved > span { flex: none; width: 7px; height: 7px; margin-top: 6px; border: 1px solid var(--lime-ink); border-radius: 2px; background: var(--lime); }
+.app-workspace .skills-unsaved p { color: var(--ink-2); font-size: 12px; line-height: 1.8; }
+.app-workspace .skills-saved-note { display: flex; align-items: center; gap: 7px; margin-top: 20px; color: var(--brand-900); font-size: 12px; line-height: 1.7; }
+.app-workspace .skills-saved-note svg { flex: none; }
+.app-workspace .skills-selection-foot { display: flex; justify-content: space-between; gap: 8px; padding: 17px 24px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 10px; font-weight: 650; }
+.app-workspace .skills-catalog { grid-column: 1; grid-row: 1; min-width: 0; padding: 0; }
+.app-workspace .skills-catalog-head { padding: 28px; border-bottom: 1px solid var(--line); }
+.app-workspace .skills-catalog-head h2 { max-width: 400px; margin-top: 12px; font-size: clamp(24px, 2.4vw, 29px); font-weight: 750; line-height: 1.2; letter-spacing: -.04em; }
+.app-workspace .skills-catalog-head p { margin-top: 14px; color: var(--ink-2); font-size: 13px; line-height: 1.8; }
+.app-workspace .skills-catalog-body { padding: 28px; }
+.app-workspace .skills-search-row { display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-top: 10px; }
+.app-workspace .skills-search-row .input-wrap { min-width: 0; width: 100%; }
+.app-workspace .skills-search-row .btn { align-self: flex-start; max-width: 100%; overflow-wrap: anywhere; text-align: left; }
+.app-workspace .skills-filters { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+.app-workspace .skills-filter { border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; background: var(--surface); color: var(--ink-2); font-size: 12px; cursor: pointer; }
+.app-workspace .skills-filter.active { border-color: var(--brand-900); background: var(--brand-50); color: var(--brand-900); font-weight: 700; }
+.app-workspace .skills-source { margin-top: 20px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.app-workspace #skills-search { scroll-margin-top: 105px; }
+.app-workspace .skills-results-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 28px 0 18px; }
+.app-workspace .skills-results-head h3 { font-size: 14px; font-weight: 750; }
+.app-workspace .skills-results-head > span { color: var(--muted); font-size: 11px; }
+.app-workspace .skills-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.app-workspace .skills-options .chip { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 13px; text-align: left; white-space: normal; }
+.app-workspace .skills-options .chip > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.app-workspace .skills-option-mark { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); color: var(--brand-900); transition: background-color 200ms, border-color 200ms; }
+.app-workspace .skills-options .chip[aria-pressed="true"] .skills-option-mark { background: var(--brand-900); border-color: var(--brand-900); color: var(--surface); }
+.app-workspace .skills-options .chip[aria-pressed="true"] .skills-option-mark svg { animation: skills-picked 180ms var(--workspace-ease); }
+.app-workspace .skills-no-results { grid-column: 1 / -1; padding: 28px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); }
+.app-workspace .skills-no-results > svg { margin-bottom: 13px; color: var(--brand-900); }
+.app-workspace .skills-no-results h3 { font-size: 17px; font-weight: 750; }
+.app-workspace .skills-no-results p { margin-top: 10px; color: var(--ink-2); font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+@keyframes skills-picked { from { opacity: .3; transform: rotate(-25deg); } to { opacity: 1; transform: rotate(0); } }
+@media (hover: hover) {
+  .app-workspace .skills-selected .chip:hover > svg { transform: rotate(90deg); }
+}
+@media (max-width: 1200px) {
+  .app-workspace .skills-workspace { grid-template-columns: minmax(0, 1fr); }
+  .app-workspace .skills-selection, .app-workspace .skills-catalog { grid-column: auto; grid-row: auto; position: static; }
+  .app-workspace .skills-selected { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-workspace .skills-selection-empty .icon-tile { display: none; }
+  .app-workspace .skills-selection-empty .btn { width: auto; }
+}
+@media (max-width: 600px) {
+  .app-workspace .skills-selection-head, .app-workspace .skills-selection-body, .app-workspace .skills-catalog-head, .app-workspace .skills-catalog-body { padding: 22px 20px; }
+  .app-workspace .skills-selection-head h2 { font-size: 18px; }
+  .app-workspace .skills-selection-head p, .app-workspace .skills-catalog-head p, .app-workspace .skills-selection-empty p { font-size: 14px; }
+  .app-workspace .skills-selection-foot { padding-inline: 20px; }
+  .app-workspace .skills-options, .app-workspace .skills-selected { grid-template-columns: minmax(0, 1fr); }
+  .app-workspace .skills-catalog-head h2 { font-size: 25px; }
+  .app-workspace .skills-selection-empty .btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-workspace .skills-selected .chip > svg, .app-workspace .skills-option-mark { transition: none; }
+  .app-workspace .skills-selected .chip:hover > svg { transform: none; }
+  .app-workspace .skills-options .chip[aria-pressed="true"] .skills-option-mark svg { animation: none; }
+}
